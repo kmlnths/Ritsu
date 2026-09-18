@@ -62,6 +62,7 @@
     .home-main,.home-side{min-width:0}
     .home-side .tiles{grid-template-columns:1fr}
     .home-side .sec-h:first-child{margin-top:2px}
+    .dayscroll-wrap{max-width:680px;margin-left:auto;margin-right:auto}
   }
   .topbar{display:none} .bottomnav{display:none}
   .day-h{display:flex;align-items:center;gap:14px;padding-bottom:16px;margin-bottom:20px;border-bottom:1px solid var(--line)}
@@ -475,7 +476,7 @@
   .orbit-card .eco-today{color:#B9B3D6;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;flex:none}
   .orbit-msg{margin:3px 16px 0;color:#9C96BE;font-size:12.5px;line-height:1.5}
   .orbit-note{color:#7C769B;font-size:11.5px;padding:2px 16px 14px}
-  .orbit-card #forest{margin-top:6px}
+  .orbit-card #forest{margin:6px auto 0;max-width:440px}
 
   /* ===== Progress card (rings + med/routine bars) ===== */
   .prog-card{padding:16px}
@@ -2137,8 +2138,9 @@
     main+=fastHomeCard();
     main+=todayTimeline();
     var pb=(state.probeHide?null:pendingProbe());
+    var probeHtml='';
     if(pb){
-      main+='<div class="probe"><p class="ph">Ritsu noticed something</p>'+
+      probeHtml='<div class="probe"><p class="ph">Ritsu noticed something</p>'+
          '<p class="pq">'+findingText(pb)+'</p>'+
          '<p class="psub">Not a telling-off, knowing the reason is what makes a pattern useful. Tap one, or skip it.</p><div class="prow">'+
          PROBE_REASONS.map(function(r){return '<button class="mchip" data-probe="'+pb.item.id+'|'+pb.k+'|'+r[0]+'">'+esc(r[1])+'</button>'}).join("")+
@@ -2167,6 +2169,7 @@
       '</div>';
     side+='<div class="panel"><div class="cpanel-h"><h4>Consistency</h4><button class="mini-toggle'+(calDates?" on":"")+'" data-caldates>'+(calDates?"Hide dates":"Show dates")+'</button></div><p style="color:var(--muted);font-size:13.5px;margin:4px 0 14px;line-height:1.55;max-width:46ch">One square per day. The fuller it is, the more of that day\'s routine you finished.</p>'+calendarPanel(6)+'</div>';
     var rf=reflection();if(rf)side+='<div class="reflect"><p class="q">'+rf.q+'</p><p>'+esc(rf.p)+'</p></div>';
+    if(probeHtml)side+=probeHtml;
     side+='<div class="sec-h"><h2>Your areas</h2><span class="line"></span><button class="add" data-action="add-cat">+ area</button></div>';
     if(areas.length===0){side+='<div class="empty"><h3>No areas yet</h3><p>Create one like Health or Hygiene.</p><button class="btn primary" data-action="add-cat">＋ New area</button></div>';}
     else{
