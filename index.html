@@ -965,6 +965,31 @@
   @keyframes vtInBack{from{opacity:0;transform:translateX(-24px)}}
   @media(prefers-reduced-motion:reduce){.tick.pop,.hm-gauge circle.on{animation:none}}
 
+  /* ===== batch 3: quick add, backup nudge, welcome ===== */
+  .qrow{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px}
+  .qchip{position:relative;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:none;color:var(--muted);font-size:13.5px;font-weight:500}
+  .qchip::after{content:"";position:absolute;inset:-6px}
+  .qchip.on{border-color:var(--accent);color:var(--accent-ink);background:var(--accent-soft)}
+  .qhint{margin:-4px 0 12px;font-size:13px;color:var(--accent-ink)}
+  .qhint[hidden]{display:none}
+  .qmore{position:relative;border:0;background:none;color:var(--accent-ink);font-weight:600;font-size:13.5px;padding:6px 0 12px}
+  .qmore::after{content:"";position:absolute;inset:-8px -10px}
+  #q-more[hidden]{display:none}
+  .nudge{display:flex;flex-direction:column;gap:12px;margin-bottom:14px;padding:14px 16px;border:1px solid var(--line);border-radius:16px;
+    background:linear-gradient(120deg,color-mix(in srgb,var(--accent) 14%,var(--panel)) 0%,var(--panel) 70%)}
+  .nudge b{display:block;font-size:15px}
+  .nudge small{display:block;margin-top:2px;font-size:13px;color:var(--muted);line-height:1.45}
+  .nudge-b{display:flex;gap:8px}
+  .welcome-card{max-width:440px;margin:0 auto;padding:calc(48px + env(safe-area-inset-top)) 4px 40px}
+  .w-sub{margin:10px 0 26px;font-size:15.5px;line-height:1.5;color:var(--muted)}
+  .w-opt{display:block;width:100%;text-align:left;margin-bottom:12px;padding:16px 18px;border:1px solid var(--line);border-radius:16px;color:var(--ink);cursor:pointer;
+    background:linear-gradient(180deg,var(--panel-2),var(--panel))}
+  .w-opt b{display:block;font-size:16px;font-weight:600}
+  .w-opt small{display:block;margin-top:3px;font-size:13.5px;line-height:1.45;color:var(--muted)}
+  .w-opt:hover,.w-opt:focus-visible{border-color:var(--accent)}
+  .welcome .gdock,.welcome .fab,.welcome .sidebar,.welcome .topbar{display:none!important}
+  .welcome .app{grid-template-columns:1fr}
+
   /* magnifying dock (phone). The glyph magnifies, never the button; --d is set by script. */
   .gdock{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:40;
     padding:8px 10px 7px;border-radius:999px;touch-action:none;max-width:calc(100% - 16px);
@@ -1936,7 +1961,7 @@
     _emit(){this.ready=true;this.onChange();},
     _initDb(){var self=this;["cats","items","people","tags","markers"].forEach(function(c){try{self.db.collection(c).onSnapshot(function(snap){var m={};snap.docs.forEach(function(d){if(d.exists){var v=Object.assign({},d.data()||{});v.id=d.id;if(c==="items")normalizeItem(v);m[d.id]=v;}});self.cache[c]=m;self._emit();},function(err){if(err&&err.code!=="unavailable")console.warn("db",c,err.code);self._emit();});}catch(e){console.warn(e);}});setTimeout(function(){if(!self.ready)self._emit();},1200);},
     _lsKey:"ritsu_local",
-    _initLocal(){try{var raw=localStorage.getItem(this._lsKey);if(raw)this.cache=JSON.parse(raw);}catch(e){}var self=this;Object.keys(this.cache.items||{}).forEach(function(k){normalizeItem(self.cache.items[k])});if(!this.cache.tags)this.cache.tags={};if(!this.cache.markers)this.cache.markers={};if(Object.keys(this.cache.cats||{}).length===0)seedLocal(this);this._emit();},
+    _initLocal(){try{var raw=localStorage.getItem(this._lsKey);if(raw)this.cache=JSON.parse(raw);else this.fresh=true;}catch(e){}var self=this;Object.keys(this.cache.items||{}).forEach(function(k){normalizeItem(self.cache.items[k])});if(!this.cache.tags)this.cache.tags={};if(!this.cache.markers)this.cache.markers={};if(Object.keys(this.cache.cats||{}).length===0){if(this.fresh)this.welcome=true;else seedLocal(this);}this._emit();},
     _save(){if(this.local){try{localStorage.setItem(this._lsKey,JSON.stringify(this.cache))}catch(e){}}},
     /* ---- device-only items never touch the shared database. Not hidden from friends -
        genuinely absent from the data they can reach. Retires once real logins exist. ---- */
@@ -2337,7 +2362,7 @@
     _orbitRAF=requestAnimationFrame(_orbitLoop);
   }
 
-  function render(){if(!Store.ready)return;renderNav();var v=$("#view");
+  function render(){if(!Store.ready)return;document.body.classList.toggle("welcome",!!Store.welcome);if(Store.welcome){$("#view").innerHTML=viewWelcome();return;}renderNav();var v=$("#view");
     orbitUnmount();
     if(state.view==="day")v.innerHTML=viewDay();else if(state.view==="fasting")v.innerHTML=viewFasting();else if(state.view==="medreport")v.innerHTML=viewMedReport(state.medId);else if(state.view==="reports")v.innerHTML=viewReports();else if(state.view==="people")v.innerHTML=viewPeople();else if(state.view==="settings")v.innerHTML=viewSettings();
     else if(state.view==="item"){var i=Store.get("items",state.itemId);if(!i){state.view="home";return render();}v.innerHTML=viewItem(i);}
@@ -2651,7 +2676,7 @@
     var ds=hmDay(),st=hmStats(ds);
     var nh=(ds===today())?hmNextHtml():"",nx=$("#hmNext");nx.innerHTML=nh;nx.hidden=!nh;
     $("#hmCards").innerHTML=hmCardsHtml(ds,st);
-    $("#hmHint").hidden=!!state.homeOpen;
+    $("#hmHint").hidden=!!state.homeOpen;$("#hmHint").textContent=visibleItems().length?"Tap a card to see what is left. Tap it again to open the list.":"Nothing here yet. Tap the plus button to add your first task, or open an area to add a habit.";
     var hh=$("#hmHero");hh.innerHTML=hmHeroHtml(ds,st);hh.classList.toggle("complete",!!hh.querySelector(".hm-done-flag"));
   }
   function hmBodySoon(){clearTimeout(_hmT);_hmT=setTimeout(hmBody,90)}
@@ -2798,7 +2823,7 @@
       '<button class="hm-hero" id="hmHero" data-hmopen="all" aria-label="Open the full task list"></button>';
 
     /* ===== SIDE column: consistency, then the rest of what used to live on Home ===== */
-    var side='<div class="panel hm-cal"><div class="hm-cal-h"><h4>Consistency</h4><div class="hm-cal-r"><span><b>'+(con==null?"-":con+"%")+'</b> last 30 days</span><button class="mini-toggle'+(calDates?" on":"")+'" data-caldates>'+(calDates?"Hide dates":"Show dates")+'</button></div></div>'+calendarPanel(4,true)+'</div>';
+    var side=backupNudge()+'<div class="panel hm-cal"><div class="hm-cal-h"><h4>Consistency</h4><div class="hm-cal-r"><span><b>'+(con==null?"-":con+"%")+'</b> last 30 days</span><button class="mini-toggle'+(calDates?" on":"")+'" data-caldates>'+(calDates?"Hide dates":"Show dates")+'</button></div></div>'+calendarPanel(4,true)+'</div>';
     side+=fastHomeCard();
     var rf=reflection();if(rf)side+='<div class="reflect"><p class="q">'+rf.q+'</p><p>'+esc(rf.p)+'</p></div>';
     var pb=(state.probeHide?null:pendingProbe());
@@ -3282,6 +3307,7 @@
     var h='<div class="day-h"><div class="d"><p class="kicker">Preferences</p><h1 class="title" style="font-size:32px">Settings</h1></div></div>';
     var me=state.me?personById(state.me):null;
     h+='<div class="panel"><div class="setrow"><div class="info"><b>Appearance</b><small>Saved on this device. Auto follows your phone.</small></div><div class="themetoggle"><button class="'+(theme==="warm"?"on":"")+'" data-theme-set="warm">Light</button><button class="'+(theme==="dark"?"on":"")+'" data-theme-set="dark">Dark</button><button class="'+(theme==="auto"?"on":"")+'" data-theme-set="auto">Auto</button></div></div><div class="setrow"><div class="info"><b>Days-behind orbit</b><small>The solar-system tile at the top of Home.</small></div><div class="themetoggle"><button class="'+(!orbitHide?"on":"")+'" data-orbit-set="1">On</button><button class="'+(orbitHide?"on":"")+'" data-orbit-set="0">Off</button></div></div><div class="setrow"><div class="info"><b>You are</b><small>Used for “assigned to you”, and for who can see a task.</small></div><button class="btn sm" data-action="pick-me">'+(me?esc(me.name):"Set")+'</button></div><div class="setrow"><div class="info"><b>Export your data</b><small>A doctor-ready summary, or everything as JSON. It is your data, it should not be trapped in here.</small></div><button class="btn sm" data-action="export">Export</button></div><div class="setrow"><div class="info"><b>Reset the sample data</b><small>Wipes this device and reloads with fresh example history. Only useful while we are still prototyping.</small></div><button class="btn danger sm" data-action="reseed">Start fresh</button></div></div>';
+    h+=dataPanel();
     h+='<div class="sec-h"><h2>Tags</h2><span class="line"></span><button class="add" data-action="add-tag">+ new</button></div><div class="panel">';
     var ts=tags();if(!ts.length)h+='<p class="kicker" style="color:var(--muted)">No tags yet.</p>';ts.forEach(function(t){var n=Store.all("items").filter(function(i){return (i.tags||[]).indexOf(t.id)>-1}).length;h+='<div class="tagline"><span class="sw" style="background:'+esc(t.color)+'"></span><b>'+esc(t.name)+'</b><span class="n">'+n+'</span><button class="x" data-del-tag="'+t.id+'">✕</button></div>';});h+='</div>';
     h+='<div class="sec-h"><h2>Flags</h2><span class="line"></span></div><div class="panel">';
@@ -3295,6 +3321,102 @@
   }
 
   /* ---- modals ---- */
+  /* ===== batch 3: quick add, backup and restore, first-run welcome ===== */
+
+  /* "Call the plumber tomorrow" becomes the title "Call the plumber" and the date tomorrow */
+  function parseQuick(text){
+    var m=/\s+(?:on\s+)?(today|tonight|tomorrow|tmrw|tmr|next week|in (\d{1,2}) days?|(?:next\s+)?(mon(?:day)?|tue(?:s(?:day)?)?|wed(?:nesday)?|thu(?:r(?:s(?:day)?)?)?|fri(?:day)?|sat(?:urday)?|sun(?:day)?))\s*$/i.exec(text||"");
+    if(!m||!text.slice(0,m.index).trim())return null;
+    var w=m[1].toLowerCase(),n=null;
+    if(w==="today"||w==="tonight")n=0;else if(w==="tomorrow"||w==="tmrw"||w==="tmr")n=1;else if(w==="next week")n=7;
+    else if(m[2])n=parseInt(m[2],10);
+    else{var idx=["sun","mon","tue","wed","thu","fri","sat"].indexOf(m[3].toLowerCase().slice(0,3));n=(idx-new Date().getDay()+7)%7||7;}
+    return {title:text.slice(0,m.index).trim(),date:addDaysStr(today(),n)};
+  }
+  function qHint(){
+    var h=$("#q-hint"),t=$("#i-title");if(!h||!t)return;
+    var q=(ms.mode==="task"&&!ms.id&&!ms.dateTouched)?parseQuick(t.value):null;
+    if(q){var d=new Date(q.date+"T00:00:00");h.textContent="Due "+DOW[d.getDay()]+" "+d.getDate()+" "+MON[d.getMonth()];h.hidden=false;}else h.hidden=true;
+  }
+  function qChips(){
+    var q=(ms.mode==="task"&&!ms.id&&!ms.dateTouched)?parseQuick(($("#i-title")||{}).value):null;
+    var due=q?q.date:($("#i-due")||{}).value;   /* what is typed wins until a chip or the date field is used */
+    [].forEach.call(document.querySelectorAll(".qchip[data-qday]"),function(c){var on=due===addDaysStr(today(),parseInt(c.getAttribute("data-qday"),10));c.classList.toggle("on",on);c.setAttribute("aria-pressed",on);});
+  }
+
+  /* backup to a file, restore from a file, one step back */
+  function backupData(){return {app:"ritsu",version:1,exportedAt:new Date().toISOString(),me:state.me||null,cache:{cats:Store.cache.cats||{},items:Store.cache.items||{},people:Store.cache.people||{},tags:Store.cache.tags||{},markers:Store.cache.markers||{}},priv:Store._priv||{}}}
+  function downloadBackup(){
+    var blob=new Blob([JSON.stringify(backupData(),null,1)],{type:"application/json"});
+    var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="ritsu-backup-"+today()+".json";
+    document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1500);
+    try{localStorage.setItem("ritsu_last_backup",today())}catch(e){}
+    toast("Backup saved to your downloads");
+  }
+  function restoreBackup(text,skipConfirm){
+    var b;try{b=JSON.parse(text)}catch(e){toast("That file is not a Ritsu backup");return}
+    var c=b&&b.cache;
+    if(!b||b.app!=="ritsu"||!c||!c.items||!c.cats){toast("That file is not a Ritsu backup");return}
+    if(!Store.local){toast("Restore works with this device's storage only");return}
+    var when=(b.exportedAt||"").slice(0,10)||"an earlier day";
+    if(!skipConfirm&&!confirm("Replace everything on this device with the backup from "+when+"? What you have now is kept for one step back."))return;
+    if(!skipConfirm){try{localStorage.setItem("ritsu_prev_backup",JSON.stringify({cache:Store.cache,priv:Store._priv}))}catch(e){}}
+    Store.cache={cats:c.cats||{},items:c.items||{},people:c.people||{},tags:c.tags||{},markers:c.markers||{}};
+    Object.keys(Store.cache.items).forEach(function(k){normalizeItem(Store.cache.items[k])});
+    Store._priv=b.priv||{};Object.keys(Store._priv).forEach(function(k){normalizeItem(Store._priv[k])});
+    Store._save();Store._savePriv();
+    if(b.me){state.me=b.me;try{localStorage.setItem("ritsu_me",b.me)}catch(e){}}
+    var was=Store.welcome;Store.welcome=false;
+    if(was){try{localStorage.setItem("ritsu_first_seen",today())}catch(e){}state.view="home";}
+    toast("Backup restored");Store._emit();
+  }
+  function undoRestore(){
+    var raw=null;try{raw=localStorage.getItem("ritsu_prev_backup")}catch(e){}
+    if(!raw)return;
+    var p;try{p=JSON.parse(raw)}catch(e){return}
+    Store.cache=p.cache;Store._priv=p.priv||{};Store._save();Store._savePriv();
+    try{localStorage.removeItem("ritsu_prev_backup")}catch(e){}
+    toast("Back to how it was");Store._emit();
+  }
+  function readBackupFile(file,skipConfirm){if(!file)return;var r=new FileReader();r.onload=function(){restoreBackup(String(r.result||""),skipConfirm)};r.readAsText(file);}
+  function dataPanel(){
+    var last=null,prev=false;try{last=localStorage.getItem("ritsu_last_backup");prev=!!localStorage.getItem("ritsu_prev_backup")}catch(e){}
+    if(navigator.storage&&navigator.storage.persisted)navigator.storage.persisted().then(function(p){
+      var n=document.getElementById("persist-note"),b=document.getElementById("persist-ask");
+      if(n)n.textContent=p?"Yes. The browser will not clear Ritsu's data on its own.":"Not yet. Adding Ritsu to your home screen helps, and a backup file is the real safety net.";
+      if(b)b.hidden=!!p;
+    });
+    var h='<div class="sec-h"><h2>Your data</h2><span class="line"></span></div><div class="panel">';
+    h+='<div class="setrow"><div class="info"><b>Back up to a file</b><small>'+(last?"Last backup: "+esc(last)+". ":"Never backed up. ")+'Everything lives on this device, so a file is your safety net.</small></div><button class="btn primary sm" data-backup-now>Download</button></div>';
+    h+='<div class="setrow"><div class="info"><b>Restore from a backup</b><small>Replaces what is on this device. What you have now is kept for one step back.</small></div><label class="btn sm" for="restore-file">Choose file</label><input type="file" id="restore-file" accept=".json,application/json" hidden></div>';
+    if(prev)h+='<div class="setrow"><div class="info"><b>Undo the last restore</b><small>Go back to what was here before.</small></div><button class="btn sm" data-restore-undo>Undo</button></div>';
+    h+='<div class="setrow"><div class="info"><b>Protected from browser cleanup</b><small id="persist-note">Checking...</small></div><button class="btn sm" id="persist-ask" data-persist-ask hidden>Ask</button></div></div>';
+    return h;
+  }
+  /* a calm nudge once a month; the first launch only starts the clock */
+  function backupNudge(){
+    if(!Store.local)return "";
+    var last=null,seen=null,snooze=null;
+    try{last=localStorage.getItem("ritsu_last_backup");seen=localStorage.getItem("ritsu_first_seen");snooze=localStorage.getItem("ritsu_backup_snooze");}catch(e){return ""}
+    if(!seen){try{localStorage.setItem("ritsu_first_seen",today())}catch(e){}return ""}
+    if(dCount(last||seen)>-30)return "";
+    if(snooze&&dCount(snooze)>0)return "";
+    if(Store.all("items").length<3)return "";
+    return '<div class="nudge"><div><b>Time for a backup</b><small>'+(last?"Your last one was "+(-dCount(last))+" days ago. ":"You have not made one yet. ")+'It takes a second and protects your history.</small></div><div class="nudge-b"><button class="btn primary sm" data-backup-now>Back up</button><button class="btn ghost sm" data-backup-later>Later</button></div></div>';
+  }
+
+  /* first launch on a device with no data */
+  var WELCOME_CATS=[["c_todo","To-do","🗒️","#8E97A3",0],["c_health","Health","💪","#34D399",1],["c_mind","Mind","📚","#10B981",2]];
+  function viewWelcome(){
+    return '<div class="welcome-card"><h1 class="hm-greet">Welcome</h1><p class="w-sub">Ritsu keeps your habits, health and to-dos in one calm place. Everything stays on this device.</p>'+
+      '<button class="w-opt" data-welcome="clean"><b>Start clean</b><small>Body, Mind and To-do areas, ready for your own things.</small></button>'+
+      '<button class="w-opt" data-welcome="examples"><b>Show me around</b><small>Fills Ritsu with example habits so you can see how it works. You can wipe them later in Settings.</small></button>'+
+      '<label class="w-opt" for="welcome-file"><b>Restore a backup</b><small>Already use Ritsu? Choose your backup file.</small></label><input type="file" id="welcome-file" accept=".json,application/json" hidden></div>';
+  }
+  function finishWelcome(){Store.welcome=false;Store._save();try{localStorage.setItem("ritsu_first_seen",today())}catch(e){}state.view="home";Store._emit();}
+  function startClean(){WELCOME_CATS.forEach(function(c){Store.cache.cats[c[0]]={id:c[0],name:c[1],emoji:c[2],color:c[3],order:c[4]};});finishWelcome();}
+  function startExamples(){seedLocal(Store);finishWelcome();}
+
   var ms={};
   function openModal(html){$("#modal").innerHTML=html;$("#overlay").classList.add("show");}
   function closeModal(){$("#overlay").classList.remove("show");ms={};}
@@ -3329,7 +3451,12 @@
   function openTask(id,presetDate){var d=id?JSON.parse(JSON.stringify(Store.get("items",id))):{catId:TODO_CAT,sub:"",title:"",kind:"todo",notes:"",priority:"med",tags:[],assignees:[],private:false,done:false,dueDate:presetDate||today(),repeatEvery:0,list:todoList};if(id&&!d.list)d.list="work";ms={type:"item",mode:"task",id:id||null,data:d};renderTaskModal();}
   function renderTaskModal(){var d=ms.data,ppl=people(),ts=tags();
     var h='<div class="modal-h"><h3>'+(ms.id?"Edit task":"New task")+'</h3><button class="x" data-close>×</button></div><div class="modal-b">';
-    h+='<div class="field"><label for="i-title">Task</label><input type="text" id="i-title" value="'+esc(d.title)+'" placeholder="e.g. Call the plumber"></div>';
+    h+='<div class="field"><label for="i-title">Task</label><input type="text" id="i-title" value="'+esc(d.title)+'" placeholder="e.g. Call the plumber tomorrow" autocomplete="off" enterkeyhint="done"></div>';
+    if(!ms.id){
+      h+='<div class="qrow" role="group" aria-label="When">'+[["0","Today"],["1","Tomorrow"],["7","Next week"]].map(function(o){var on=d.dueDate===addDaysStr(today(),+o[0]);return '<button type="button" class="qchip'+(on?" on":"")+'" data-qday="'+o[0]+'" aria-pressed="'+on+'">'+o[1]+'</button>'}).join("")+'<button type="button" class="qchip" data-qpick>Pick a date</button></div>';
+      h+='<p class="qhint" id="q-hint" aria-live="polite" hidden></p>';
+      h+='<button type="button" class="qmore" data-qmore aria-expanded="'+(!!ms.qOpen)+'">'+(ms.qOpen?"Fewer options":"More options")+'</button><div id="q-more"'+(ms.qOpen?"":" hidden")+'>';
+    }
     h+='<div class="two"><div class="field"><label for="i-due">Day</label><input type="date" id="i-due" value="'+esc(d.dueDate||"")+'"></div><div class="field"><label id="l-prio">Priority</label><div class="seg" id="i-prio" role="group" aria-labelledby="l-prio">'+prioBtns(d.priority)+'</div></div></div>';
     h+='<div class="field"><label id="l-list">List</label><div class="seg" id="i-list" role="group" aria-labelledby="l-list">'+[["work","Work"],["personal","Personal"]].map(function(o){return '<button type="button" data-listset="'+o[0]+'" class="'+((d.list||"work")===o[0]?"on":"")+'">'+o[1]+'</button>';}).join("")+'</div></div>';
     h+='<div class="field"><label id="l-tags">Tags</label><div class="pick-wrap" id="i-tags" role="group" aria-labelledby="l-tags">'+ts.map(function(t){return '<button type="button" class="tagpick '+((d.tags||[]).indexOf(t.id)>-1?"on":"")+'" data-tagtoggle="'+t.id+'"><span class="dot" style="background:'+snapTag(t.color)+'"></span>'+esc(t.name)+'</button>'}).join("")+'<button type="button" class="tagpick" data-action="add-tag">+ new</button></div></div>';
@@ -3342,6 +3469,7 @@
        ["device","Only this device","Never leaves this device. It will not sync, and clearing the browser deletes it."]]
       .map(function(o){return '<button type="button" class="seeopt '+(see===o[0]?"on":"")+'" data-see="'+o[0]+'"><span class="rad"></span><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></button>'}).join("")+
       '</div></div>';
+    if(!ms.id)h+='</div>';
     h+='</div><div class="modal-f">'+(ms.id?'<button class="btn danger sm" data-del-item="'+ms.id+'">Delete</button>':'')+'<span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-item>'+(ms.id?"Save":"Add")+'</button></div>';
     openModal(h);
     if(!ms.id){var ti=$("#i-title");if(ti)setTimeout(function(){ti.focus()},60);}}
@@ -3439,7 +3567,8 @@
       var a4=num("i-nweek");if(a4!==undefined)d.normal.maxPerWeek=a4;
     }
     var rep=g("i-rep");if(rep){var rv=parseInt(rep.value,10);if(rv===-1){var rn=g("i-repnum");d.repeatEvery=rn?(parseInt(rn.value,10)||1):(d.repeatEvery>0?d.repeatEvery:3);}else d.repeatEvery=rv;}}
-  function saveItem(){syncItem();var d=ms.data;if(!(d.title||"").trim()){toast("Give it a name");return;}
+  function saveItem(){if(ms.mode==="task"&&!ms.id&&!ms.dateTouched){var qt=$("#i-title"),qp=qt?parseQuick(qt.value):null;if(qp){qt.value=qp.title;var qdue=$("#i-due");if(qdue)qdue.value=qp.date;}}
+    syncItem();var d=ms.data;if(!(d.title||"").trim()){toast("Give it a name");return;}
     var stance=(ms.mode==="task")?"routine":(d.stance||"routine");
     var kind=(stance!=="routine")?"todo":(ms.mode==="task"?"todo":(d.akind==="activity"||d.akind==="oneoff"?"todo":d.akind));
     var base={catId:d.catId,sub:d.sub||"",title:d.title.trim(),kind:kind,notes:d.notes||"",priority:d.priority||"med",tags:d.tags||[],assignees:d.assignees||[],private:!!d.private,reminder:d.reminder||null};
@@ -3736,6 +3865,12 @@
     dock.addEventListener("pointercancel",rest);
   })();
   document.addEventListener("keydown",function(e){var t=e.target;if(e.key==="Escape"&&state.homeOpen&&$("#hmCards")){hmFlip(null);return;}if((e.key==="Enter"||e.key===" ")&&t&&t.classList&&(t.classList.contains("hm-card")||t.hasAttribute("data-daysheet"))){e.preventDefault();t.click();}});
+  document.addEventListener("input",function(e){if(e.target&&e.target.id==="i-title"&&ms.mode==="task"&&!ms.id){qHint();qChips();}});
+  document.addEventListener("change",function(e){var t=e.target;if(!t)return;
+    if(t.id==="i-due"&&ms.mode==="task"){ms.dateTouched=true;qChips();qHint();}
+    if(t.id==="restore-file"){readBackupFile(t.files&&t.files[0],false);t.value="";}
+    if(t.id==="welcome-file"){readBackupFile(t.files&&t.files[0],true);t.value="";}});
+  document.addEventListener("keydown",function(e){var t=e.target;if(e.key==="Enter"&&t&&t.id==="i-title"&&ms.mode==="task"&&!ms.id){e.preventDefault();saveItem();}});
   $("#fab").addEventListener("click",function(){if(state.view==="area")openItemEditor(null,state.areaId);else if(state.view==="day")openTask(null,state.day);else openTask(null,today());});
   var _ms=$("#mSettings");if(_ms)_ms.addEventListener("click",function(){go("settings");});
   document.addEventListener("keydown",function(e){if(e.key==="Escape"&&$("#overlay").classList.contains("show"))closeModal();});
@@ -3755,6 +3890,14 @@
     if((el=e.target.closest("[data-hmall]"))){state.dayDomain=null;render();return;}
     if((el=e.target.closest("[data-toastundo]"))){var tu=_toastUndo;_toastUndo=null;$("#toast").classList.remove("show");if(tu)tu();return;}
     if((el=e.target.closest("[data-daysheet]"))){openDaySheet(el.getAttribute("data-daysheet"));return;}
+    if((el=e.target.closest("[data-qday]"))){var di=$("#i-due");if(di)di.value=addDaysStr(today(),parseInt(el.getAttribute("data-qday"),10));ms.dateTouched=true;qChips();qHint();return;}
+    if((el=e.target.closest("[data-qpick]"))){syncItem();ms.qOpen=true;ms.dateTouched=true;renderTaskModal();var dp2=$("#i-due");if(dp2){dp2.focus();try{if(dp2.showPicker)dp2.showPicker()}catch(e4){}}return;}
+    if((el=e.target.closest("[data-qmore]"))){syncItem();ms.qOpen=!ms.qOpen;renderTaskModal();return;}
+    if((el=e.target.closest("[data-backup-now]"))){downloadBackup();if(state.view==="home")render();return;}
+    if((el=e.target.closest("[data-backup-later]"))){try{localStorage.setItem("ritsu_backup_snooze",addDaysStr(today(),14))}catch(e5){}render();return;}
+    if((el=e.target.closest("[data-restore-undo]"))){undoRestore();return;}
+    if((el=e.target.closest("[data-persist-ask]"))){if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().then(function(ok){toast(ok?"Ritsu's data is now protected":"The browser said not yet");render();});return;}
+    if((el=e.target.closest("[data-welcome]"))){if(el.getAttribute("data-welcome")==="clean")startClean();else startExamples();return;}
     if((el=e.target.closest("[data-theme-set]"))){applyTheme(el.getAttribute("data-theme-set"));render();return;}
     if((el=e.target.closest("[data-orbit-set]"))){orbitHide=el.getAttribute("data-orbit-set")==="0";try{localStorage.setItem("ritsu_orbit",orbitHide?"0":"1")}catch(e2){}render();return;}
     if((el=e.target.closest("[data-caldates]"))){calDates=!calDates;try{localStorage.setItem("ritsu_caldates",calDates?"1":"0")}catch(e2){}render();return;}
@@ -3783,7 +3926,7 @@
     if((el=e.target.closest("[data-undo]"))){e.stopPropagation();var ui=Store.get("items",el.getAttribute("data-undo"));if(ui)removeEvent(ui,today());state.mstrip=null;clearTimeout(_mt);return;}
     if((el=e.target.closest("[data-open]"))){go("item",el.getAttribute("data-open"));return;}
     if((el=e.target.closest("[data-action]"))){var a=el.getAttribute("data-action");if(a==="add-cat")openCatEditor(null);else if(a==="edit-cat")openCatEditor(el.getAttribute("data-id"));else if(a==="add-item")openItemEditor(null,el.getAttribute("data-cat"));else if(a==="add-day")openTask(null,el.getAttribute("data-date"));else if(a==="edit-item")openItemEditor(el.getAttribute("data-id"));else if(a==="add-person")openPersonEditor();else if(a==="pick-me")openMePicker();else if(a==="add-tag")openTagEditor();else if(a==="pick-flag")openFlagPicker();else if(a==="library")openLibrary(el.getAttribute("data-cat"));else if(a==="export")openExport("doctor");
-      else if(a==="reseed"){if(confirm("Wipe this device and reload with fresh sample data?")){try{localStorage.removeItem("ritsu_local");localStorage.removeItem("ritsu_private_items");localStorage.removeItem("ritsu_me");localStorage.removeItem("ritsu_probe_day");}catch(x){}location.reload();}}
+      else if(a==="reseed"){if(confirm("Wipe everything on this device and start over? Make a backup first if you want to keep your history.")){try{localStorage.removeItem("ritsu_local");localStorage.removeItem("ritsu_private_items");localStorage.removeItem("ritsu_me");localStorage.removeItem("ritsu_probe_day");}catch(x){}location.reload();}}
       return;}
     if((el=e.target.closest("[data-setme]"))){state.me=el.getAttribute("data-setme");try{localStorage.setItem("ritsu_me",state.me)}catch(x){}closeModal();render();return;}
     if((el=e.target.closest("[data-del-person]"))){var pid=el.getAttribute("data-del-person");var pn=personById(pid);if(confirm("Remove "+(pn?pn.name:"this person")+"?")){Store.del("people",pid);Store.all("items").forEach(function(i){if((i.assignees||[]).indexOf(pid)>-1)Store.update("items",i.id,{assignees:i.assignees.filter(function(x){return x!==pid})});});if(state.me===pid){state.me=null;try{localStorage.removeItem("ritsu_me")}catch(x){}}}return;}
