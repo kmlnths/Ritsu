@@ -769,7 +769,7 @@
   /* Body / Mind / To-do cards: tap once and the card turns over to show what is left */
   .hm-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
   .hm-card{position:relative;height:164px;perspective:900px;cursor:pointer;outline:none;user-select:none;-webkit-user-select:none}
-  .hm-flip{position:relative;width:100%;height:100%;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;transition:transform .6s cubic-bezier(.32,.72,.24,1)}
+  .hm-flip{position:relative;width:100%;height:100%;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;transition:transform .5s cubic-bezier(.32,.72,.24,1)}
   .hm-card.flip .hm-flip{transform:rotateY(180deg)}
   .hm-face{position:absolute;inset:0;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:16px;overflow:hidden;-webkit-backface-visibility:hidden;backface-visibility:hidden}
   .hm-card:focus-visible .hm-face{box-shadow:0 0 0 2px var(--accent)}
@@ -870,6 +870,22 @@
     .hm-card.flip .hm-front{opacity:0}
     .hm-tk,.hm-tk svg,.hm-theme{transition:none}
   }
+
+  /* polish: instant press feedback, 44pt touch targets, contrast on small text, steady numerals, today marker */
+  .hm-card{transition:transform .1s ease-out}
+  .hm-card:active{transform:scale(.97)}
+  .hm-arrow,.hm-todaybtn,.hm-add,.dayfilter button,.hm-cal-r .mini-toggle{position:relative}
+  .hm-arrow::after,.hm-theme::after,.hm-todaybtn::after,.hm-add::after,.dayfilter button::after,.hm-cal-r .mini-toggle::after{content:"";position:absolute;inset:-8px}
+  .hmd small,.hmd .tk,.hm-yr,.hm-hint{color:var(--muted)}
+  .hm-gauge .mid b,.hm-facts b,.hmd b,.hm-nmeta,.hm-cons b{font-variant-numeric:tabular-nums}
+  .hm-bl li,.hm-bh span,.hm-more{letter-spacing:.01em}
+  .hmd.today .tk:not(.mo)::after{width:5px;height:5px;margin:3px auto 0;border-radius:50%;background:var(--accent)}
+  .hmd.today.on .tk:not(.mo)::after{background:var(--on-accent);opacity:1}
+  .gdock{box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.07)}
+  :root[data-theme="warm"] .hm-nbtn,:root[data-theme="warm"] .hmd.on{background:linear-gradient(160deg,#059669,#047857)}
+  ::view-transition-old(root),::view-transition-new(root){animation-duration:.35s}
+  @media(prefers-reduced-transparency:reduce){.gdock{background:var(--panel);-webkit-backdrop-filter:none;backdrop-filter:none}}
+  @media(prefers-contrast:more){.gdock,.hm-face,.hm-next,.hm-hero{border-color:var(--muted)}}
 
   /* magnifying dock (phone). The glyph magnifies, never the button; --d is set by script. */
   .gdock{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:40;
@@ -2457,14 +2473,14 @@
   }
   function hmListSort(a,b){var ac=doneForNow(a)?1:0,bc=doneForNow(b)?1:0;if(ac!==bc)return ac-bc;return hmPrio(a,b)}
   /* each card has a front (the dots) and a back (what is left, most important first) */
-  function hmCardsHtml(ds){
+  function hmCardsHtml(ds,st){
     var h="";
     HM_DOMS.forEach(function(d){
-      var s=hmStat(d[0],ds),p=s.tot?s.done/s.tot:0,on=state.homeOpen===d[0];
+      var s=st[d[0]],p=s.tot?s.done/s.tot:0,on=state.homeOpen===d[0];
       var pend=s.its.filter(function(i){return !hmDone(i,ds)}).sort(hmPrio),shown=pend.slice(0,3);
       var back=!s.tot?'<div class="hm-bmsg">Nothing due</div>':!s.left?'<div class="hm-bmsg ok">'+HM_CHECK+'All done</div>':
         '<ul class="hm-bl">'+shown.map(function(i){return '<li'+(i.priority==="high"?' class="hi"':'')+'><i></i><span>'+esc(i.title)+'</span></li>'}).join("")+'</ul>'+(pend.length>3?'<div class="hm-more">+'+(pend.length-3)+' more</div>':'');
-      h+='<div class="hm-card'+(on?" flip":"")+'" role="button" tabindex="0" data-hmcard="'+d[0]+'" aria-pressed="'+on+'" aria-label="'+d[1]+': '+(s.tot?s.left+" left":"nothing due")+'"><div class="hm-flip">'+
+      h+='<div class="hm-card'+(on?" flip":"")+'" role="button" tabindex="0" data-hmcard="'+d[0]+'" aria-pressed="'+on+'" aria-label="'+d[1]+': '+(s.tot?s.left+" left":"nothing due")+'. Press once to see what is left, press again to open the list."><div class="hm-flip">'+
         '<div class="hm-face hm-front"><h3>'+d[1]+'</h3><div class="hm-gauge">'+hmArc(p,HM_ROWS_MINI,100,54,50,50)+'<div class="mid"><b>'+(s.tot?Math.round(p*100)+"%":"-")+'</b></div></div>'+
         '<span class="sub'+(s.tot&&!s.left?" ok":"")+'">'+(!s.tot?"Nothing due":s.left?s.left+" left":"All done")+'</span></div>'+
         '<div class="hm-face hm-back"><div class="hm-bh"><b>'+d[1]+'</b><span>'+(s.tot?s.left+" left":"")+'</span></div>'+back+'<div class="hm-bf">Open list &rarr;</div></div></div></div>';
@@ -2487,15 +2503,15 @@
       h+='<i'+(r==null?' class="n"':'')+' style="height:'+(r==null?3:Math.round(4+r*14))+'px"></i>';}
     return h;
   }
-  function hmHeroHtml(ds){
-    var off=dCount(ds),tot=0,done=0,over=0,con=consistency(30);
-    HM_DOMS.forEach(function(d){var s=hmStat(d[0],ds);tot+=s.tot;done+=s.done;});
+  function hmHeroHtml(ds,st){
+    var off=dCount(ds),tot=0,done=0,over=0,con=_hmCons.con;
+    HM_DOMS.forEach(function(d){var s=st[d[0]];tot+=s.tot;done+=s.done;});
     if(off===0)visibleItems().forEach(function(i){if(i.kind==="todo"&&!isRepeat(i)&&!i.done&&i.dueDate&&dCount(i.dueDate)<0)over++;});
     var p=tot?done/tot:0,title=off===0?"Done today":off<0?"Done on "+hmLabel(ds):"Planned for "+hmLabel(ds);
     return '<div class="hm-hero-h"><h3>'+title+'</h3><span>Full list &rarr;</span></div>'+
       '<div class="hm-gauge">'+hmArc(p,HM_ROWS_HERO,200,112,100,100)+'<div class="mid"><b>'+(tot?Math.round(p*100)+"%":"-")+'</b><small>'+(tot?done+" of "+tot:"nothing due")+'</small></div></div>'+
       '<div class="hm-facts'+(off===0?"":" f2")+'"><div><b>'+(tot-done)+'</b><small>left</small></div>'+(off===0?'<div class="miss"><b>'+over+'</b><small>overdue</small></div>':'')+'<div><b>'+done+'</b><small>done</small></div></div>'+
-      '<div class="hm-cons"><span><b>'+(con==null?"-":con+"%")+'</b> consistency, last 30 days</span><span class="hm-spark" aria-hidden="true">'+hmSpark()+'</span></div>';
+      '<div class="hm-cons"><span><b>'+(con==null?"-":con+"%")+'</b> consistency, last 30 days</span><span class="hm-spark" aria-hidden="true">'+_hmCons.spark+'</span></div>';
   }
 
   /* Up next: the next timed thing today (medication, a timed task, a running fast) */
@@ -2530,16 +2546,32 @@
   }
 
   /* redraw only the parts that depend on the chosen day, so scrolling the strip stays smooth */
-  function hmRefresh(){
+  /* Day-independent numbers (30-day score, 14-day bars) are worked out once per full draw, not once per day the strip
+     passes. While the strip is moving only the cheap parts update; the cards and big card catch up when it settles. */
+  var _hmCons=null,_hmT=0;
+  function hmStats(ds){return {body:hmStat("body",ds),mind:hmStat("mind",ds),todo:hmStat("todo",ds)}}
+  function hmHead(){
     var mn=$("#hmMn");if(!mn)return;
     var ds=hmDay(),d=new Date(ds+"T00:00:00");
     mn.textContent=HM_MONTHS[d.getMonth()];$("#hmYr").textContent=d.getFullYear();
     $("#hmTodayBtn").hidden=(ds===today());
-    var nh=(ds===today())?hmNextHtml():"",nx=$("#hmNext");nx.innerHTML=nh;nx.hidden=!nh;
-    $("#hmCards").innerHTML=hmCardsHtml(ds);
-    $("#hmHint").hidden=!!state.homeOpen;
-    $("#hmHero").innerHTML=hmHeroHtml(ds);
   }
+  function hmBody(){
+    if(!$("#hmCards")||!_hmCons)return;
+    var ds=hmDay(),st=hmStats(ds);
+    var nh=(ds===today())?hmNextHtml():"",nx=$("#hmNext");nx.innerHTML=nh;nx.hidden=!nh;
+    $("#hmCards").innerHTML=hmCardsHtml(ds,st);
+    $("#hmHint").hidden=!!state.homeOpen;
+    $("#hmHero").innerHTML=hmHeroHtml(ds,st);
+  }
+  function hmBodySoon(){clearTimeout(_hmT);_hmT=setTimeout(hmBody,90)}
+  function hmRefresh(){clearTimeout(_hmT);hmHead();hmBody()}
+  /* keep "in 54 min" honest while the app stays open */
+  setInterval(function(){
+    if(document.hidden||state.view!=="home"||hmDay()!==today())return;
+    var nx=$("#hmNext");if(!nx)return;
+    var h=hmNextHtml();if(nx.innerHTML!==h){nx.innerHTML=h;nx.hidden=!h;}
+  },30000);
   function hmSnap(i,instant){
     if(!_hmSc)return;
     i=Math.max(0,Math.min(HM_BACK+HM_FWD,i));
@@ -2569,22 +2601,39 @@
       if(ready&&n!==sel){
         btns[sel].classList.remove("on");sel=n;btns[sel].classList.add("on");
         state.homeDay=addDaysStr(today(),n-HM_BACK);
-        hmRefresh();
+        hmHead();hmBodySoon();
         if(navigator.vibrate&&(!navigator.userActivation||navigator.userActivation.hasBeenActive))try{navigator.vibrate(5)}catch(e){}   /* a little tick on phones that allow it */
       }
     }
     sc.addEventListener("scroll",function(){if(!raf)raf=requestAnimationFrame(onScroll)},{passive:true});
-    sc.addEventListener("wheel",function(e){if(Math.abs(e.deltaY)>Math.abs(e.deltaX)){e.preventDefault();sc.scrollLeft+=e.deltaY;}},{passive:false});
-    /* mouse drag (touch already scrolls and snaps natively) */
-    function dragMove(e){var dx=e.clientX-drag.x;if(Math.abs(dx)>3)moved=true;sc.scrollLeft=drag.l-dx;}
+    /* wheel: the strip moves freely while the wheel turns, then settles on a day */
+    var wheelT=0;
+    sc.addEventListener("wheel",function(e){
+      if(Math.abs(e.deltaY)<=Math.abs(e.deltaX))return;   /* a sideways trackpad swipe is already native */
+      e.preventDefault();
+      sc.style.scrollSnapType="none";sc.scrollLeft+=e.deltaY;
+      clearTimeout(wheelT);wheelT=setTimeout(function(){sc.style.scrollSnapType="";hmSnap(Math.round(sc.scrollLeft/HM_ITEM));},110);
+    },{passive:false});
+    /* mouse drag: follow the pointer 1:1, then throw the strip on by the release velocity and settle on the nearest day
+       (touch already scrolls with native momentum and snap) */
+    var samples=[];
+    function dragMove(e){
+      var dx=e.clientX-drag.x;if(Math.abs(dx)>3)moved=true;sc.scrollLeft=drag.l-dx;
+      samples.push({t:performance.now(),x:e.clientX});
+      while(samples.length>1&&samples[0].t<samples[samples.length-1].t-100)samples.shift();
+    }
     function dragEnd(){
-      window.removeEventListener("pointermove",dragMove);window.removeEventListener("pointerup",dragEnd);
-      drag=null;sc.style.scrollSnapType="";sc.style.cursor="";hmSnap(Math.round(sc.scrollLeft/HM_ITEM));
+      window.removeEventListener("pointermove",dragMove);window.removeEventListener("pointerup",dragEnd);window.removeEventListener("pointercancel",dragEnd);
+      var v=0,n=samples.length;
+      if(n>1&&performance.now()-samples[n-1].t<80){var dt=samples[n-1].t-samples[0].t;if(dt>8)v=-(samples[n-1].x-samples[0].x)/dt*1000;}   /* scroll px per second */
+      drag=null;samples=[];sc.style.scrollSnapType="";sc.style.cursor="";
+      var dr=0.998,throwPx=Math.max(-1400,Math.min(1400,(v/1000)*dr/(1-dr)));   /* exponential-decay projection: where a flick would come to rest */
+      hmSnap(Math.round((sc.scrollLeft+throwPx)/HM_ITEM));
     }
     sc.addEventListener("pointerdown",function(e){
       if(e.pointerType!=="mouse")return;
-      drag={x:e.clientX,l:sc.scrollLeft};moved=false;sc.style.scrollSnapType="none";sc.style.cursor="grabbing";
-      window.addEventListener("pointermove",dragMove);window.addEventListener("pointerup",dragEnd);
+      drag={x:e.clientX,l:sc.scrollLeft};moved=false;samples=[{t:performance.now(),x:e.clientX}];sc.style.scrollSnapType="none";sc.style.cursor="grabbing";
+      window.addEventListener("pointermove",dragMove);window.addEventListener("pointerup",dragEnd);window.addEventListener("pointercancel",dragEnd);
     });
     sc.addEventListener("click",function(e){var b=e.target.closest(".hmd");if(!b||moved)return;hmSnap(+b.getAttribute("data-hmi"));});
     requestAnimationFrame(function(){sc.scrollLeft=sel*HM_ITEM;onScroll();ready=true;});
@@ -2594,11 +2643,11 @@
 
   function viewHome(){
     var cs=cats();var areas=cs.filter(function(c){return c.id!==TODO_CAT});
-    var con=consistency(30);
+    var con=consistency(30);_hmCons={con:con,spark:hmSpark()};
     var strip='<span class="hm-pad"></span>';
     for(var k=0;k<=HM_BACK+HM_FWD;k++){
       var dsk=addDaysStr(today(),k-HM_BACK),dk=new Date(dsk+"T00:00:00"),first=dk.getDate()===1;
-      strip+='<button class="hmd" data-hmi="'+k+'" aria-label="'+hmLabel(dsk)+'"><small>'+DOW[dk.getDay()]+'</small><b>'+dk.getDate()+'</b><span class="tk'+(first?" mo":"")+'">'+(first?MON[dk.getMonth()]:"")+'</span></button>';
+      strip+='<button class="hmd'+(k===HM_BACK?" today":"")+'" data-hmi="'+k+'" aria-label="'+hmLabel(dsk)+'"><small>'+DOW[dk.getDay()]+'</small><b>'+dk.getDate()+'</b><span class="tk'+(first?" mo":"")+'">'+(first?MON[dk.getMonth()]:"")+'</span></button>';
     }
     strip+='<span class="hm-pad"></span>';
 
@@ -3522,7 +3571,7 @@
     dock.addEventListener("pointerup",function(e){if(e.pointerType==="touch")rest()});
     dock.addEventListener("pointercancel",rest);
   })();
-  document.addEventListener("keydown",function(e){var t=e.target;if((e.key==="Enter"||e.key===" ")&&t&&t.classList&&t.classList.contains("hm-card")){e.preventDefault();t.click();}});
+  document.addEventListener("keydown",function(e){var t=e.target;if(e.key==="Escape"&&state.homeOpen&&$("#hmCards")){hmFlip(null);return;}if((e.key==="Enter"||e.key===" ")&&t&&t.classList&&t.classList.contains("hm-card")){e.preventDefault();t.click();}});
   $("#fab").addEventListener("click",function(){if(state.view==="area")openItemEditor(null,state.areaId);else if(state.view==="day")openTask(null,state.day);else openTask(null,today());});
   var _ms=$("#mSettings");if(_ms)_ms.addEventListener("click",function(){go("settings");});
   document.addEventListener("keydown",function(e){if(e.key==="Escape"&&$("#overlay").classList.contains("show"))closeModal();});
@@ -3531,7 +3580,10 @@
   document.addEventListener("click",function(e){var el;
     if(state.homeOpen&&$("#hmCards")&&!e.target.closest("[data-hmcard]")){hmFlip(null);}   /* a tap anywhere else turns the card back over */
     if((el=e.target.closest("[data-hmcard]"))){var hd=el.getAttribute("data-hmcard");if(state.homeOpen===hd)openDayList(hd,hmDay());else hmFlip(hd);return;}
-    if((el=e.target.closest("[data-hmtheme]"))){var nt=theme==="dark"?"warm":"dark";applyTheme(nt);[].forEach.call(document.querySelectorAll("[data-hmtheme]"),function(b){b.setAttribute("aria-checked",nt==="dark")});return;}
+    if((el=e.target.closest("[data-hmtheme]"))){var nt=theme==="dark"?"warm":"dark";
+      var swapTheme=function(){applyTheme(nt);[].forEach.call(document.querySelectorAll("[data-hmtheme]"),function(b){b.setAttribute("aria-checked",nt==="dark")});};
+      if(document.startViewTransition&&!matchMedia("(prefers-reduced-motion:reduce)").matches){try{document.startViewTransition(swapTheme);}catch(e3){swapTheme();}}else swapTheme();   /* a soft cross-fade, no flash */
+      return;}
     if((el=e.target.closest("[data-hmopen]"))){var ho=el.getAttribute("data-hmopen");openDayList(ho==="all"?null:ho,hmDay());return;}
     if((el=e.target.closest("[data-hmweek]"))){hmSnap(hmCur()+7*parseInt(el.getAttribute("data-hmweek"),10));return;}
     if((el=e.target.closest("[data-hmtoday]"))){hmSnap(HM_BACK);return;}
