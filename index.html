@@ -857,8 +857,8 @@
   .hm-tk .moon{fill:#E5E7EB;opacity:0;transform:rotate(-40deg)}
   .hm-theme[aria-checked="true"] .sun{opacity:0;transform:rotate(90deg)}
   .hm-theme[aria-checked="true"] .moon{opacity:1;transform:none}
-  /* a touch more colour: soft emerald glow top left, faint amber top right */
-  body{background-image:radial-gradient(900px 460px at 6% -6%,color-mix(in srgb,var(--accent) 15%,transparent),transparent 62%),radial-gradient(1100px 520px at 96% -10%,color-mix(in srgb,var(--gold) 9%,transparent),transparent 60%);background-repeat:no-repeat}
+  /* a touch more colour: one soft emerald glow at the top of the page, a single hue so it never muddies */
+  body{background-image:radial-gradient(1000px 520px at 50% -14%,color-mix(in srgb,var(--accent) 14%,transparent),transparent 68%);background-repeat:no-repeat}
   .hmd.on{background:linear-gradient(160deg,var(--accent-ink),var(--accent))}
   .dayfilter .df-add{margin-left:auto;color:var(--accent);border-color:var(--accent);font-weight:600}
   .dayfilter .df-all{margin-left:0}
@@ -886,6 +886,13 @@
   ::view-transition-old(root),::view-transition-new(root){animation-duration:.35s}
   @media(prefers-reduced-transparency:reduce){.gdock{background:var(--panel);-webkit-backdrop-filter:none;backdrop-filter:none}}
   @media(prefers-contrast:more){.gdock,.hm-face,.hm-next,.hm-hero{border-color:var(--muted)}}
+
+  /* header: a plain greeting, then the quote of the day. No banner, no brand text. */
+  .hm-hello{min-width:0;flex:1}
+  .hm-quote{margin:8px 0 0;max-width:36ch;font-size:15px;line-height:1.45;color:var(--ink);opacity:.88;text-wrap:pretty}
+  .hm-quote cite{display:block;margin-top:5px;font-style:normal;font-size:12.5px;letter-spacing:.02em;color:var(--muted)}
+  .topbar{display:none}   /* phones used to show a boxed "Ritsu" strip here; every page has its own heading */
+  @media(max-width:820px){.main{padding-top:calc(16px + env(safe-area-inset-top))}}
 
   /* magnifying dock (phone). The glyph magnifies, never the button; --d is set by script. */
   .gdock{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:40;
@@ -2255,7 +2262,7 @@
     else v.innerHTML=viewHome();
     if(state.view==="home"){homeMount();if(!orbitHide)orbitMount();}
   }
-  function greeting(){var h=new Date().getHours();var g=h<5?"Still going":h<12?"Good morning":h<17?"Good afternoon":h<21?"Good evening":"Good night";var me=state.me?personById(state.me):null;return g+(me?", "+esc(me.name.split(" ")[0]):"")}
+  function greeting(){var h=new Date().getHours();var g=h<5?"Good night":h<12?"Good morning":h<17?"Good afternoon":h<21?"Good evening":"Good night";var me=state.me?personById(state.me):null;return g+(me?", "+esc(me.name.split(" ")[0]):"")}
   function progressLine(){var ds=dayScore(today());var pct=ds?Math.round(ds.r*100):0;
     if(pct<=0)return "A fresh day. Let’s begin.";
     return "You’re "+pct+"% through today’s system.";}
@@ -2641,6 +2648,42 @@
 
   window.addEventListener("resize",function(){if(_hmSc&&_hmSc.isConnected&&_hmSc.clientWidth)_hmSc.scrollLeft=hmIdx(hmDay())*HM_ITEM;});
 
+  /* A quote for the top of Home. One per day, in order, then round again. No dashes in any of them. */
+  var HM_QUOTES=[
+    ["Discipline today. Freedom tomorrow.",""],
+    ["How we spend our days is, of course, how we spend our lives.","Annie Dillard"],
+    ["You do not rise to the level of your goals. You fall to the level of your systems.","James Clear"],
+    ["Well begun is half done.","Proverb"],
+    ["The best time to plant a tree was twenty years ago. The second best time is now.","Proverb"],
+    ["A journey of a thousand miles begins with a single step.","Lao Tzu"],
+    ["Small steps every day add up to a long way.",""],
+    ["We are what we repeatedly do. Excellence, then, is not an act, but a habit.","Will Durant"],
+    ["Do the next small thing.",""],
+    ["First say to yourself what you would be, and then do what you have to do.","Epictetus"],
+    ["Show up first. Motivation usually follows.",""],
+    ["Every action you take is a vote for the type of person you wish to become.","James Clear"],
+    ["Consistency beats intensity.",""],
+    ["Start where you are. Use what you have. Do what you can.","Arthur Ashe"],
+    ["Care for the body, steady the mind, finish the list.",""],
+    ["What you do every day matters more than what you do once in a while.","Gretchen Rubin"],
+    ["Progress, not perfection.",""],
+    ["We suffer more often in imagination than in reality.","Seneca"],
+    ["Make it easy to begin and hard to skip.",""],
+    ["Be patient with yourself. Nothing in nature blooms all year.",""],
+    ["Waste no more time arguing what a good person should be. Be one.","Marcus Aurelius"],
+    ["One good day is a good start. Two is a streak.",""],
+    ["Rest is part of the work.",""],
+    ["A little each day is a lot in a year.",""],
+    ["Tiny habits, done often, change a life.",""],
+    ["Keep the promise you made to yourself this morning.",""],
+    ["Quiet effort, repeated, is enough.",""],
+    ["Today is a fresh page.",""],
+    ["Done is better than perfect.",""],
+    ["The secret of getting ahead is getting started.",""],
+    ["Discipline is choosing what you want most over what you want now.",""]
+  ];
+  function hmQuote(){var d=new Date(),n=Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000);return HM_QUOTES[n%HM_QUOTES.length]}
+
   function viewHome(){
     var cs=cats();var areas=cs.filter(function(c){return c.id!==TODO_CAT});
     var con=consistency(30);_hmCons={con:con,spark:hmSpark()};
@@ -2652,7 +2695,8 @@
     strip+='<span class="hm-pad"></span>';
 
     /* ===== MAIN column: the day ===== */
-    var main='<div class="hm-top"><h1 class="hm-greet">'+esc(greeting())+'</h1>'+hmThemeHtml()+'</div>'+
+    var q=hmQuote();
+    var main='<div class="hm-top"><div class="hm-hello"><h1 class="hm-greet">'+greeting()+'</h1><p class="hm-quote">&ldquo;'+esc(q[0])+'&rdquo;'+(q[1]?'<cite>'+esc(q[1])+'</cite>':'')+'</p></div>'+hmThemeHtml()+'</div>'+
       '<div class="hm-mhead"><div><span class="hm-mn" id="hmMn"></span><span class="hm-yr" id="hmYr"></span></div>'+
       '<div class="hm-mact"><button class="hm-add" data-action="add-day" data-date="'+hmDay()+'">+ Add task</button><button class="hm-todaybtn" id="hmTodayBtn" data-hmtoday hidden>Today</button></div></div>'+
       '<div class="hm-strip"><button class="hm-arrow" data-hmweek="-1" aria-label="Earlier week"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>'+
