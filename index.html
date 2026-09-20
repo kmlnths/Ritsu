@@ -1041,20 +1041,25 @@
     display:block;aspect-ratio:580/545;cursor:pointer;border-radius:16px;user-select:none;-webkit-user-select:none;touch-action:manipulation}
   .blob-host svg{display:block;width:100%;height:100%;overflow:visible}
   .buddy-wrap{display:contents}
-  .hm-buddy{position:relative;display:flex;align-items:center;gap:12px;margin:8px 0 2px;min-height:78px}
-  .hm-buddy .blob-host{flex:none;width:88px}
-  .hm-buddy .hm-hint{margin:0;flex:1;text-align:left;font-size:13.5px;line-height:1.4;color:var(--muted)}
-  .hm-buddy.talk .hm-hint{visibility:hidden}
-  .buddy-bubble{position:absolute;left:104px;top:50%;transform:translate(6px,-50%) scale(.97);max-width:calc(100% - 116px);padding:9px 14px;border-radius:16px;
+  /* home: top right corner, under the light/dark switch. Its voice takes the place of the greeting for a few seconds. */
+  .hm-top{position:relative}
+  .hm-side-r{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+  .hm-top .blob-host{width:68px;margin-right:-4px}
+  .buddy-bubble{position:absolute;right:74px;bottom:8px;max-width:calc(100% - 90px);transform:translateX(8px) scale(.96);transform-origin:100% 60%;padding:10px 14px;border-radius:16px;
     background:var(--ink);color:var(--bg);font-size:15px;font-weight:600;line-height:1.3;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
-  .buddy-bubble.on{opacity:1;transform:translate(0,-50%) scale(1)}
-  .buddy-bubble::after{content:"";position:absolute;left:-5px;top:50%;width:12px;height:12px;background:inherit;transform:translateY(-50%) rotate(45deg);border-radius:2px}
-  .buddy-off .hm-buddy .blob-host,.buddy-off .buddy-bubble,.buddy-off .welcome-blob{display:none}
-  .buddy-off .hm-buddy{min-height:0}
-  .buddy-off .hm-buddy .hm-hint{text-align:center}
+  .buddy-bubble.on{opacity:1;transform:translateX(0) scale(1)}
+  .buddy-bubble::after{content:"";position:absolute;right:-5px;top:50%;width:12px;height:12px;background:inherit;transform:translateY(-50%) rotate(45deg);border-radius:2px}
+  .hm-top.talk .hm-hello{visibility:hidden}
+  .buddy-off .blob-host,.buddy-off .buddy-bubble{display:none}
   .welcome-blob{width:200px;margin:0 auto 4px}
   .wipe-blob{width:150px;margin:0 auto}
   .wipe-txt{margin:8px 0 0;text-align:center;font-size:15px;line-height:1.5;color:var(--muted)}
+  /* the Undo bar: a small blob beside the words, where the tick just happened */
+  .toast{width:max-content;max-width:calc(100vw - 24px)}
+  .toast .tx{min-width:0;overflow-wrap:anywhere}
+  .toast.has-blob{display:flex;align-items:center;gap:10px;padding:6px 16px 6px 10px}
+  .toast.has-blob.has-undo{padding:6px 8px 6px 10px}
+  .toast-blob{width:44px;flex:none;cursor:default;pointer-events:none}
   @media(prefers-reduced-motion:reduce){.buddy-bubble{transition:none}}
 </style>
 </head>
@@ -2741,7 +2746,7 @@
 
     /* ===== MAIN column: the day ===== */
     var q=hmQuote();
-    var main='<div class="hm-top"><div class="hm-hello"><h1 class="hm-greet">'+greeting()+'</h1><p class="hm-quote">&ldquo;'+esc(q[0])+'&rdquo;'+(q[1]?'<cite>'+esc(q[1])+'</cite>':'')+'</p></div>'+hmThemeHtml()+'</div>'+
+    var main='<div class="hm-top"><div class="hm-hello"><h1 class="hm-greet">'+greeting()+'</h1><p class="hm-quote">&ldquo;'+esc(q[0])+'&rdquo;'+(q[1]?'<cite>'+esc(q[1])+'</cite>':'')+'</p></div><div class="hm-side-r">'+hmThemeHtml()+'<span class="buddy-slot" id="buddySlot"></span></div></div>'+
       '<div class="hm-mhead"><div><span class="hm-mn" id="hmMn"></span><span class="hm-yr" id="hmYr"></span></div>'+
       '<div class="hm-mact"><button class="hm-add" data-action="add-day" data-date="'+hmDay()+'">+ Add task</button><button class="hm-todaybtn" id="hmTodayBtn" data-hmtoday hidden>Today</button></div></div>'+
       '<div class="hm-strip"><button class="hm-arrow" data-hmweek="-1" aria-label="Earlier week"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>'+
@@ -2749,7 +2754,7 @@
       '<button class="hm-arrow" data-hmweek="1" aria-label="Later week"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div>'+
       '<div class="hm-next" id="hmNext" hidden></div>'+
       '<div class="hm-cards" id="hmCards"></div>'+
-      '<div class="hm-buddy" id="hmBuddy"><span class="buddy-slot" id="buddySlot"></span><p class="hm-hint" id="hmHint">Tap a card to see what is left. Tap it again to open the list.</p></div>'+
+      '<p class="hm-hint" id="hmHint">Tap a card to see what is left. Tap it again to open the list.</p>'+
       '<button class="hm-hero" id="hmHero" data-hmopen="all" aria-label="Open the full task list"></button>';
 
     /* ===== SIDE column: consistency, then the rest of what used to live on Home ===== */
@@ -3277,7 +3282,7 @@
     var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="ritsu-backup-"+today()+".json";
     document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1500);
     try{localStorage.setItem("ritsu_last_backup",today())}catch(e){}
-    toast("Backup saved to your downloads");Buddy.react("love");
+    toast("Backup saved to your downloads",null,"love");Buddy.react("love");
   }
   function restoreBackup(text,skipConfirm){
     var b;try{b=JSON.parse(text)}catch(e){toast("That file is not a Ritsu backup");return}
@@ -3348,7 +3353,15 @@
   function openModal(html){$("#modal").innerHTML=html;$("#overlay").classList.add("show");}
   function closeModal(){$("#overlay").classList.remove("show");ms={};}
   var _toastUndo=null,_justDone=null;
-  function toast(m,undo){var t=$("#toast");_toastUndo=undo||null;t.innerHTML="<span></span>"+(undo?'<button data-toastundo>Undo</button>':"");t.firstChild.textContent=m;t.classList.toggle("has-undo",!!undo);t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove("show");_toastUndo=null},undo?5500:2000);}
+  /* a finished day: every item that counts is done */
+  function dayFinished(){var sc=dayScore(today());return !!(sc&&sc.of>0&&sc.r>=1)}
+  /* mood is optional: "happy", "joy" or "love" puts the small blob in the bar, where the feedback is */
+  function toast(m,undo,mood){var t=$("#toast");_toastUndo=undo||null;
+    var wantBlob=!!(mood&&Buddy.cfg.show&&(Buddy.cfg.mode!=="quiet"||mood==="joy"));
+    t.innerHTML=(wantBlob?'<span class="blob-host toast-blob"></span>':"")+'<span class="tx"></span>'+(undo?'<button data-toastundo>Undo</button>':"");
+    t.querySelector(".tx").textContent=m;t.classList.toggle("has-undo",!!undo);t.classList.toggle("has-blob",wantBlob);
+    if(wantBlob)Buddy.temp(t.querySelector(".toast-blob"),mood,false,true);
+    t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove("show");_toastUndo=null},undo?5500:2000);}
   /* ===== the companion: a small jelly blob that reacts to what happens ===== */
   /*
     The body outline, side nubs, eye, cheek and mouth geometry, the skirt wobble and the poke rules are adapted
@@ -3641,7 +3654,7 @@
     var j=new Jelly(host,{onOverpoke:function(){say("Okay, okay! That is enough.",2600)},onWake:function(){say("I am up, I am up!",2600)}});
     main={wrap:wrap,host:host,bubble:wrap.lastChild,blob:j};return main;
   }
-  function rowOf(){return main&&main.wrap.parentNode&&main.wrap.parentNode.closest?main.wrap.parentNode.closest(".hm-buddy"):null}
+  function rowOf(){return main&&main.wrap.parentNode&&main.wrap.parentNode.closest?main.wrap.parentNode.closest(".hm-top"):null}
   function visible(){return !!(main&&main.host.isConnected)}
   function say(txt,ms){
     if(!main||!cfg.show||!cfg.say)return;
@@ -3690,9 +3703,9 @@
     morning();
   }
   /* a one-off blob for a screen of its own: Welcome, and the careful moment before a wipe */
-  function temp(host,mood,full){
+  function temp(host,mood,full,decor){
     if(!host)return null;
-    host.setAttribute("role","button");host.setAttribute("tabindex","0");host.setAttribute("aria-label","Poke the blob");
+    if(decor)host.setAttribute("aria-hidden","true");else{host.setAttribute("role","button");host.setAttribute("tabindex","0");host.setAttribute("aria-label","Poke the blob");}
     var b=new Jelly(host,{full:!!full});b.ephemeral=true;b.setMood(mood);
     ensureLoop();if(reduce)b.tick(performance.now()/1000,0);return b;
   }
@@ -4150,7 +4163,7 @@
 
   function logToggleDate(i,ds){ if(countOn(i,ds)>0)setDayCount(i,ds,0); else setDayCount(i,ds,1); }
   function tapTodo(i){
-    if(!isRepeat(i)&&!isLimit(i)&&!isBody(i)){var was={done:!!i.done,completedAt:i.completedAt||null},nowDone=!i.done;_justDone=nowDone?i.id:null;setTimeout(function(){_justDone=null},900);if(nowDone)Buddy.react("done");Store.update("items",i.id,{done:nowDone,completedAt:nowDone?fmt(new Date())+"T"+nowHM()+":00":null});toast(nowDone?"Done: "+i.title:"Marked not done",function(){Store.update("items",i.id,was)});return;}
+    if(!isRepeat(i)&&!isLimit(i)&&!isBody(i)){var was={done:!!i.done,completedAt:i.completedAt||null},nowDone=!i.done;_justDone=nowDone?i.id:null;setTimeout(function(){_justDone=null},900);if(nowDone)Buddy.react("done");Store.update("items",i.id,{done:nowDone,completedAt:nowDone?fmt(new Date())+"T"+nowHM()+":00":null});toast(nowDone?"Done: "+i.title:"Marked not done",function(){Store.update("items",i.id,was)},nowDone?(dayFinished()?"joy":"happy"):null);return;}
     if(isLimit(i)||isBody(i)){addEvent(i,today());openStrip(i.id);return;}   /* always adds, undo lives in the strip */
     var pd=Math.max(1,normOf(i).max||perDayOf(i));var c=countOn(i,today());
     if(c<pd){addEvent(i,today());openStrip(i.id);}else setDayCount(i,today(),0);
@@ -4161,7 +4174,7 @@
     setDayCount(i,ds,countOn(i,ds)>0?0:1);
   }
   function toggleItem(id){var i=Store.get("items",id);if(!i)return;
-    if(i.kind==="med"){if(isLimit(i)||isBody(i)){addEvent(i,today());openStrip(i.id);}else{var was0=countOn(i,today())>0;if(!was0){_justDone=i.id;setTimeout(function(){_justDone=null},900);Buddy.react("done");}logToggleDate(i,today());toast(was0?"Marked not taken":"Taken: "+i.title,function(){var fi=Store.get("items",i.id);if(fi)logToggleDate(fi,today());});}}
+    if(i.kind==="med"){if(isLimit(i)||isBody(i)){addEvent(i,today());openStrip(i.id);}else{var was0=countOn(i,today())>0;if(!was0){_justDone=i.id;setTimeout(function(){_justDone=null},900);Buddy.react("done");}logToggleDate(i,today());toast(was0?"Marked not taken":"Taken: "+i.title,function(){var fi=Store.get("items",i.id);if(fi)logToggleDate(fi,today());},was0?null:(dayFinished()?"joy":"happy"));}}
     else if(i.kind==="todo")tapTodo(i);}
 
   $("#overlay").addEventListener("click",function(e){if(e.target===this)closeModal();});
