@@ -2969,7 +2969,7 @@
     else if(i.kind==="measure"){h+='<span class="pill" style="color:var(--accent-ink)">'+PI("target")+esc((i.target||0)+(i.unit?" "+i.unit:""))+'</span>';var st3=streakOf(i);if(st3>1)h+='<span class="streak">'+PI("flame")+st3+'</span>';}
     else if(i.kind==="upkeep"){var d3=dCount(nextDue(i));h+='<span class="pill due '+(d3<=0?"over":d3<=7?"soon":"")+'">'+(i.mode==="rebuy"?"rebuy":"replace")+' in '+(d3<=0?"now":d3+"d")+'</span>';}
     h+=flagPills(i,today());
-    if(i.reminder)h+='<span class="pill">'+PI("bell")+esc(fmtTime(i.reminder))+'</span>';
+    if(i.reminder)h+='<span class="pill">'+PI("bell")+esc(fmtSpan(i))+'</span>';
     h+=tagPills(i.tags);
     if(opts.area){var c=Store.get("cats",i.catId);if(c)h+='<span class="pill" style="color:'+esc(c.color)+'">'+esc(c.name)+'</span>';}
     h+='</div></div><div class="rright">';
@@ -3034,7 +3034,7 @@
 
   function viewItem(i){
     var c=Store.get("cats",i.catId);
-    var h='<button class="back" data-back-area="'+i.catId+'">← '+esc(c?c.name:"Back")+'</button><div class="day-h" style="border:0;padding-bottom:0;margin-bottom:10px"><div class="d"><p class="kicker">'+esc(c?c.name:"")+(i.sub?" · "+esc(i.sub):"")+'</p><h1 class="title" style="font-size:30px">'+esc(i.title)+(i.private?" "+LOCK:"")+'</h1><p class="kicker" style="color:var(--muted);margin-top:8px">'+itemSubtitle(i)+(i.reminder?' · '+PI("bell")+esc(fmtTime(i.reminder)):'')+'</p></div><button class="btn ghost sm" data-action="edit-item" data-id="'+i.id+'">Edit</button></div>';
+    var h='<button class="back" data-back-area="'+i.catId+'">← '+esc(c?c.name:"Back")+'</button><div class="day-h" style="border:0;padding-bottom:0;margin-bottom:10px"><div class="d"><p class="kicker">'+esc(c?c.name:"")+(i.sub?" · "+esc(i.sub):"")+'</p><h1 class="title" style="font-size:30px">'+esc(i.title)+(i.private?" "+LOCK:"")+'</h1><p class="kicker" style="color:var(--muted);margin-top:8px">'+itemSubtitle(i)+(i.reminder?' · '+PI("bell")+esc(fmtSpan(i)):'')+'</p></div><button class="btn ghost sm" data-action="edit-item" data-id="'+i.id+'">Edit</button></div>';
     if(i.notes)h+='<p style="color:var(--muted);margin:0 0 6px;font-size:14px">'+esc(i.notes)+'</p>';
     if(i.tags&&i.tags.length)h+='<div class="rmeta" style="margin:10px 0">'+tagPills(i.tags)+'</div>';
     if(i.kind==="todo"&&!isRepeat(i)&&!isEpisode(i)){h+='<div class="panel" style="display:flex;align-items:center;gap:14px;margin-top:14px"><button class="tick '+(i.done?"on":"")+'" data-toggle="'+i.id+'">✓</button><div style="flex:1"><b>'+(i.done?"Completed"+(i.completedAt?" · "+esc(fmtTime(completedLocal(i).slice(11,16))):""):"Not done yet")+'</b>'+(i.dueDate?'<div class="kicker" style="color:var(--muted);margin-top:3px">Due '+esc(dueLabel(i.dueDate))+'</div>':'')+'</div></div>';h+=assignPanel(i);return h;}
@@ -3955,12 +3955,120 @@
   function openRestock(id){var i=Store.get("items",id);if(!i)return;ms={type:"restock",id:id};openModal('<div class="modal-h"><h3>Restock '+esc(i.title)+'</h3><button class="x" data-close>×</button></div><div class="modal-b"><p class="kicker" style="color:var(--muted);margin:0 0 6px">You have '+(i.stock||0)+' pills. How many did you add?</p><div class="bignum"><input type="number" id="rs" min="0" step="1" placeholder="30"><span class="u">pills</span></div><label class="toggle-line" style="margin-top:10px"><input type="checkbox" id="rs-set"> Set the total instead of adding</label></div><div class="modal-f"><span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-restock="'+id+'">Save</button></div>');setTimeout(function(){var e=$("#rs");if(e)e.focus();},60);}
   function saveRestock(id){var i=Store.get("items",id);if(!i)return;var n=parseInt(($("#rs")||{}).value,10);if(isNaN(n)){closeModal();return;}var set=$("#rs-set")&&$("#rs-set").checked;Store.update("items",id,{stock:Math.max(0,set?n:(i.stock||0)+n)});closeModal();toast("Restocked");}
 
+  /* ===== typing a sentence: "call alex tom at 5 in the evening" =====
+     Plain code with no page in it: it only reads the text and the clock it is given, so it can move to a server later.
+     It never guesses silently, the add sheet shows what it read and any chip can be tapped to change it. */
+  var TY_DOW=["sun","mon","tue","wed","thu","fri","sat"];
+  function parseTyped(text,now){
+    text=String(text==null?"":text);now=now||new Date();
+    var low=text.replace(/[A-Z]/g,function(c){return c.toLowerCase()});
+    var cut=[],parts={date:[],time:[],dur:[]},res={date:null,time:null,dur:null,parts:parts};
+    var pad=function(n){return (n<10?"0":"")+n},ds=function(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())};
+    var mid=new Date(now.getFullYear(),now.getMonth(),now.getDate()),nowMin=now.getHours()*60+now.getMinutes();
+    var addD=function(n){return new Date(mid.getFullYear(),mid.getMonth(),mid.getDate()+n)};
+    var CON=/(?:\b(?:on|at|for|by|in|within|till|until|before|after|the|this)\s+){1,2}$/;
+    function free(s,e){for(var i=0;i<cut.length;i++)if(s<cut[i][1]&&e>cut[i][0])return false;return true}
+    function find(re,ok){var g=new RegExp(re.source,"gi"),m;while((m=g.exec(low))){if(!m[0].length){g.lastIndex++;continue}var s=m.index,e=s+m[0].length;if(free(s,e)&&(!ok||ok(m)))return {m:m,s:s,e:e}}return null}
+    function take(kind,s,e){var c=CON.exec(low.slice(0,s));if(c&&free(s-c[0].length,s))s-=c[0].length;cut.push([s,e]);parts[kind].push([s,e])}
+    var hit,tm=null,per=null,bias=null,dateN=null,relDate=null;
+
+    /* in 2 hours, in half an hour */
+    hit=find(/\bin\s+(an?|half\s+an?|\d+(?:\.\d+)?)\s*(hours?|hrs?|h|minutes?|mins?|m)\b/);
+    if(hit){var q=hit.m[1].replace(/\s+/g," "),n=/^half/.test(q)?0.5:/^an?$/.test(q)?1:parseFloat(q),mins=/^h/.test(hit.m[2])?n*60:n;
+      if(n>0&&mins<=1440){var t=new Date(now.getTime()+Math.round(mins)*60000);res.time=pad(t.getHours())+":"+pad(t.getMinutes());relDate=ds(t);take("time",hit.s,hit.e)}}
+
+    /* for an hour, for 30 min */
+    hit=find(/\bfor\s+(?:(an?|half\s+an?)\s+hour|(\d+(?:\.\d+)?)\s*(hours?|hrs?|h|minutes?|mins?|m))\b/);
+    if(hit){var dm=hit.m[1]?(/^half/.test(hit.m[1])?30:60):Math.round(parseFloat(hit.m[2])*(/^h/.test(hit.m[3])?60:1));
+      if(dm>0&&dm<=1440){res.dur=dm;take("dur",hit.s,hit.e)}}
+
+    /* the day after tomorrow first, so "tomorrow" inside it is not read twice */
+    hit=find(/\bday\s+after\s+(?:tomorrow|tom|tmrw|tmr)\b(?!['’])/);
+    if(hit){dateN=2;take("date",hit.s,hit.e)}
+
+    /* the time */
+    if(res.time===null){
+      hit=find(/\b(?:at\s+)?(\d{1,2})(?::(\d{2}))?\s*([ap])\.?m\b\.?/,function(m){var h=+m[1],mi=m[2]?+m[2]:0;return h>=1&&h<=12&&mi<60});
+      if(hit){tm={h:+hit.m[1],m:hit.m[2]?+hit.m[2]:0,ap:hit.m[3]};take("time",hit.s,hit.e)}
+      if(!tm){hit=find(/\b(?:at\s+)?(\d{1,2}):(\d{2})\b/,function(m){return +m[1]<=23&&+m[2]<60});
+        if(hit){tm={h:+hit.m[1],m:+hit.m[2],ap:null,is24:(+hit.m[1]>12||+hit.m[1]===0||/^0/.test(hit.m[1]))};take("time",hit.s,hit.e)}}
+      if(!tm){hit=find(/\b(?:at\s+)?(noon|midday)\b/);if(hit){tm={h:12,m:0,ap:"p"};take("time",hit.s,hit.e)}}
+      if(!tm){hit=find(/\bat\s+(\d{1,2})(?:\s*o'?clock)?\b/,function(m){return +m[1]>=1&&+m[1]<=23});
+        if(hit){tm={h:+hit.m[1],m:0,ap:null,is24:(+hit.m[1]>12)};take("time",hit.s,hit.e)}}
+    }
+    /* morning, afternoon, evening, night: only when something makes it clear it is a time, so "Morning run" stays a title */
+    hit=find(/\b(?:in\s+the|this|at)\s+(morning|afternoon|evening|night)\b/);
+    if(hit){per=hit.m[1];take("time",hit.s,hit.e)}
+    else{hit=find(/\b(?:tomorrow|tmrw|tmr|tom|today|(?:mon|tues?|wednes|thurs?|fri|satur|sun)day)\s+(morning|afternoon|evening|night)\b/);
+      if(hit){per=hit.m[1];var ps=hit.e-per.length;cut.push([ps,hit.e]);parts.time.push([ps,hit.e])}}
+
+    /* the day */
+    hit=find(/\b(tomorrow|tmrw|tmr)\b(?!['’])/);
+    if(dateN===null&&hit){dateN=1;take("date",hit.s,hit.e)}
+    if(dateN===null){
+      hit=find(/\b(?:on|for|by|at|within|till|until|before|after)\s+tom\b(?!['’])/);
+      if(hit){dateN=1;take("date",hit.e-3,hit.e)}
+      else{hit=find(/\btom\b(?!['’])(?=\s+(?:on|for|by|at|within|till|until|before|after|morning|afternoon|evening|night|\d))/);
+        if(hit){dateN=1;take("date",hit.s,hit.e)}}
+    }
+    if(dateN===null){hit=find(/\b(today|tonight)\b/);if(hit){dateN=0;if(hit.m[1].toLowerCase()==="tonight")bias="night";take("date",hit.s,hit.e)}}
+    if(dateN===null){hit=find(/\bin\s+(\d{1,3}|a|an|one)\s+(days?|weeks?)\b/);
+      if(hit){var k=/^\d/.test(hit.m[1])?+hit.m[1]:1;dateN=k*(/^w/.test(hit.m[2])?7:1);take("date",hit.s,hit.e)}}
+    if(dateN===null){hit=find(/\bnext\s+week\b/);if(hit){dateN=7;take("date",hit.s,hit.e)}}
+    if(dateN===null){
+      hit=find(/\b(?:(?:on|next|this)\s+)?(sunday|monday|tuesday|wednesday|thursday|friday|saturday|tues|thurs|thur|tue|thu|fri)\b/);
+      if(!hit)hit=find(/\b(?:on|next|this)\s+(sun|mon|wed|sat)\b/);
+      if(hit){var wi=TY_DOW.indexOf(hit.m[1].toLowerCase().slice(0,3));dateN=(wi-now.getDay()+7)%7||7;take("date",hit.s,hit.e)}
+    }
+    if(dateN===null){
+      hit=find(/\b(?:on\s+)?the\s+(\d{1,2})(?:st|nd|rd|th)\b|\bon\s+(\d{1,2})(?:st|nd|rd|th)\b/,function(m){var d=+(m[1]||m[2]);return d>=1&&d<=31});
+      if(hit){var dom=+(hit.m[1]||hit.m[2]);
+        for(var z=0;z<13;z++){var c=new Date(mid.getFullYear(),mid.getMonth()+z,dom);if(c.getDate()===dom&&c>=mid){dateN=Math.round((c-mid)/864e5);break}}
+        if(dateN!==null)take("date",hit.s,hit.e)}
+    }
+    if(dateN===null){
+      var MN="(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)";
+      hit=find(new RegExp("\\b(\\d{1,2})(?:st|nd|rd|th)?\\s+"+MN+"\\b|\\b"+MN+"\\s+(\\d{1,2})(?:st|nd|rd|th)?\\b"),function(m){var d=+(m[1]||m[4]);return d>=1&&d<=31});
+      if(hit){var dd=+(hit.m[1]||hit.m[4]),mn=["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"].indexOf((hit.m[2]||hit.m[3]).slice(0,3)),cd=new Date(mid.getFullYear(),mn,dd);
+        if(cd<mid)cd=new Date(mid.getFullYear()+1,mn,dd);
+        if(cd.getDate()===dd){dateN=Math.round((cd-mid)/864e5);take("date",hit.s,hit.e)}}
+    }
+    res.date=dateN!==null?ds(addD(dateN)):relDate;
+
+    /* the hour: 5 in the evening is 17:00. With nothing to go on, 7 to 11 is morning, 1 to 6 is afternoon, and today never picks a time that has already passed */
+    if(tm){
+      var h=tm.h,p=per||bias;
+      if(tm.ap)h=(h%12)+(tm.ap==="p"?12:0);
+      else if(tm.is24||h===0){}
+      else if(p==="morning")h=h%12;
+      else if(p==="afternoon"||p==="evening"||p==="night")h=(h%12)+12;
+      else{
+        var onToday=!res.date||res.date===ds(now),cand=h===12?12:(h>=7?h:h+12),alt=h===12?0:(cand>=12?cand-12:cand+12);
+        h=(onToday&&cand*60+tm.m<=nowMin&&alt*60+tm.m>nowMin)?alt:cand;
+      }
+      if(h<24&&tm.m<60)res.time=pad(h)+":"+pad(tm.m);
+    }else if(per&&res.time===null){res.time=pad({morning:9,afternoon:15,evening:18,night:21}[per])+":00"}
+    return res;
+  }
+  /* the title with the words that were read taken out. use says which parts to take out. */
+  function tyTitle(text,parts,use){
+    var spans=[];["date","time","dur"].forEach(function(k){if(use[k])parts[k].forEach(function(s){spans.push(s)})});
+    if(!spans.length)return String(text).trim();
+    spans.sort(function(a,b){return a[0]-b[0]});
+    var out="",pos=0;spans.forEach(function(s){if(s[0]>=pos){out+=text.slice(pos,s[0]);pos=s[1]}else if(s[1]>pos)pos=s[1]});out+=text.slice(pos);
+    out=out.replace(/\s+/g," ").replace(/^[\s,;:.\-]+|[\s,;:.\-]+$/g,"");
+    var prev;do{prev=out;out=out.replace(/\s+(?:on|at|for|by|in|within|till|until|before|after|the|to)$/i,"")}while(out!==prev);
+    return out||String(text).trim();
+  }
+
   /* ===== v4: one add sheet for everything =====
      The plus button, "+ Add" and every "+ add" open this. It starts as a To-do task, and one tap moves it to Body or Mind.
-     Date, time, priority and repeat are always one tap away. Time uses a scroll wheel, not the round clock dial. */
+     Date, time, priority and repeat are always one tap away. Time uses a scroll wheel, not the round clock dial.
+     Type "call alex tom at 5 in the evening" and the date, time and length fill in while you type. */
   var QI={
     cal:'<rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
     clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3.2 2"/>',
+    len:'<path d="M9.5 2.5h5M12 2.5V5"/><circle cx="12" cy="13.5" r="7"/><path d="M12 10v3.8"/>',
     flag:'<path d="M5.5 21V4M5.5 4.5h11l-2.2 3.8 2.2 3.7h-11"/>',
     rep:'<path d="M17 2.5l3.5 3.5L17 9.5M3.5 11V9.5A3.5 3.5 0 0 1 7 6h13.5M7 21.5L3.5 18 7 14.5M20.5 13v1.5A3.5 3.5 0 0 1 17 18H3.5"/>',
     tag:'<path d="M3.5 3.5h8.2l8.8 8.8a1.6 1.6 0 0 1 0 2.3l-5.9 5.9a1.6 1.6 0 0 1-2.3 0L3.5 11.7z"/><circle cx="8" cy="8" r="1.2"/>',
@@ -3973,19 +4081,31 @@
   function qi(n){return '<svg class="qi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+QI[n]+'</svg>'}
   var QA_REPS=[[0,"Doesn't repeat"],[1,"Every day"],[2,"Every 2 days"],[7,"Every week"],[14,"Every 2 weeks"],[30,"Every month"]];
   var QA_PRIO=[["none","No priority"],["low","Low"],["med","Medium"],["high","High"]];
+  var QA_DUR=[["none","No length"],[15,"15 min"],[30,"30 min"],[45,"45 min"],[60,"1 hour"],[90,"1.5 hours"],[120,"2 hours"],[180,"3 hours"]];
   var MONFULL=["January","February","March","April","May","June","July","August","September","October","November","December"];
   var qa=null,qp=null;
   function p2(n){return (n<10?"0":"")+n}
   function qaDateLabel(ds){if(!ds)return"No date";if(ds===today())return"Today";if(ds===addDaysStr(today(),1))return"Tomorrow";var d=new Date(ds+"T00:00:00");return DOW[d.getDay()]+" "+d.getDate()+" "+MON[d.getMonth()]}
   function qaRepLabel(n){for(var i=0;i<QA_REPS.length;i++)if(QA_REPS[i][0]===n)return QA_REPS[i][1];return "Every "+n+" days"}
+  function durLabel(m){var h=Math.floor(m/60),r=m%60;if(!r)return h===1?"1 hour":h+" hours";if(!h)return r+" min";return h+" h "+r+" min"}
+  /* a time with a length reads "12:00pm to 1:00pm" */
+  function fmtSpan(i){if(!i.reminder)return"";if(!i.duration)return fmtTime(i.reminder);var s=i.reminder.split(":"),t=(+s[0]*60+ +s[1]+i.duration)%1440;return fmtTime(i.reminder)+" to "+fmtTime(p2(Math.floor(t/60))+":"+p2(t%60))}
   function qaAreas(){return cats().filter(function(c){return c.id!==TODO_CAT&&areaDomain(c.id)===qa.card})}
   function qaFixCat(){if(qa.card==="todo")return;var a=qaAreas();if(!a.some(function(c){return c.id===qa.cat}))qa.cat=a[0]?a[0].id:null}
+  /* what the sheet means right now: what was typed, unless a chip was tapped, which always wins */
+  function qaEff(){
+    var t=$("#q-title"),txt=t?t.value:(qa.title||""),P=parseTyped(txt,new Date());
+    var date=qa.touched?qa.date:(P.date||qa.date),time=qa.timeTouched?qa.time:(P.time||null),dur=qa.durTouched?qa.dur:(P.dur||null);
+    if(!time)dur=null;
+    var use={date:!!P.parts.date.length&&qa.rep===0,time:!!P.parts.time.length&&(!qa.timeTouched||qa.time!=null),dur:!!P.parts.dur.length&&!!time&&(!qa.durTouched||qa.dur!=null)};
+    return {P:P,text:txt,date:date,time:time,dur:dur,use:use,title:tyTitle(txt,P.parts,use)};
+  }
 
   function openAdd(date,cat){
     var card="todo",area=null;
     if(cat&&cat!==TODO_CAT){card=areaDomain(cat)==="mind"?"mind":"body";area=cat}
     else if(!cat&&state.view==="day"&&(state.dayDomain==="body"||state.dayDomain==="mind"))card=state.dayDomain;
-    qa={card:card,cat:area,list:todoList,date:date||today(),time:null,prio:"none",rep:card==="todo"?0:1,tags:[],notes:"",open:"",touched:false};
+    qa={card:card,cat:area,list:todoList,date:date||today(),time:null,dur:null,prio:"none",rep:card==="todo"?0:1,tags:[],notes:"",open:"",touched:false,timeTouched:false,durTouched:false};
     qaFixCat();ms={type:"quick"};renderAdd();
   }
   function renderAdd(){
@@ -4003,16 +4123,27 @@
     if(qa.card==="todo")w=[["work","Work"],["personal","Personal"]].map(function(o){return '<button type="button" class="qa-chip'+(qa.list===o[0]?" on":"")+'" data-qa="list" data-v="'+o[0]+'" aria-pressed="'+(qa.list===o[0])+'">'+o[1]+'</button>'}).join("");
     else{var ar=qaAreas();w=ar.length?ar.map(function(c){var on=qa.cat===c.id;return '<button type="button" class="qa-chip'+(on?" on":"")+'" data-qa="cat" data-v="'+esc(c.id)+'" aria-pressed="'+on+'"><span class="qa-dot" style="background:'+esc(c.color||"var(--accent)")+'"></span>'+esc(c.name)+'</button>'}).join(""):'<span class="qa-none">No '+(qa.card==="body"?"body":"mind")+' areas yet. Make one from the menu first.</span>'}
     $("#qa-where").innerHTML=w;
-    var a="";
-    if(qa.rep===0)a+=qaAct("date","cal",qaDateLabel(qa.date),!!qa.date);
-    a+=qaAct("time","clock",qa.time?fmtTime(qa.time):"Time",!!qa.time);
+    var t=$("#q-title");if(t)t.placeholder=qa.card==="todo"?"What needs doing?":qa.card==="body"?"e.g. Brush teeth":"e.g. Read 20 pages";
+    paintActs();
+  }
+  /* the row of chips and the line under the title: repainted on every keystroke, so they always show what was read */
+  function paintActs(){
+    var e=qaEff(),a="";
+    if(qa.rep===0)a+=qaAct("date","cal",qaDateLabel(e.date),true);
+    a+=qaAct("time","clock",e.time?fmtTime(e.time):"Time",!!e.time);
+    if(e.time)a+=qaAct("dur","len",e.dur?durLabel(e.dur):"Length",!!e.dur);
     a+=qaAct("prio","flag",qa.prio==="none"?"Priority":QA_PRIO.filter(function(p){return p[0]===qa.prio})[0][1],qa.prio!=="none");
     a+=qaAct("rep","rep",qa.rep?qaRepLabel(qa.rep):"Repeat",qa.rep>0);
     a+=qaAct("tags","tag",qa.tags.length?qa.tags.length+(qa.tags.length===1?" tag":" tags"):"Tags",qa.tags.length>0,' aria-expanded="'+(qa.open==="tags")+'"');
     a+=qaAct("notes","note",qa.notes?"Note added":"Note",!!qa.notes,' aria-expanded="'+(qa.open==="notes")+'"');
     $("#qa-acts").innerHTML=a;
     $("#qa-go").textContent=qa.rep>0?"Add habit":"Add task";
-    var t=$("#q-title");if(t)t.placeholder=qa.card==="todo"?"What needs doing?":qa.card==="body"?"e.g. Brush teeth":"e.g. Read 20 pages";
+    var bits=[];
+    if(e.use.date&&!qa.touched)bits.push(qaDateLabel(e.date));
+    if(e.P.parts.time.length&&!qa.timeTouched&&e.time)bits.push(fmtTime(e.time));
+    else if(e.P.time&&!e.P.parts.time.length&&!qa.timeTouched)bits.push(fmtTime(e.P.time));
+    if(e.use.dur&&!qa.durTouched)bits.push(durLabel(e.dur));
+    var h=$("#qa-hint");if(h){if(bits.length){h.textContent="Read as: "+bits.join(", ");h.hidden=false}else h.hidden=true}
   }
   function paintPanel(){
     var p=$("#qa-panel");if(!p)return;
@@ -4021,29 +4152,24 @@
     else p.innerHTML="";
   }
   function qaRead(){var t=$("#q-title");if(t)qa.title=t.value;var n=$("#q-notes");if(n)qa.notes=n.value}
-  function qaHint(){
-    var h=$("#qa-hint"),t=$("#q-title");if(!h||!t||!qa)return;
-    var q=(!qa.touched&&qa.rep===0)?parseQuick(t.value):null;
-    if(q){h.textContent="Due "+qaDateLabel(q.date);h.hidden=false}else h.hidden=true;
-  }
   function saveAdd(){
-    qaRead();var title=(qa.title||"").trim();
+    qaRead();var e=qaEff(),title=(e.title||"").trim();
     if(!title){toast("Give it a name");var t=$("#q-title");if(t)t.focus();return}
     var isTodo=qa.card==="todo",cat=isTodo?TODO_CAT:qa.cat;
     if(!cat){toast("Pick an area first");return}
-    if(!qa.touched&&qa.rep===0){var q=parseQuick(title);if(q){title=q.title;qa.date=q.date}}
+    var date=qa.rep>0?null:e.date;
     var d={catId:cat,sub:"",title:title,akind:qa.rep>0?"activity":"oneoff",kind:"todo",notes:qa.notes||"",priority:qa.prio,tags:qa.tags.slice(),assignees:[],private:false,done:false,
-      dueDate:qa.rep>0?null:qa.date,repeatEvery:qa.rep,perDay:1,reminder:qa.time,stance:"routine",list:qa.list,markers:[],expect:null,normal:{min:1,max:1,maxGapDays:qa.rep||null,maxPerWeek:null}};
-    var when=qa.rep>0?qaRepLabel(qa.rep).toLowerCase():(qa.date?qaDateLabel(qa.date):"")+(qa.time?" "+fmtTime(qa.time):"");
+      dueDate:date,repeatEvery:qa.rep,perDay:1,reminder:e.time,duration:e.time?e.dur:null,stance:"routine",list:qa.list,markers:[],expect:null,normal:{min:1,max:1,maxGapDays:qa.rep||null,maxPerWeek:null}};
+    var when=(qa.rep>0?qaRepLabel(qa.rep):qaDateLabel(date))+(e.time?" "+fmtTime(e.time):"");
     ms={type:"item",mode:(isTodo&&qa.rep===0)?"task":"area",id:null,data:d,dateTouched:true};
     saveItem();
-    toast("Added "+title+(when?" ("+when.trim()+")":""));
+    toast("Added "+title+" ("+when+")");
   }
   /* the full forms stay one tap away, filled in with what was already typed */
   function qaMore(){
-    qaRead();var q=qa;
-    var apply=function(d){d.title=q.title||"";d.priority=q.prio;d.tags=q.tags.slice();d.notes=q.notes||"";d.reminder=q.time;if(q.rep>0){d.akind="activity";d.repeatEvery=q.rep}else{d.akind="oneoff";d.dueDate=q.date}};
-    if(q.card==="todo"&&q.rep===0){openTask(null,q.date);apply(ms.data);ms.data.list=q.list;ms.data.dueDate=q.date;ms.qOpen=true;ms.dateTouched=true;renderTaskModal()}
+    qaRead();var q=qa,e=qaEff();
+    var apply=function(d){d.title=e.title||q.title||"";d.priority=q.prio;d.tags=q.tags.slice();d.notes=q.notes||"";d.reminder=e.time;d.duration=e.time?e.dur:null;if(q.rep>0){d.akind="activity";d.repeatEvery=q.rep}else{d.akind="oneoff";d.dueDate=e.date}};
+    if(q.card==="todo"&&q.rep===0){openTask(null,e.date);apply(ms.data);ms.data.list=q.list;ms.qOpen=true;ms.dateTouched=true;renderTaskModal()}
     else{openItemEditor(null,q.card==="todo"?TODO_CAT:q.cat);if(ms.data){apply(ms.data);renderItemModal()}}
   }
 
@@ -4062,17 +4188,17 @@
       return '<button type="button" role="option" aria-selected="'+on+'" class="'+(on?"on":"")+'" data-qp="pick" data-v="'+r[0]+'"><span>'+r[1]+'</span>'+(r[2]?'<em>'+esc(r[2])+'</em>':"")+(on?qi("ck"):"")+'</button>'}).join("")+'</div>');
   }
   function qpDate(){
-    var t=today(),cur=!qa.date?"none":qa.date===t?"today":qa.date===addDaysStr(t,1)?"tomorrow":qa.date===addDaysStr(t,7)?"week":"pick";
-    qpList("date","Date",[["today","Today"],["tomorrow","Tomorrow"],["week","Next week"],["pick","Pick a date",cur==="pick"?qaDateLabel(qa.date):""],["none","No date"]],cur);
+    var t=today(),ed=qaEff().date,cur=ed===t?"today":ed===addDaysStr(t,1)?"tomorrow":ed===addDaysStr(t,7)?"week":"pick";
+    qpList("date","Date",[["today","Today"],["tomorrow","Tomorrow"],["week","Next week"],["pick","Pick a date",cur==="pick"?qaDateLabel(ed):""]],cur);
   }
   function qpCal(){
-    var base=qa.date||today();qp={kind:"cal",m:base.slice(0,7)};qpCalPaint();
+    var base=qaEff().date||today();qp={kind:"cal",m:base.slice(0,7),sel:base};qpCalPaint();
   }
   function qpCalPaint(){
     var y=+qp.m.slice(0,4),m=+qp.m.slice(5,7)-1,lead=(new Date(y,m,1).getDay()+6)%7,dim=new Date(y,m+1,0).getDate(),t=today(),cells="";
     for(var i=0;i<lead;i++)cells+="<span></span>";
-    for(var d=1;d<=dim;d++){var ds=y+"-"+p2(m+1)+"-"+p2(d),cls=(ds===qa.date?"on ":"")+(ds===t?"t":"");
-      cells+='<button type="button" class="'+cls+'" data-qp="day" data-v="'+ds+'" aria-label="'+d+" "+MONFULL[m]+" "+y+'"'+(ds===qa.date?' aria-pressed="true"':"")+'>'+d+'</button>'}
+    for(var d=1;d<=dim;d++){var ds=y+"-"+p2(m+1)+"-"+p2(d),cls=(ds===qp.sel?"on ":"")+(ds===t?"t":"");
+      cells+='<button type="button" class="'+cls+'" data-qp="day" data-v="'+ds+'" aria-label="'+d+" "+MONFULL[m]+" "+y+'"'+(ds===qp.sel?' aria-pressed="true"':"")+'>'+d+'</button>'}
     qpOpen('<div class="qp-cal-h"><button type="button" data-qp="calnav" data-v="-1" aria-label="Earlier month">'+qi("pv")+'</button><b>'+MONFULL[m]+" "+y+'</b><button type="button" data-qp="calnav" data-v="1" aria-label="Later month">'+qi("nx")+'</button></div>'+
       '<div class="qp-cal"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>'+cells+'</div>'+
       '<div class="qp-foot"><button type="button" class="qp-link" data-qp="day" data-v="'+t+'">Today</button><span class="spacer"></span><button type="button" class="qp-link" data-qp="close">Cancel</button></div>');
@@ -4135,13 +4261,14 @@
       if(a==="pick"&&qp&&qa){
         if(qp.kind==="date"){
           if(v==="pick"){qpCal();return}
-          qa.date=v==="today"?today():v==="tomorrow"?addDaysStr(today(),1):v==="week"?addDaysStr(today(),7):null;qa.touched=true;
+          qa.date=v==="today"?today():v==="tomorrow"?addDaysStr(today(),1):addDaysStr(today(),7);qa.touched=true;
         }else if(qp.kind==="prio")qa.prio=v;
         else if(qp.kind==="rep")qa.rep=+v;
-        qpClose();paintAdd();qaHint();return;
+        else if(qp.kind==="dur"){qa.dur=v==="none"?null:+v;qa.durTouched=true}
+        qpClose();paintActs();return;
       }
       if(a==="calnav"&&qp){var y=+qp.m.slice(0,4),m=+qp.m.slice(5,7)-1+(+v),d2=new Date(y,m,1);qp.m=d2.getFullYear()+"-"+p2(d2.getMonth()+1);qpCalPaint();return}
-      if(a==="day"&&qa){qa.date=v;qa.touched=true;qpClose();paintAdd();qaHint();return}
+      if(a==="day"&&qa){qa.date=v;qa.touched=true;qpClose();paintActs();return}
       if(a==="preset"&&qp){var s=v.split(":"),H=+s[0],L=$("#qlayer");qp.h=H%12||12;qp.pm=H>=12;qp.m=+s[1];
         L.querySelector('[data-w="h"]').jump(qp.h-1);L.querySelector('[data-w="m"]').jump(qp.m);L.querySelector('[data-w="p"]').jump(qp.pm?1:0);return}
       if(a==="timeok"&&qp){var cb=qp.done,val=qpTimeValue();qpClose();cb(val);return}
@@ -4150,21 +4277,22 @@
     }
     if((el=e.target.closest("[data-qa]"))&&ms&&ms.type==="quick"&&qa){
       var k=el.getAttribute("data-qa"),val2=el.getAttribute("data-v");qaRead();
-      if(k==="card"){qa.card=val2;if(val2==="todo"){if(qa.rep>0&&!qa.repTouched)qa.rep=0}else if(!qa.repTouched&&qa.rep===0)qa.rep=1;qaFixCat();paintAdd();qaHint()}
+      if(k==="card"){qa.card=val2;if(val2==="todo"){if(qa.rep>0&&!qa.repTouched)qa.rep=0}else if(!qa.repTouched&&qa.rep===0)qa.rep=1;qaFixCat();paintAdd()}
       else if(k==="list"){qa.list=val2;paintAdd()}
       else if(k==="cat"){qa.cat=val2;paintAdd()}
       else if(k==="date")qpDate();
-      else if(k==="time")qpTime(qa.time||"",function(v){qa.time=v||null;paintAdd()});
+      else if(k==="time")qpTime(qaEff().time||"",function(v){qa.time=v||null;qa.timeTouched=true;paintActs()});
+      else if(k==="dur")qpList("dur","Length",QA_DUR,qaEff().dur||"none");
       else if(k==="prio")qpList("prio","Priority",QA_PRIO,qa.prio);
       else if(k==="rep"){qa.repTouched=true;qpList("rep","Repeat",QA_REPS,qa.rep)}
-      else if(k==="tags"){qa.open=qa.open==="tags"?"":"tags";paintAdd();paintPanel()}
-      else if(k==="notes"){qa.open=qa.open==="notes"?"":"notes";paintAdd();paintPanel()}
-      else if(k==="tag"){var ix=qa.tags.indexOf(val2);if(ix>-1)qa.tags.splice(ix,1);else qa.tags.push(val2);paintAdd();paintPanel()}
+      else if(k==="tags"){qa.open=qa.open==="tags"?"":"tags";paintActs();paintPanel()}
+      else if(k==="notes"){qa.open=qa.open==="notes"?"":"notes";paintActs();paintPanel()}
+      else if(k==="tag"){var ix=qa.tags.indexOf(val2);if(ix>-1)qa.tags.splice(ix,1);else qa.tags.push(val2);paintActs();paintPanel()}
       else if(k==="more")qaMore();
       else if(k==="go")saveAdd();
     }
   });
-  document.addEventListener("input",function(e){if(e.target&&e.target.id==="q-title"&&qa)qaHint();if(e.target&&e.target.id==="q-notes"&&qa){qa.notes=e.target.value}});
+  document.addEventListener("input",function(e){if(e.target&&e.target.id==="q-title"&&qa&&ms&&ms.type==="quick")paintActs();if(e.target&&e.target.id==="q-notes"&&qa){qa.notes=e.target.value}});
   document.addEventListener("keydown",function(e){
     if(e.key==="Escape"){var L=$("#qlayer");if(L&&L.classList.contains("show")){e.stopPropagation();e.preventDefault();qpClose();return}}
     if(e.key==="Enter"&&!e.isComposing&&e.target&&(e.target.id==="q-title"||e.target.id==="q-notes")&&ms&&ms.type==="quick"){e.preventDefault();saveAdd()}
@@ -4311,7 +4439,7 @@
     syncItem();var d=ms.data;if(!(d.title||"").trim()){toast("Give it a name");return;}
     var stance=(ms.mode==="task")?"routine":(d.stance||"routine");
     var kind=(stance!=="routine")?"todo":(ms.mode==="task"?"todo":(d.akind==="activity"||d.akind==="oneoff"?"todo":d.akind));
-    var base={catId:d.catId,sub:d.sub||"",title:d.title.trim(),kind:kind,notes:d.notes||"",priority:d.priority||"med",tags:d.tags||[],assignees:d.assignees||[],private:!!d.private,reminder:d.reminder||null};
+    var base={catId:d.catId,sub:d.sub||"",title:d.title.trim(),kind:kind,notes:d.notes||"",priority:d.priority||"med",tags:d.tags||[],assignees:d.assignees||[],private:!!d.private,reminder:d.reminder||null,duration:d.duration||null};
     base.stance=stance;base.localOnly=!!d.localOnly;base.markers=(d.markers||[]).slice();base.scale=d.scale||null;base.expect=d.expect||null;base.probes=d.probes||{};
     if(d.catId===TODO_CAT)base.list=d.list||"work";
     if(stance==="fast"){
@@ -4343,7 +4471,7 @@
       if(ms.id)Store.update("items",ms.id,base);else{base.createdAt=new Date().toISOString();base.createdDate=today();base.order=Date.now();Store.add("items",base);}
       closeModal();return;
     }
-    if(kind==="todo"){var rep=(ms.mode==="task"||d.akind==="oneoff")?0:(d.repeatEvery||1);base.repeatEvery=rep;base.perDay=rep>0?Math.max(1,d.perDay||1):1;base.normal={min:base.perDay,max:base.perDay,maxGapDays:rep>0?rep:null,maxPerWeek:null};base.dueDate=rep>0?null:(d.dueDate||null);base.done=rep>0?false:!!d.done;if(!ms.id&&rep>0){base.counts={};base.logTimes={};base.events={};}}
+    if(kind==="todo"){var rep=(ms.mode==="task"||d.akind==="oneoff")?0:(d.repeatEvery||1);base.repeatEvery=rep;base.perDay=rep>0?Math.max(1,d.perDay||1):1;base.normal={min:base.perDay,max:base.perDay,maxGapDays:rep>0?rep:null,maxPerWeek:null};base.dueDate=rep>0?null:(d.dueDate||(d.catId===TODO_CAT?today():null));base.done=rep>0?false:!!d.done;if(!ms.id&&rep>0){base.counts={};base.logTimes={};base.events={};}}
     if(kind==="measure"){base.repeatEvery=1;base.target=d.target||1;base.unit=d.unit||"";if(!ms.id)base.values={};}
     if(kind==="med"){base.repeatEvery=1;base.dosesPerDay=d.dosesPerDay||1;base.stock=d.stock||0;base.reorderTablets=d.reorderTablets||0;base.reorderAt=d.reorderAt||0;base.courseDays=d.courseDays||0;base.courseStart=d.courseStart||today();if(!ms.id){base.log=[];base.logTimes={};}}
     if(kind==="upkeep"){base.mode=d.mode||"replace";base.intervalDays=d.intervalDays||30;base.lastDone=d.lastDone||today();}
