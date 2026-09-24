@@ -2865,7 +2865,6 @@
     var con=consistency(30);
     /* ===== SIDE column: consistency, then the rest of what used to live on Home ===== */
     var side='<div class="panel hm-cal"><div class="hm-cal-h"><h4 aria-level="2">Day by day</h4><div class="hm-cal-r"><span><b>'+(con==null?"-":con+"%")+'</b> last 30 days</span><button class="mini-toggle'+(calDates?" on":"")+'" data-caldates>'+(calDates?"Hide dates":"Show dates")+'</button></div></div>'+calendarPanel(4,true)+'</div>';
-    side+=fastHomeCard();
     var rf=reflection();if(rf)side+='<div class="reflect"><p class="q">'+rf.q+'</p><p>'+esc(rf.p)+'</p></div>';
     var pb=(state.probeHide?null:pendingProbe());
     if(pb){
@@ -2912,7 +2911,7 @@
       '<div class="hm-next" id="hmNext" hidden></div>'+
       '<div class="hm-cards" id="hmCards"></div>'+
       '<p class="hm-hint" id="hmHint">Tap a card to turn it over. Hold it to open the list.</p>'+
-      '<button class="hm-hero" id="hmHero" data-hmopen="all" aria-label="Open the full task list"></button>'+backupNudge();
+      '<button class="hm-hero" id="hmHero" data-hmopen="all" aria-label="Open the full task list"></button>'+fastHomeCard()+backupNudge();
 
     return '<div class="home-grid solo"><div class="home-main">'+main+'</div></div>';
   }
@@ -3207,7 +3206,7 @@
       var ds=addDaysStr(today(),-k);
       if(start&&ds<start)continue;
       var taken=didOn(i,ds);var tm=taken?completionTime(i,ds):null;
-      var inW=taken&&!driftOn(i,ds),ex0=expectOf(i);if(taken&&tm&&ex0){var dd0=wrapDiff(minsOf(tm)-minsOf(ex0.at)),sl0=(ex0.slack==null?60:ex0.slack),dr0=ex0.dir||"either";inW=dr0==="late"?dd0<=sl0:dr0==="early"?dd0>=-sl0:Math.abs(dd0)<=sl0;}
+      var inW=taken&&!driftOn(i,ds),win0=medWindow(i);if(taken&&tm&&win0){var dd0=wrapDiff(minsOf(tm)-win0.at),sl0=win0.slack,dr0=win0.dir||"either";inW=dr0==="late"?dd0<=sl0:dr0==="early"?dd0>=-sl0:Math.abs(dd0)<=sl0;}
       out.push({ds:ds,taken:taken,min:tm?minsOf(tm):null,past:dCount(ds)<0,inWin:inW});
     }
     return out;
