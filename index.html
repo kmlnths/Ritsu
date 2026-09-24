@@ -135,7 +135,7 @@
   .icon-row{display:flex;flex-wrap:wrap;gap:6px} .icon-row button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--panel-2);color:var(--muted);display:grid;place-items:center;cursor:pointer} .icon-row button .phi{width:20px;height:20px} .icon-row button.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink)}
   .swatches{display:flex;flex-wrap:wrap;gap:8px} .swatches button{width:28px;height:28px;border-radius:50%;border:2px solid transparent} .swatches button.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--panel),0 0 0 4px currentColor}
   .toggle-line{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--muted);padding:4px 0} .toggle-line input{width:auto}
-  .bignum{display:flex;align-items:center;gap:12px;justify-content:center;margin:4px 0} .bignum input{width:120px;text-align:center;font-family:var(--serif);font-weight:600;font-size:28px;padding:10px} .bignum .u{color:var(--muted)}
+  .bignum{display:flex;align-items:center;gap:12px;justify-content:center;margin:4px 0} .bignum input{width:120px;background:var(--panel-2);color:var(--ink);border:1px solid var(--line);border-radius:10px;text-align:center;font-family:var(--serif);font-weight:600;font-size:28px;padding:10px} .bignum .u{color:var(--muted)}
   .toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:10px;font-size:13.5px;font-weight:600;z-index:90;opacity:0;transition:.2s;pointer-events:none} .toast.show{opacity:1;transform:translateX(-50%)}
   .skeleton{color:var(--faint);text-align:center;padding:80px 20px;font-family:var(--mono);font-size:13px} .scrim{display:none}
   @media(max-width:820px){
@@ -610,7 +610,9 @@
   .calcell.fut em,.calcell.today em{opacity:.9}
 
   /* ===== Fasting (home entry + page) ===== */
-  .fasthome{display:flex;align-items:center;gap:14px;text-align:left;width:100%;padding:14px 16px;margin-bottom:14px;cursor:pointer}
+  .fasthome{display:flex;align-items:center;gap:14px;text-align:left;width:100%;padding:14px 16px;margin:12px 0 14px;cursor:pointer}
+  .mv-ok{margin-top:14px}.mv-ck{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel-2);font-size:14.5px;cursor:pointer}
+  .mv-ck input{width:20px;height:20px;accent-color:var(--accent);flex:none}
   .fasthome .fh-ring{width:44px;height:44px;border-radius:50%;flex:none;display:grid;place-items:center;position:relative}
   .fasthome .fh-ring::after{content:"";position:absolute;inset:5px;border-radius:50%;background:var(--panel)}
   .fasthome .fh-ring i{position:relative;z-index:1;font-style:normal;font-size:12px;font-weight:700;color:var(--ink)}
@@ -1682,7 +1684,7 @@
   function isRepeat(i){return i.kind==="todo"&&(i.repeatEvery||0)>0}
   function perDayOf(i){return Math.max(1,i.perDay||1)}
   function countOn(i,ds){var e=(i.events||{})[ds];if(e)return e.length;return (i.counts||{})[ds]||0}
-  function measureHit(i,ds){var val=(i.values||{})[ds];return val!=null&&val>=(i.target||1)}
+  function measureHit(i,ds){var val=(i.values||{})[ds];if(val!=null&&(i.okDays||[]).indexOf(ds)>-1)return true;return val!=null&&val>=(i.target||1)}
   function medDaysLeft(i){return Math.floor((i.stock||0)/(i.dosesPerDay||1))}
   function medCourseLeft(i){return (i.courseDays||0)>0?dCount(addDaysStr(i.courseStart||today(),i.courseDays)):null}
   function didOn(i,ds){if(i.kind==="measure")return measureHit(i,ds);if(i.kind==="med")return (i.log||[]).indexOf(ds)>-1;if(i.kind==="todo"){if(isRepeat(i))return countOn(i,ds)>0;return !!i.done;}return false}
@@ -4350,9 +4352,13 @@
   /* put a fast back to running after ending it by mistake */
   function undoEndFast(id){var i=Store.get("items",id);if(!i)return;var fs=(i.fasts||[]).map(function(f){return Object.assign({},f)});if(fs.some(function(f){return !f.e}))return;var last=null;fs.forEach(function(f){if(f.e&&(!last||f.e>last.e))last=f;});if(last){delete last.e;Store.update("items",id,{fasts:fs});toast("Fast is running again");}}
 
-  function openMeasure(id){var i=Store.get("items",id);if(!i)return;var cur=(i.values||{})[today()];ms={type:"measure",id:id};openModal('<div class="modal-h"><h3>'+esc(i.title)+'</h3><button class="x" data-close>×</button></div><div class="modal-b"><p class="kicker" style="color:var(--muted);margin:0 0 6px">Today · goal '+(i.target||0)+' '+esc(i.unit||"")+'</p><div class="bignum"><input type="number" id="mv" step="any" min="0" value="'+(cur!=null?cur:"")+'" placeholder="0"><span class="u">'+esc(i.unit||"")+'</span></div></div><div class="modal-f">'+(cur!=null?'<button class="btn danger sm" data-clear-measure="'+id+'">Clear</button>':'')+'<span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-measure="'+id+'">Save reading</button></div>');setTimeout(function(){var e=$("#mv");if(e){e.focus();e.select();}},60);}
-  function saveMeasure(id){var i=Store.get("items",id);if(!i)return;var val=parseFloat(($("#mv")||{}).value);var vals=Object.assign({},i.values||{});var times=Object.assign({},i.logTimes||{});if(isNaN(val)){delete vals[today()];delete times[today()];}else{vals[today()]=val;times[today()]=nowHM();}Store.update("items",id,{values:vals,lastDone:today(),logTimes:times});closeModal();}
-  function clearMeasure(id){var i=Store.get("items",id);if(!i)return;var vals=Object.assign({},i.values||{});delete vals[today()];Store.update("items",id,{values:vals});closeModal();}
+  function openMeasure(id){var i=Store.get("items",id);if(!i)return;var cur=(i.values||{})[today()];ms={type:"measure",id:id};openModal('<div class="modal-h"><h3>'+esc(i.title)+'</h3><button class="x" data-close>×</button></div><div class="modal-b"><p class="kicker" style="color:var(--muted);margin:0 0 6px">Today · goal '+(i.target||0)+' '+esc(i.unit||"")+'</p><div class="bignum"><input type="number" id="mv" step="any" min="0" value="'+(cur!=null?cur:"")+'" placeholder="0"><span class="u">'+esc(i.unit||"")+'</span></div><div id="mv-ok" class="mv-ok" hidden></div></div><div class="modal-f">'+(cur!=null?'<button class="btn danger sm" data-clear-measure="'+id+'">Clear</button>':'')+'<span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-measure="'+id+'">Save reading</button></div>');setTimeout(function(){var e=$("#mv");if(e){e.focus();e.select();mvOk(i);e.addEventListener("input",function(){mvOk(i)});}},60);}
+  function mvOk(i){var e=$("#mv"),o=$("#mv-ok");if(!e||!o)return;var v=parseFloat(e.value),t=i.target||0,on=(i.okDays||[]).indexOf(today())>-1;
+    var near=!isNaN(v)&&t>0&&v<t&&v>=t*0.8;
+    if(!near&&!on){o.hidden=true;o.innerHTML="";return;}
+    o.hidden=false;o.innerHTML='<label class="mv-ck"><input type="checkbox" id="mv-okc"'+(on?' checked':'')+'><span>Close enough. Count it as done today.</span></label>';}
+  function saveMeasure(id){var i=Store.get("items",id);if(!i)return;var val=parseFloat(($("#mv")||{}).value);var vals=Object.assign({},i.values||{});var times=Object.assign({},i.logTimes||{});if(isNaN(val)){delete vals[today()];delete times[today()];}else{vals[today()]=val;times[today()]=nowHM();}var ok=(i.okDays||[]).filter(function(d){return d!==today()}),oc=$("#mv-okc");if(oc&&oc.checked&&!isNaN(val))ok.push(today());Store.update("items",id,{values:vals,lastDone:today(),logTimes:times,okDays:ok});closeModal();}
+  function clearMeasure(id){var i=Store.get("items",id);if(!i)return;var vals=Object.assign({},i.values||{});delete vals[today()];Store.update("items",id,{values:vals,okDays:(i.okDays||[]).filter(function(d){return d!==today()})});closeModal();}
   function openRestock(id){var i=Store.get("items",id);if(!i)return;ms={type:"restock",id:id};openModal('<div class="modal-h"><h3>Restock '+esc(i.title)+'</h3><button class="x" data-close>×</button></div><div class="modal-b"><p class="kicker" style="color:var(--muted);margin:0 0 6px">You have '+(i.stock||0)+' pills. How many did you add?</p><div class="bignum"><input type="number" id="rs" min="0" step="1" placeholder="30"><span class="u">pills</span></div><label class="toggle-line" style="margin-top:10px"><input type="checkbox" id="rs-set"> Set the total instead of adding</label></div><div class="modal-f"><span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-restock="'+id+'">Save restock</button></div>');setTimeout(function(){var e=$("#rs");if(e)e.focus();},60);}
   function saveRestock(id){var i=Store.get("items",id);if(!i)return;var n=parseInt(($("#rs")||{}).value,10);if(isNaN(n)){closeModal();return;}var set=$("#rs-set")&&$("#rs-set").checked;Store.update("items",id,{stock:Math.max(0,set?n:(i.stock||0)+n)});closeModal();toast("Restocked");}
 
