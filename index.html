@@ -798,6 +798,9 @@
   .hm-gauge .mid b.of{font-size:30px;letter-spacing:-.02em}
   .hm-hero .hm-gauge .mid b.of{font-size:30px}
   .home-grid.solo{max-width:680px;margin:0 auto}
+  .hm-nbtn.quiet{background:var(--panel-2);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+  .fast-when{margin:10px 2px 0;font-size:14px;color:var(--muted);text-align:center}
+  .fh-r{display:block;font-size:12.5px;color:var(--muted);margin-top:1px}
   @media(min-width:940px){.home-grid.solo{grid-template-columns:1fr}}
   .w-opt.pri{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
   .w-opt.pri b{color:var(--on-accent)}.w-opt.pri small{color:color-mix(in srgb,var(--on-accent) 78%,transparent)}
@@ -1745,7 +1748,7 @@
     var its=visibleItems().filter(function(i){return !isEpisode(i)&&!isFast(i)&&whenOf(i)});
     if(its.length<2)return "";
     its.sort(function(a,b){return minsOf(whenOf(a).at)-minsOf(whenOf(b).at)});
-    var placed=false,h='<div class="panel"><h4>Today, in order</h4><div class="tline">';
+    var placed=false,h='<div class="panel"><h4 aria-level="2">Today, in order</h4><div class="tline">';
     its.forEach(function(i){
       var at=minsOf(whenOf(i).at);
       if(!placed&&at>now){h+='<div class="nowline"><span class="nt">'+esc(fmtTime(nowHM()))+'</span><span class="nk"><i></i></span><span class="nr"></span></div>';placed=true;}
@@ -2157,7 +2160,7 @@
   };
 
   function seedLocal(S){
-    S.cache.people["p_me"]={id:"p_me",name:"You",emoji:"🧑",color:"#E0A94A",createdAt:"a"};
+    S.cache.people["p_me"]={id:"p_me",name:"Sam",emoji:"🧑",color:"#E0A94A",createdAt:"a"};
     S.cache.people["p_al"]={id:"p_al",name:"Alex",emoji:"🦊",color:"#82BE97",createdAt:"b"};
     [["t_errand","errand","#DB8460"],["t_money","money","#82BE97"],["t_trip","trip","#E0A94A"]].forEach(function(t){S.cache.tags[t[0]]={id:t[0],name:t[1],color:t[2],createdAt:t[0]};});
     [["c_todo","To-do","🗒️","#8E97A3",0],["c_health","Health","💪","#34D399",1],["c_hygiene","Hygiene","🧼","#FBBF24",2],["c_home","Home","🏠","#E0A94A",3],["c_mind","Mind","📚","#10B981",4]].forEach(function(c){S.cache.cats[c[0]]={id:c[0],name:c[1],emoji:c[2],color:c[3],order:c[4]};});
@@ -2568,12 +2571,15 @@
     return '<button class="card fasthome" data-nav="fasting"><span class="fh-ring" style="background:var(--panel-2)"><i>⏱</i></span>'+
       '<span class="fh-mid"><b>Fasting</b><small>Start a fast, choose 16h, 24h, 36h…</small></span><span class="fh-go">Open ›</span></button>';
   }
+  function fastClock(ms){var d=new Date(ms);return fmtTime(String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"))}
+  function fastStamp(ms){var d=new Date(ms),same=fmt(d)===today();return (same?"today":DOW[d.getDay()])+" at "+fastClock(ms)}
   function viewFasting(){
     var i=fastItem();var a=i?activeFast(i):null;
     var h='<div class="day-h"><div class="d"><p class="kicker">Timer</p><h1 class="title" style="font-size:32px">Fasting</h1></div></div>';
     if(a){
       var tgt=a.target||16,h0=fastHours(a),pct=h0/tgt;
       h+='<div class="card fastpage-live">'+ringSVG(Math.min(1,pct),200,13,esc(fmtHM(h0)),(pct>=1?"past your "+tgt+"h target":Math.round(pct*100)+"% of "+tgt+"h"),"")+'</div>';
+      h+='<p class="fast-when">Started '+fastStamp(a.s)+'. Target reached about '+fastStamp(a.s+tgt*3600000)+'.</p>';
       h+='<div class="faststage">'+phaseBar(tgt,h0)+'</div>';
       h+='<div style="margin:14px 0"><button class="btn primary" data-fastend="'+i.id+'" style="width:100%;padding:14px">End fast</button></div>';
       if(h0>=20||tgt>=24)h+=careBox();
@@ -2586,7 +2592,7 @@
     }
     if(i){var df=doneFasts(i);
       if(df.length){h+='<div class="sec-h"><h2>Recent fasts</h2><span class="line"></span><span class="meta">avg '+(fastAvg(i)||0)+'h</span></div><div class="card" style="padding:2px 16px">';
-        df.slice(0,12).forEach(function(f){var d=new Date(f.s);h+='<div class="fasthist"><span class="fh-d">'+DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]+'</span><span class="fh-h">'+esc(fmtHM(fastHours(f)))+'</span><span class="fh-t">target '+(f.target||16)+'h</span></div>';});
+        df.slice(0,12).forEach(function(f){var d=new Date(f.s);h+='<div class="fasthist"><span class="fh-d">'+DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]+'<small class="fh-r">'+fastClock(f.s)+' to '+fastClock(f.e)+'</small></span><span class="fh-h">'+esc(fmtHM(fastHours(f)))+'</span><span class="fh-t">target '+(f.target||16)+'h</span></div>';});
         h+='</div>';}
     }
     return h;
@@ -2678,7 +2684,7 @@
     HM_DOMS.forEach(function(d){var s=st[d[0]];tot+=s.tot;done+=s.done;});
     if(off===0)visibleItems().forEach(function(i){if(i.kind==="todo"&&!isRepeat(i)&&!i.done&&i.dueDate&&dCount(i.dueDate)<0)over++;});
     var p=tot?done/tot:0,title=off===0?"Done today":off<0?"Done on "+hmLabel(ds):"Planned for "+hmLabel(ds);
-    return '<div class="hm-hero-h"><h3>'+title+'</h3><span>Full list &rarr;</span></div>'+
+    return '<div class="hm-hero-h"><h3 aria-level="2">'+title+'</h3><span>Full list &rarr;</span></div>'+
       '<div class="hm-gauge">'+hmArc(p,HM_ROWS_HERO,200,112,100,100)+'<div class="mid"><b class="of">'+(tot?done+" of "+tot:"-")+'</b><small>'+(tot?(off===0&&done===tot?"Day complete":off===0?"done today":"done"):"nothing due")+'</small></div></div>'+
       '<div class="hm-cons"><span><b>'+(con==null?"-":con+"%")+'</b> consistency, last 30 days</span><span class="hm-spark" aria-hidden="true">'+_hmCons.spark+'</span></div>'+(off===0&&tot>0&&done===tot?'<i class="hm-done-flag" hidden></i>':'');
   }
@@ -2708,9 +2714,9 @@
     var c=p.c,i=c.i,now=Date.now(),t=new Date(c.ts),hhmm=String(t.getHours()).padStart(2,"0")+":"+String(t.getMinutes()).padStart(2,"0");
     var when=p.reached?"target reached":p.late?hmMins(now-c.ts)+" late":"in "+hmMins(c.ts-now);
     var at=c.fast?(p.reached?"":"ends "+fmtTime(hhmm)):fmtTime(hhmm);
-    var btn=c.fast?'<button class="hm-nbtn" data-fastend="'+i.id+'">End fast</button>':
+    var btn=c.fast?'<button class="hm-nbtn quiet" data-fastend="'+i.id+'">End fast</button>':
             i.kind==="measure"?'<button class="hm-nbtn" data-measure="'+i.id+'">Log</button>':
-            '<button class="hm-nbtn" data-toggle="'+i.id+'">'+(i.kind==="med"?"Taken":"Done")+'</button>';
+            '<button class="hm-nbtn" data-toggle="'+i.id+'">'+(i.kind==="med"?"Taken":"Mark done")+'</button>';
     return '<div class="hm-nbody" data-open="'+i.id+'"><div class="hm-nmeta"><b>Up next</b>'+(at?'<em>'+esc(at)+'</em>':'')+'<span'+(p.late?' class="late"':'')+'>'+esc(when)+'</span></div><h2>'+esc(i.title)+'</h2></div>'+btn;
   }
 
@@ -2858,7 +2864,7 @@
   function patternsExtra(){
     var con=consistency(30);
     /* ===== SIDE column: consistency, then the rest of what used to live on Home ===== */
-    var side='<div class="panel hm-cal"><div class="hm-cal-h"><h4>Consistency</h4><div class="hm-cal-r"><span><b>'+(con==null?"-":con+"%")+'</b> last 30 days</span><button class="mini-toggle'+(calDates?" on":"")+'" data-caldates>'+(calDates?"Hide dates":"Show dates")+'</button></div></div>'+calendarPanel(4,true)+'</div>';
+    var side='<div class="panel hm-cal"><div class="hm-cal-h"><h4 aria-level="2">Day by day</h4><div class="hm-cal-r"><span><b>'+(con==null?"-":con+"%")+'</b> last 30 days</span><button class="mini-toggle'+(calDates?" on":"")+'" data-caldates>'+(calDates?"Hide dates":"Show dates")+'</button></div></div>'+calendarPanel(4,true)+'</div>';
     side+=fastHomeCard();
     var rf=reflection();if(rf)side+='<div class="reflect"><p class="q">'+rf.q+'</p><p>'+esc(rf.p)+'</p></div>';
     var pb=(state.probeHide?null:pendingProbe());
@@ -2946,7 +2952,7 @@
     if(i.kind==="med")return d?"Taken, tap to undo: "+t:"Mark "+t+" taken";
     return d?"Done, tap to undo: "+t:"Mark "+t+" done";
   }
-  function itemRow(i,opts){opts=opts||{};var complete=doneForNow(i);var cc=countOn(i,today());var st;
+  function itemRow(i,opts){opts=opts||{};var dsR=opts.ds||today(),isT=dsR===today(),pastR=dCount(dsR)<0;var complete=isT?doneForNow(i):(pastR?creditOn(i,dsR)>=1:false);var cc=isT?countOn(i,today()):(pastR?countOn(i,dsR):0);var st;
     var stance=stanceOf(i);var pd=Math.max(1,normOf(i).max||perDayOf(i));
     var isDone=complete&&isRoutine(i)&&(i.kind==="todo"||i.kind==="measure"||i.kind==="med");
     var h='<div class="row '+(isDone?"done":"")+'" data-open="'+i.id+'">';
@@ -2966,7 +2972,7 @@
     else h+='<span class="tick" style="border-style:dashed">↻</span>';
 
     h+='<div class="rb"><div class="rt"><button class="rtb" data-open="'+i.id+'">'+esc(i.title)+'</button>'+(i.private?LOCK:"")+(i.localOnly?'<span class="flagpill" style="margin-left:7px">this device</span>':"")+'</div><div class="rmeta">';
-    var ct=(complete&&isRoutine(i))?completionTime(i,today()):null;
+    var ct=(complete&&isRoutine(i))?completionTime(i,dsR):null;
     if(ct)h+='<span class="time accent">'+(i.kind==="med"?"taken ":"done ")+esc(fmtTime(ct))+'</span>';
 
     if(isEpisode(i)){
@@ -3002,7 +3008,7 @@
     if(opts.area){var c=Store.get("cats",i.catId);if(c)h+='<span class="pill" style="color:'+esc(c.color)+'">'+esc(c.name)+'</span>';}
     h+='</div></div><div class="rright">';
     if(isEpisode(i)){h+='<button class="mini-btn" data-ep="'+i.id+'">'+(activeEp(i)?"It\'s over":"Start")+'</button>';}
-    else if(i.kind==="upkeep"&&isRoutine(i)){var d4=dCount(nextDue(i));h+='<span class="days '+(d4<=0?"bad":d4<=7?"warn":"ok")+'">'+(d4<=0?"now":d4+"d")+'</span><button class="mini-btn" data-reset="'+i.id+'">'+(i.mode==="rebuy"?"Bought":"Done")+'</button>';}
+    else if(i.kind==="upkeep"&&isRoutine(i)){var d4=dCount(nextDue(i));h+='<span class="days '+(d4<=0?"bad":d4<=7?"warn":"ok")+'">'+(d4<=0?"now":d4+"d")+'</span><button class="mini-btn" data-reset="'+i.id+'">'+(i.mode==="rebuy"?"Bought":"Mark done")+'</button>';}
     else if(i.kind==="med"&&isRoutine(i))h+='<button class="mini-btn" data-restock="'+i.id+'">Restock</button>';
     else if(i.kind==="measure"){var tv=(i.values||{})[today()];h+='<span class="mval"><b class="'+(complete?"hit":"")+'">'+(tv!=null?tv:"-")+'</b><small>'+esc(i.unit||"")+'</small></span>';}
     else h+=avatarStack(i.assignees,3);
@@ -3043,13 +3049,13 @@
       h+='<div class="dayfilter"><button class="df-back" data-hmback>&larr; Home</button><span>Showing <b>'+_dl+'</b></span><button class="df-add" data-action="add-day" data-date="'+ds+'">+ Add</button><button class="df-all" data-hmall>Show all</button></div>';
       h+='<div class="sec-h"><h2>'+_dl+'</h2><span class="meta">'+due.length+'</span><span class="line"></span><span class="meta">most important first</span></div>';
       if(!due.length)h+='<div class="cat-empty">Nothing due for this day.</div>';
-      else{h+='<div class="card">';due.slice().sort(hmListSort).forEach(function(i){h+=itemRow(i,{area:true});});h+='</div>';}
+      else{h+='<div class="card">';due.slice().sort(hmListSort).forEach(function(i){h+=itemRow(i,{area:true,ds:ds});});h+='</div>';}
       return h;
     }
     if(!state.dayDomain||state.dayDomain==="todo")h+='<div class="sec-h"><h2>To-do list</h2><span class="meta">'+loose.length+'</span><span class="line"></span><button class="add" data-action="add-day" data-date="'+ds+'">+ add</button></div>';
-    if(!state.dayDomain||state.dayDomain==="todo"){if(!loose.length)h+='<div class="cat-empty">Nothing on the list for this day.</div>';else{h+='<div class="card">';loose.slice().sort(itemSort).forEach(function(i){h+=itemRow(i);});h+='</div>';}}
+    if(!state.dayDomain||state.dayDomain==="todo"){if(!loose.length)h+='<div class="cat-empty">Nothing on the list for this day.</div>';else{h+='<div class="card">';loose.slice().sort(itemSort).forEach(function(i){h+=itemRow(i,{ds:ds});});h+='</div>';}}
     var byCat={},corder=[];rest.forEach(function(i){if(!byCat[i.catId]){byCat[i.catId]=[];corder.push(i.catId);}byCat[i.catId].push(i);});
-    corder.forEach(function(cid){var c=Store.get("cats",cid);if(!c)return;h+='<div class="sec-h"><h2 style="font-size:16px"><i class="adot" style="background:'+esc(c.color)+'"></i>'+esc(c.name)+'</h2><span class="line"></span></div><div class="card">';byCat[cid].slice().sort(itemSort).forEach(function(i){h+=itemRow(i);});h+='</div>';});
+    corder.forEach(function(cid){var c=Store.get("cats",cid);if(!c)return;h+='<div class="sec-h"><h2 style="font-size:16px"><i class="adot" style="background:'+esc(c.color)+'"></i>'+esc(c.name)+'</h2><span class="line"></span></div><div class="card">';byCat[cid].slice().sort(itemSort).forEach(function(i){h+=itemRow(i,{ds:ds});});h+='</div>';});
     if(!due.length)h+='<div class="empty"><h3>Clear day</h3><p>Nothing scheduled.</p></div>';
     return h;
   }
@@ -3080,7 +3086,7 @@
       h+='<div class="stat-row"><div class="statbox"><b>'+(fastAvg(i)||"-")+'</b><small>average hours</small></div>'+
         '<div class="statbox good"><b>'+(dn.length?Math.round(fastBest(i)*10)/10:"-")+'</b><small>longest</small></div>'+
         '<div class="statbox"><b>'+dn.filter(function(f){return dCount(fmt(new Date(f.s)))>-7}).length+'</b><small>this week</small></div></div>';
-      h+='<div class="panel"><h4>Recent fasts</h4>';
+      h+='<div class="panel"><h4 aria-level="2">Recent fasts</h4>';
       if(!dn.length)h+='<p class="kicker" style="color:var(--muted)">Nothing logged yet. Start one when you finish eating, end it when you eat again.</p>';
       else dn.slice(0,14).forEach(function(f){
         var hh=fastHours(f),tg=f.target||ftg,st=new Date(f.s);
@@ -3105,7 +3111,7 @@
       h+='<div class="stat-row"><div class="statbox"><b>'+(all2.length?epDays(all2[0]):"-")+'</b><small>'+(A?"days so far":"last one, days")+'</small></div>'+
         '<div class="statbox"><b>'+(epAvg(i)||"-")+'</b><small>usual length</small></div>'+
         '<div class="statbox"><b>'+(longest||"-")+'</b><small>longest</small></div></div>';
-      h+='<div class="panel"><h4>Every time this happened</h4>';
+      h+='<div class="panel"><h4 aria-level="2">Every time this happened</h4>';
       if(!all2.length)h+='<p class="kicker" style="color:var(--muted)">Nothing yet. Tap Start when it begins and It\'s over when it goes, Ritsu keeps the length so you learn what normal looks like for you.</p>';
       else{h+='<div class="noticed">';
         all2.forEach(function(e){
@@ -3138,7 +3144,7 @@
       h+='<div class="stat-row"><div class="statbox '+(st>0?"flame":"")+'"><b>'+(st>0?st:best)+'</b><small>'+(st>0?"current streak":"best streak")+'</small></div><div class="statbox"><b>'+Math.round(dn/d30*100)+'%</b><small>last 30 days</small></div><div class="statbox good"><b>'+dn+'</b><small>days in 30</small></div></div>';
       if(st===0&&best>1)h+='<p class="kicker" style="color:var(--muted);margin:-6px 0 14px">Best run was '+best+' days, back to it today.</p>';
     }
-    if(i.kind==="measure"){var tv=(i.values||{})[today()];h+='<div class="panel" style="display:flex;align-items:center;justify-content:space-between;gap:12px"><div><b>Today:</b> '+(tv!=null?tv:"-")+' '+esc(i.unit||"")+' <span style="color:var(--faint)">/ '+(i.target||0)+'</span></div><button class="btn primary sm" data-measure="'+i.id+'">Log today</button></div><div class="panel"><h4>Last 14 days</h4><div class="mbars">';var mx=i.target||1;for(var m=13;m>=0;m--){var v0=(i.values||{})[addDaysStr(today(),-m)];if(v0>mx)mx=v0;}for(var mm=13;mm>=0;mm--){var d2=addDaysStr(today(),-mm);var vv=(i.values||{})[d2];var hh=vv!=null?Math.max(3,Math.round(vv/mx*50)):2;var dd2=new Date(d2+"T00:00:00");h+='<div class="mb"><i class="'+(measureHit(i,d2)?"hit":"")+'" style="height:'+hh+'px"></i><small>'+dd2.getDate()+'</small></div>';}h+='</div></div>';}
+    if(i.kind==="measure"){var tv=(i.values||{})[today()];h+='<div class="panel" style="display:flex;align-items:center;justify-content:space-between;gap:12px"><div><b>Today:</b> '+(tv!=null?tv:"-")+' '+esc(i.unit||"")+' <span style="color:var(--faint)">/ '+(i.target||0)+'</span></div><button class="btn primary sm" data-measure="'+i.id+'">Log today</button></div><div class="panel"><h4 aria-level="2">Last 14 days</h4><div class="mbars">';var mx=i.target||1;for(var m=13;m>=0;m--){var v0=(i.values||{})[addDaysStr(today(),-m)];if(v0>mx)mx=v0;}for(var mm=13;mm>=0;mm--){var d2=addDaysStr(today(),-mm);var vv=(i.values||{})[d2];var hh=vv!=null?Math.max(3,Math.round(vv/mx*50)):2;var dd2=new Date(d2+"T00:00:00");h+='<div class="mb"><i class="'+(measureHit(i,d2)?"hit":"")+'" style="height:'+hh+'px"></i><small>'+dd2.getDate()+'</small></div>';}h+='</div></div>';}
     var bf=scannable(i);
     /* colour encodes meaning, not category, filled means something different per stance */
     var cell=function(ds){
@@ -3154,12 +3160,12 @@
         ? '<span><i></i>nothing logged</span><span><i style="background:var(--good)"></i>in usual range</span><span><i style="background:var(--gold)"></i>outside it</span><span><i style="background:var(--rust)"></i>flagged</span>'
         : '<span><i></i>missed</span><span><i style="background:var(--accent)"></i>done</span>';
 
-    h+='<div class="panel"><h4>This week</h4><div class="dots7">';
+    h+='<div class="panel"><h4 aria-level="2">This week</h4><div class="dots7">';
     for(var w=6;w>=0;w--){var ds2=addDaysStr(today(),-w);var dd3=new Date(ds2+"T00:00:00");var cl2=cell(ds2);var c3=countOn(i,ds2);
       h+='<div class="dot7" '+(bf?'data-backfill="'+i.id+'|'+ds2+'"':'')+'><span class="d '+cl2+'">'+(c3>0?(c3>1?c3:(isLimit(i)?"1":"✓")):"")+'</span><small>'+DOW[dd3.getDay()].slice(0,2)+'</small></div>';}
     h+='</div>'+(bf?'<p class="kicker" style="color:var(--muted);margin-top:10px">Tap a day to fix a missed log.</p>':'')+'</div>';
 
-    h+='<div class="panel"><h4>History</h4><div class="heat">';var start=new Date(today()+"T00:00:00");var back=start.getDay()+70;
+    h+='<div class="panel"><h4 aria-level="2">History</h4><div class="heat">';var start=new Date(today()+"T00:00:00");var back=start.getDay()+70;
     for(var col=0;col<11;col++){h+='<div class="heatcol">';for(var row=0;row<7;row++){var idx=col*7+row;var dd4=new Date(start);dd4.setDate(dd4.getDate()-back+idx);var s3=fmt(dd4);var fut=dCount(s3)>0;
       h+='<div class="heatcell '+cell(s3)+(fut?" fut":"")+'" '+(!fut&&bf?'data-backfill="'+i.id+'|'+s3+'"':'')+' title="'+s3+(countOn(i,s3)?" · "+countOn(i,s3)+"×":"")+'"></div>';}h+='</div>';}
     h+='</div><div class="heatlbl"><span>~10 weeks ago</span><span>today</span></div><div class="heatlegend">'+legend+'</div></div>';
@@ -3171,7 +3177,7 @@
       for(var q3=0;q3<90;q3++){var ds3=addDaysStr(today(),-q3);
         flagsOn(i,ds3).forEach(function(f){if(!grp[f])grp[f]=[];grp[f].push(ds3);tot90++;});}
       var gk=Object.keys(grp).sort(function(a,b){return (SEVRANK[mkInfo(b).s]-SEVRANK[mkInfo(a).s])||grp[b].length-grp[a].length});
-      h+='<div class="panel"><h4>What you noticed</h4>';
+      h+='<div class="panel"><h4 aria-level="2">What you noticed</h4>';
       if(!gk.length)h+='<p class="kicker" style="color:var(--muted)">Nothing flagged in the last 90 days. Log one, then tap a chip in the strip that appears.</p>';
       else{h+='<div class="noticed">';gk.forEach(function(f){var m=mkInfo(f);var ds4=grp[f].slice(0,6).map(function(d){var dd=new Date(d+"T00:00:00");return MON[dd.getMonth()]+" "+dd.getDate()});
         h+='<div class="nrow"><span class="flagpill '+SEVCLS[m.s]+'">'+esc(m.s)+'</span><div class="nb"><b>'+esc(m.n)+'</b><small>'+ds4.join(" · ")+(grp[f].length>6?" +"+(grp[f].length-6)+" more":"")+'</small></div><span class="n">'+grp[f].length+'×</span></div>';});
@@ -3179,7 +3185,7 @@
       h+='</div>';
     }
     var freq=[0,0,0,0,0,0,0],dates=[];if(i.kind==="measure"){for(var kk in(i.values||{}))if(measureHit(i,kk))dates.push(kk);}else if(i.kind==="todo"){dates=Object.keys(i.counts||{}).filter(function(x){return i.counts[x]>0});}else dates=(i.log||[]);dates.forEach(function(x){freq[new Date(x+"T00:00:00").getDay()]++;});var fmax=Math.max(1,Math.max.apply(null,freq));
-    h+='<div class="panel"><h4>'+(isLimit(i)?"Which days it happens":isBody(i)?"Which days you log it":"Which days you do it")+'</h4><div class="freq">';for(var f=1;f<=7;f++){var di=f%7;h+='<div class="freqbar"><div class="fb" style="height:'+Math.max(3,Math.round(freq[di]/fmax*66))+'px"></div><small>'+DOW[di][0]+'</small></div>';}h+='</div></div>';
+    h+='<div class="panel"><h4 aria-level="2">'+(isLimit(i)?"Which days it happens":isBody(i)?"Which days you log it":"Which days you do it")+'</h4><div class="freq">';for(var f=1;f<=7;f++){var di=f%7;h+='<div class="freqbar"><div class="fb" style="height:'+Math.max(3,Math.round(freq[di]/fmax*66))+'px"></div><small>'+DOW[di][0]+'</small></div>';}h+='</div></div>';
     h+=assignPanel(i);return h;
   }
   function itemSubtitle(i){if(isFast(i))return "Fasting \u00b7 "+protoLabel(targetOf(i));if(isEpisode(i))return "Episode, starts, runs, ends";if(isLimit(i))return "Holding off, "+esc(rangeLabel(i));if(isBody(i))return "Body, "+esc(rangeLabel(i));if(i.kind==="measure")return "Goal "+(i.target||0)+" "+esc(i.unit||"")+" · daily";if(i.kind==="med")return "Medication · "+(i.dosesPerDay||1)+"/day";if(i.kind==="upkeep")return (i.mode==="rebuy"?"Rebuy":"Replace")+" every "+(i.intervalDays||30)+" days";if(i.kind==="todo")return isRepeat(i)?(esc(repeatLabel(i.repeatEvery))+(perDayOf(i)>1?" · "+perDayOf(i)+"×/day":"")):"One-off task";return ""}
@@ -3237,10 +3243,10 @@
   function viewMedReport(medId){
     var meds=visibleItems().filter(function(i){return i.kind==="med"});
     var i=medId?Store.get("items",medId):meds[0];
-    if(!i||i.kind!=="med")return '<button class="back" data-nav="reports">Back</button><div class="empty"><h3>No medications yet</h3><p>Add a medication in an area, then its report shows up here.</p></div>';
+    if(!i||i.kind!=="med")return '<button class="back" data-nav="reports">Back to Patterns</button><div class="empty"><h3>No medications yet</h3><p>Add a medication in an area, then its report shows up here.</p></div>';
     var period=state.medPeriod||30;
     var days=medDays(i,period);
-    if(!days.length)return '<button class="back" data-nav="reports">Back</button><div class="empty"><h3>Nothing logged yet</h3><p>Once you start logging '+esc(i.title)+', its report fills in.</p></div>';
+    if(!days.length)return '<button class="back" data-nav="reports">Back to Patterns</button><div class="empty"><h3>Nothing logged yet</h3><p>Once you start logging '+esc(i.title)+', its report fills in.</p></div>';
     var past=days.filter(function(d){return d.past;});
     var takenAll=days.filter(function(d){return d.taken;});
     var takenPast=past.filter(function(d){return d.taken;});
@@ -3262,7 +3268,7 @@
     h+='<div class="listtabs" style="display:flex;width:100%;margin:12px 0 14px">'+[[7,"7 days"],[30,"30 days"],[90,"Course"]].map(function(o){return '<button style="flex:1" class="'+(period===o[0]?"on":"")+'" data-medperiod="'+o[0]+'">'+o[1]+'</button>';}).join("")+'</div>';
     h+='<div class="mr-hero"><div class="mr-hcard"><div class="mr-lab">Adherence</div><div class="mr-big">'+adh+'%</div><div class="mr-sub">'+dosesTaken+' of '+dosesTotal+' doses taken</div><div class="mr-adh"><i style="width:'+adh+'%"></i></div></div>';
     h+='<div class="mr-hcard"><div class="mr-lab">Average time</div><div class="mr-big">'+(avg!=null?fmtTime(hmFromMin(avg)):"-")+'</div><div class="mr-sub">'+(dev!=null?"give or take "+dev+" min":"no times logged")+'</div></div></div>';
-    h+='<div class="card"><div class="card-h" style="display:flex;justify-content:space-between;align-items:baseline"><h4 style="margin:0">When you take it</h4>'+(win?'<span style="font-size:11.5px;color:var(--faint)">usual '+fmtTime(hmFromMin(win.lo))+" to "+fmtTime(hmFromMin(win.hi))+'</span>':"")+'</div><p style="font-size:12px;color:var(--muted);margin:6px 0 12px;line-height:1.5">Each dot is one day at the time you logged it. The band is your usual window; a cross is a missed day.</p>'+medChart(days,win)+'<div class="mr-leg"><span><i style="background:var(--good)"></i>in window</span><span><i style="background:var(--gold)"></i>outside window</span><span><i class="x" style="background:var(--rust)"></i>missed</span></div></div>';
+    h+='<div class="card"><div class="card-h" style="display:flex;justify-content:space-between;align-items:baseline"><h4 aria-level="2" style="margin:0">When you take it</h4>'+(win?'<span style="font-size:11.5px;color:var(--faint)">usual '+fmtTime(hmFromMin(win.lo))+" to "+fmtTime(hmFromMin(win.hi))+'</span>':"")+'</div><p style="font-size:12px;color:var(--muted);margin:6px 0 12px;line-height:1.5">Each dot is one day at the time you logged it. The band is your usual window; a cross is a missed day.</p>'+medChart(days,win)+'<div class="mr-leg"><span><i style="background:var(--good)"></i>in window</span><span><i style="background:var(--gold)"></i>outside window</span><span><i class="x" style="background:var(--rust)"></i>missed</span></div></div>';
     h+='<div class="mr-grid">'+
       '<div class="mr-sc"><div class="k">In-window rate</div><div class="v">'+(takenAll.length?Math.round(inWinCount/takenAll.length*100):0)+'<small>%</small></div></div>'+
       '<div class="mr-sc"><div class="k">Longest run, no miss</div><div class="v">'+best+' <small>days</small></div></div>'+
@@ -3294,24 +3300,24 @@
     var bmax=Math.max(1,Math.max.apply(null,buckets));var labels=[];if(per==="week"){for(var w=6;w>=0;w--)labels.push(DOW[new Date(addDaysStr(today(),-w)+"T00:00:00").getDay()][0]);}else if(per==="month")labels=["W1","W2","W3","W4"];else{var mn=new Date().getMonth();for(var mm=11;mm>=0;mm--)labels.push(MON[(mn-mm+12)%12][0]);}
     var tod=[0,0,0,0];inRange.forEach(function(c){if(!c.t)return;var h2=parseInt(c.t,10);if(h2<6)tod[3]++;else if(h2<12)tod[0]++;else if(h2<18)tod[1]++;else tod[2]++;});
     var h='<div class="day-h"><div class="d"><p class="kicker">Look back</p><h1 class="title" style="font-size:32px">Patterns</h1></div><div class="rtabs">'+["week","month","year"].map(function(p){return '<button class="'+(per===p?"on":"")+'" data-report="'+p+'">'+p+'</button>'}).join("")+'</div></div>';
-    var conR=consistency(per==="week"?7:30);
+    var conR=consistency(per==="week"?7:per==="year"?365:30);
     var adh=null,adhI=all.filter(function(i){return i.kind==="med"&&isRoutine(i)})[0];
     if(adhI){var am=0,ad=per==="week"?7:30;for(var qa=0;qa<ad;qa++)if(didOn(adhI,addDaysStr(today(),-qa)))am++;adh=Math.round(am/ad*100);}
-    h+='<div class="hm-hero rep-hero"><div class="hm-hero-h"><h3>Consistency</h3><span>'+(per==="week"?"last 7 days":"last 30 days")+'</span></div><div class="hm-gauge">'+hmArc(conR==null?0:conR/100,HM_ROWS_HERO,200,112,100,100)+'<div class="mid"><b>'+(conR==null?"-":conR+"%")+'</b><small>of the daily routine</small></div></div><div class="hm-facts f2"><div><b>'+total+'</b><small>things logged</small></div><div><b>'+(adh!=null?adh+"%":(avgSleep!=null?avgSleep+"h":"-"))+'</b><small>'+(adh!=null?"meds taken":"avg sleep")+'</small></div></div></div>';
+    h+='<div class="hm-hero rep-hero"><div class="hm-hero-h"><h3>Consistency</h3><span>'+(per==="week"?"last 7 days":per==="year"?"last 12 months":"last 30 days")+'</span></div><div class="hm-gauge">'+hmArc(conR==null?0:conR/100,HM_ROWS_HERO,200,112,100,100)+'<div class="mid"><b>'+(conR==null?"-":conR+"%")+'</b><small>of the daily routine</small></div></div><div class="hm-facts f2"><div><b>'+total+'</b><small>things logged</small></div><div><b>'+(adh!=null?adh+"%":(avgSleep!=null?avgSleep+"h":"-"))+'</b><small>'+(adh!=null?"meds taken":"avg sleep")+'</small></div></div></div>';
     h+=patternsExtra();
     var _meds=all.filter(function(mi){return mi.kind==="med"});
     if(_meds.length){h+='<div class="sec-h"><h2>Medication</h2><span class="line"></span><span class="meta">'+_meds.length+'</span></div><div class="panel" style="padding:2px 16px">';
       _meds.forEach(function(mi){var _l=lastDoneOf(mi);h+='<button class="medlink" data-medreport="'+mi.id+'"><span class="ml-i">'+PILL_SVG+'</span><span class="ml-d"><b>'+esc(mi.title)+'</b><small>'+((mi.dosesPerDay||1))+' daily'+(_l?", last "+dayShort(_l):"")+'</small></span><span class="ml-go">\u203A</span></button>';});
       h+='</div>';}
-    h+='<div class="panel"><h4>Activity, this '+per+'</h4><div class="bars">';for(var b=0;b<nb;b++)h+='<div class="b"><i class="'+(buckets[b]<bmax*0.4?"low":"")+'" style="height:'+Math.max(4,Math.round(buckets[b]/bmax*100))+'%"></i><small>'+esc(labels[b]||"")+'</small></div>';h+='</div></div>';
-    h+='<div class="panel"><h4>When you get things done</h4><div class="tod"><div class="t"><b>'+tod[0]+'</b><small>Morning</small></div><div class="t"><b>'+tod[1]+'</b><small>Afternoon</small></div><div class="t"><b>'+tod[2]+'</b><small>Evening</small></div><div class="t"><b>'+tod[3]+'</b><small>Night</small></div></div></div>';
+    h+='<div class="panel"><h4 aria-level="2">Activity, this '+per+'</h4><div class="bars">';for(var b=0;b<nb;b++)h+='<div class="b"><i class="'+(buckets[b]<bmax*0.4?"low":"")+'" style="height:'+Math.max(4,Math.round(buckets[b]/bmax*100))+'%"></i><small>'+esc(labels[b]||"")+'</small></div>';h+='</div></div>';
+    h+='<div class="panel"><h4 aria-level="2">When you get things done</h4><div class="tod"><div class="t"><b>'+tod[0]+'</b><small>Morning</small></div><div class="t"><b>'+tod[1]+'</b><small>Afternoon</small></div><div class="t"><b>'+tod[2]+'</b><small>Evening</small></div><div class="t"><b>'+tod[3]+'</b><small>Night</small></div></div></div>';
     /* ---- episodes: how long the last one ran ---- */
     var epItems=all.filter(isEpisode);
     if(epItems.length){
       var rows=[];
       epItems.forEach(function(i){epsOf(i).forEach(function(e){
         var endD=e.end||today();if(dCount(endD)>-(per==="week"?7:per==="month"?30:365))rows.push({i:i,e:e});});});
-      h+='<div class="panel"><h4>Episodes</h4>';
+      h+='<div class="panel"><h4 aria-level="2">Episodes</h4>';
       if(!rows.length)h+='<p class="kicker" style="color:var(--muted)">Nothing running, and none ended this '+per+'.</p>';
       else rows.sort(function(a,b){return dCount(b.e.start)-dCount(a.e.start)}).slice(0,8).forEach(function(r){
         var av=epAvg(r.i);var d0=epDays(r.e);
@@ -3326,7 +3332,7 @@
     var win=per==="week"?7:30;
     var finds=patternScan(win);
     var shown=finds.filter(function(r){return per==="week"?(LV[r.level]>=2||r.type==="slip"):LV[r.level]>=1});
-    h+='<div class="panel"><h4>Patterns to watch</h4>';if(per!=="week")h+='<p class="kicker" style="color:var(--muted);margin:2px 0 10px">Looking at the last '+win+' days.</p>';
+    h+='<div class="panel"><h4 aria-level="2">Patterns to watch</h4>';if(per!=="week")h+='<p class="kicker" style="color:var(--muted);margin:2px 0 10px">Looking at the last '+win+' days.</p>';
     if(!shown.length)h+='<p class="kicker" style="color:var(--muted)">Nothing repeating over the last '+win+' days. One odd day on its own stays off this list, only things that keep happening show up here.</p>';
     else{
       shown.slice(0,8).forEach(function(r){
@@ -3982,10 +3988,10 @@
   /* put a fast back to running after ending it by mistake */
   function undoEndFast(id){var i=Store.get("items",id);if(!i)return;var fs=(i.fasts||[]).map(function(f){return Object.assign({},f)});if(fs.some(function(f){return !f.e}))return;var last=null;fs.forEach(function(f){if(f.e&&(!last||f.e>last.e))last=f;});if(last){delete last.e;Store.update("items",id,{fasts:fs});toast("Fast is running again");}}
 
-  function openMeasure(id){var i=Store.get("items",id);if(!i)return;var cur=(i.values||{})[today()];ms={type:"measure",id:id};openModal('<div class="modal-h"><h3>'+esc(i.title)+'</h3><button class="x" data-close>×</button></div><div class="modal-b"><p class="kicker" style="color:var(--muted);margin:0 0 6px">Today · goal '+(i.target||0)+' '+esc(i.unit||"")+'</p><div class="bignum"><input type="number" id="mv" step="any" min="0" value="'+(cur!=null?cur:"")+'" placeholder="0"><span class="u">'+esc(i.unit||"")+'</span></div></div><div class="modal-f">'+(cur!=null?'<button class="btn danger sm" data-clear-measure="'+id+'">Clear</button>':'')+'<span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-measure="'+id+'">Save</button></div>');setTimeout(function(){var e=$("#mv");if(e){e.focus();e.select();}},60);}
+  function openMeasure(id){var i=Store.get("items",id);if(!i)return;var cur=(i.values||{})[today()];ms={type:"measure",id:id};openModal('<div class="modal-h"><h3>'+esc(i.title)+'</h3><button class="x" data-close>×</button></div><div class="modal-b"><p class="kicker" style="color:var(--muted);margin:0 0 6px">Today · goal '+(i.target||0)+' '+esc(i.unit||"")+'</p><div class="bignum"><input type="number" id="mv" step="any" min="0" value="'+(cur!=null?cur:"")+'" placeholder="0"><span class="u">'+esc(i.unit||"")+'</span></div></div><div class="modal-f">'+(cur!=null?'<button class="btn danger sm" data-clear-measure="'+id+'">Clear</button>':'')+'<span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-measure="'+id+'">Save reading</button></div>');setTimeout(function(){var e=$("#mv");if(e){e.focus();e.select();}},60);}
   function saveMeasure(id){var i=Store.get("items",id);if(!i)return;var val=parseFloat(($("#mv")||{}).value);var vals=Object.assign({},i.values||{});var times=Object.assign({},i.logTimes||{});if(isNaN(val)){delete vals[today()];delete times[today()];}else{vals[today()]=val;times[today()]=nowHM();}Store.update("items",id,{values:vals,lastDone:today(),logTimes:times});closeModal();}
   function clearMeasure(id){var i=Store.get("items",id);if(!i)return;var vals=Object.assign({},i.values||{});delete vals[today()];Store.update("items",id,{values:vals});closeModal();}
-  function openRestock(id){var i=Store.get("items",id);if(!i)return;ms={type:"restock",id:id};openModal('<div class="modal-h"><h3>Restock '+esc(i.title)+'</h3><button class="x" data-close>×</button></div><div class="modal-b"><p class="kicker" style="color:var(--muted);margin:0 0 6px">You have '+(i.stock||0)+' pills. How many did you add?</p><div class="bignum"><input type="number" id="rs" min="0" step="1" placeholder="30"><span class="u">pills</span></div><label class="toggle-line" style="margin-top:10px"><input type="checkbox" id="rs-set"> Set the total instead of adding</label></div><div class="modal-f"><span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-restock="'+id+'">Save</button></div>');setTimeout(function(){var e=$("#rs");if(e)e.focus();},60);}
+  function openRestock(id){var i=Store.get("items",id);if(!i)return;ms={type:"restock",id:id};openModal('<div class="modal-h"><h3>Restock '+esc(i.title)+'</h3><button class="x" data-close>×</button></div><div class="modal-b"><p class="kicker" style="color:var(--muted);margin:0 0 6px">You have '+(i.stock||0)+' pills. How many did you add?</p><div class="bignum"><input type="number" id="rs" min="0" step="1" placeholder="30"><span class="u">pills</span></div><label class="toggle-line" style="margin-top:10px"><input type="checkbox" id="rs-set"> Set the total instead of adding</label></div><div class="modal-f"><span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-restock="'+id+'">Save restock</button></div>');setTimeout(function(){var e=$("#rs");if(e)e.focus();},60);}
   function saveRestock(id){var i=Store.get("items",id);if(!i)return;var n=parseInt(($("#rs")||{}).value,10);if(isNaN(n)){closeModal();return;}var set=$("#rs-set")&&$("#rs-set").checked;Store.update("items",id,{stock:Math.max(0,set?n:(i.stock||0)+n)});closeModal();toast("Restocked");}
 
   /* ===== typing a sentence: "call alex tom at 5 in the evening" =====
@@ -4219,7 +4225,7 @@
   function qpClose(){var L=$("#qlayer");if(L)L.classList.remove("show");qp=null;var t=$("#q-title");if(t&&ms&&ms.type==="quick")t.focus()}
   function qpList(kind,title,rows,cur){
     qp={kind:kind};
-    qpOpen('<h4>'+title+'</h4><div class="qp-list" role="listbox" aria-label="'+title+'">'+rows.map(function(r){var on=String(r[0])===String(cur);
+    qpOpen('<h4 aria-level="2">'+title+'</h4><div class="qp-list" role="listbox" aria-label="'+title+'">'+rows.map(function(r){var on=String(r[0])===String(cur);
       return '<button type="button" role="option" aria-selected="'+on+'" class="'+(on?"on":"")+'" data-qp="pick" data-v="'+r[0]+'"><span>'+r[1]+'</span>'+(r[2]?'<em>'+esc(r[2])+'</em>':"")+(on?qi("ck"):"")+'</button>'}).join("")+'</div>');
   }
   function qpDate(){
@@ -4265,7 +4271,7 @@
     if(cur){var s=cur.split(":");hh=+s[0];mm=+s[1]}
     else{var n=new Date(),up=Math.ceil((n.getHours()*60+n.getMinutes()+1)/30)*30;hh=Math.floor(up/60)%24;mm=up%60}
     qp={kind:"time",done:done,h:hh%12||12,m:mm,pm:hh>=12};
-    qpOpen('<h4>Select time</h4><div class="qp-read" id="qp-read" aria-live="polite"></div>'+
+    qpOpen('<h4 aria-level="2">Select time</h4><div class="qp-read" id="qp-read" aria-live="polite"></div>'+
       '<div class="wh"><div class="wh-col" data-w="h" tabindex="0" role="listbox" aria-label="Hour"></div><div class="wh-sep">:</div><div class="wh-col" data-w="m" tabindex="0" role="listbox" aria-label="Minute"></div><div class="wh-col wh-p" data-w="p" tabindex="0" role="listbox" aria-label="AM or PM"></div></div>'+
       '<div class="qp-presets">'+[["08:00","Morning"],["12:00","Noon"],["18:00","Evening"],["21:00","Night"]].map(function(o){return '<button type="button" class="qa-chip" data-qp="preset" data-v="'+o[0]+'">'+o[1]+' <span>'+fmtTime(o[0])+'</span></button>'}).join("")+'</div>'+
       '<div class="qp-foot"><button type="button" class="qp-link" data-qp="timenone">No time</button><span class="spacer"></span><button type="button" class="qp-link" data-qp="close">Cancel</button><button type="button" class="qp-ok" data-qp="timeok">Set</button></div>');
@@ -4373,7 +4379,7 @@
       .map(function(o){return '<button type="button" class="seeopt '+(see===o[0]?"on":"")+'" data-see="'+o[0]+'"><span class="rad"></span><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></button>'}).join("")+
       '</div></div>';
     if(!ms.id)h+='</div>';
-    h+='</div><div class="modal-f">'+(ms.id?'<button class="btn danger sm" data-del-item="'+ms.id+'">Delete</button>':'')+'<span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-item>'+(ms.id?"Save":"Add")+'</button></div>';
+    h+='</div><div class="modal-f">'+(ms.id?'<button class="btn danger sm" data-del-item="'+ms.id+'">Delete</button>':'')+'<span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-item>'+(ms.id?"Save changes":"Add")+'</button></div>';
     openModal(h);
     if(!ms.id){var ti=$("#i-title");if(ti)setTimeout(function(){ti.focus()},60);}}
 
@@ -4440,7 +4446,7 @@
        ["device","Only this device","Never leaves this device. It will not sync, and clearing the browser deletes it."]]
       .map(function(o){return '<button type="button" class="seeopt '+(see===o[0]?"on":"")+'" data-see="'+o[0]+'"><span class="rad"></span><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></button>'}).join("")+
       '</div></div>';
-    h+='</div><div class="modal-f">'+(ms.id?'<button class="btn danger sm" data-del-item="'+ms.id+'">Delete</button>':'')+'<span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-item>'+(ms.id?"Save":"Add")+'</button></div>';
+    h+='</div><div class="modal-f">'+(ms.id?'<button class="btn danger sm" data-del-item="'+ms.id+'">Delete</button>':'')+'<span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-item>'+(ms.id?"Save changes":"Add")+'</button></div>';
     openModal(h);
     if(!ms.id){var ti=$("#i-title");if(ti)setTimeout(function(){ti.focus()},60);}}
   function expectField(d){
@@ -4513,7 +4519,7 @@
     if(ms.id)Store.update("items",ms.id,base);else{base.createdAt=new Date().toISOString();base.createdDate=today();base.order=Date.now();base.owner=state.me||null;Store.add("items",base);}closeModal();}
 
   function openCatEditor(id){var d=id?JSON.parse(JSON.stringify(Store.get("cats",id))):{name:"",emoji:CAT_EMOJIS[0],color:CAT_COLORS[0]};ms={type:"cat",id:id||null,data:d};renderCatModal();}
-  function renderCatModal(){var d=ms.data;openModal('<div class="modal-h"><h3>'+(ms.id?"Edit area":"New area")+'</h3><button class="x" data-close>×</button></div><div class="modal-b"><div class="field"><label>Name</label><input type="text" id="c-name" value="'+esc(d.name)+'" placeholder="e.g. Health"></div><div class="field"><label>Colour</label><div class="swatches" id="c-color">'+CAT_COLORS.map(function(c){return '<button type="button" data-v="'+c+'" class="'+(d.color===c?"on":"")+'" style="background:'+c+';color:'+c+'"></button>'}).join("")+'</div></div><div class="field"><label>Icon</label><div class="icon-row" id="c-icon">'+CAT_ICONS.map(function(n){return '<button type="button" data-v="'+n+'" class="'+((d.icon||catIcon({id:ms.id}))===n?"on":"")+'">'+phicon(n)+'</button>'}).join("")+'</div></div><div class="field"><label>Ring <span class="sub-lbl">(which domain it feeds)</span></label><div class="seg" id="c-domain">'+[["body","Body"],["mind","Mind"],["todo","To-do"]].map(function(o){return '<button type="button" data-v="'+o[0]+'" class="'+(((d.domain||(ms.id?areaDomain(ms.id):"body"))===o[0])?"on":"")+'">'+o[1]+'</button>'}).join("")+'</div></div></div><div class="modal-f">'+(ms.id?'<button class="btn danger sm" data-del-cat="'+ms.id+'">Delete</button>':'')+'<span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-cat>'+(ms.id?"Save":"Create")+'</button></div>');}
+  function renderCatModal(){var d=ms.data;openModal('<div class="modal-h"><h3>'+(ms.id?"Edit area":"New area")+'</h3><button class="x" data-close>×</button></div><div class="modal-b"><div class="field"><label>Name</label><input type="text" id="c-name" value="'+esc(d.name)+'" placeholder="e.g. Health"></div><div class="field"><label>Colour</label><div class="swatches" id="c-color">'+CAT_COLORS.map(function(c){return '<button type="button" data-v="'+c+'" class="'+(d.color===c?"on":"")+'" style="background:'+c+';color:'+c+'"></button>'}).join("")+'</div></div><div class="field"><label>Icon</label><div class="icon-row" id="c-icon">'+CAT_ICONS.map(function(n){return '<button type="button" data-v="'+n+'" class="'+((d.icon||catIcon({id:ms.id}))===n?"on":"")+'">'+phicon(n)+'</button>'}).join("")+'</div></div><div class="field"><label>Ring <span class="sub-lbl">(which domain it feeds)</span></label><div class="seg" id="c-domain">'+[["body","Body"],["mind","Mind"],["todo","To-do"]].map(function(o){return '<button type="button" data-v="'+o[0]+'" class="'+(((d.domain||(ms.id?areaDomain(ms.id):"body"))===o[0])?"on":"")+'">'+o[1]+'</button>'}).join("")+'</div></div></div><div class="modal-f">'+(ms.id?'<button class="btn danger sm" data-del-cat="'+ms.id+'">Delete</button>':'')+'<span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-cat>'+(ms.id?"Save area":"Create area")+'</button></div>');}
   function saveCat(){var d=ms.data;var n=$("#c-name");if(n)d.name=n.value;if(!(d.name||"").trim()){toast("Name it first");return;}var _dom=d.domain||(ms.id?areaDomain(ms.id):"body");if(ms.id)Store.update("cats",ms.id,{name:d.name.trim(),emoji:d.emoji,icon:d.icon||"checklist",domain:_dom,color:d.color});else Store.add("cats",{name:d.name.trim(),emoji:d.emoji,icon:d.icon||"checklist",domain:_dom,color:d.color,order:cats().length});closeModal();}
   function openTagEditor(){var back=(ms&&ms.type==="item")?JSON.parse(JSON.stringify(ms)):null;ms={type:"tag",back:back,data:{name:"",color:TAG_COLORS[Math.floor(Math.random()*TAG_COLORS.length)]}};renderTagModal();}
   function renderTagModal(){var d=ms.data;openModal('<div class="modal-h"><h3>New tag</h3><button class="x" data-close>×</button></div><div class="modal-b"><div class="field"><label>Name</label><input type="text" id="tg-name" value="'+esc(d.name)+'" placeholder="e.g. urgent"></div><div class="field"><label>Colour</label><div class="swatches" id="tg-color">'+TAG_COLORS.map(function(c){return '<button type="button" data-v="'+c+'" class="'+(d.color===c?"on":"")+'" style="background:'+c+';color:'+c+'"></button>'}).join("")+'</div></div></div><div class="modal-f"><span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-tag>Add</button></div>');}
@@ -4538,7 +4544,7 @@
     });
     h+='<div class="field" style="border-top:1px solid var(--line-2);padding-top:18px;margin-top:6px"><label>Or write your own</label><input type="text" id="nf-name" value="'+esc(ms.nf.name)+'" placeholder="e.g. Blood on the tissue"><div class="seg" id="nf-sev" style="margin-top:10px">'+
       SEVLABEL.slice().reverse().map(function(x){return '<button type="button" data-v="'+x[0]+'" class="'+(ms.nf.severity===x[0]?"on":"")+'">'+x[1]+'</button>'}).join("")+'</div></div>';
-    h+='</div><div class="modal-f"><span class="spacer"></span><button class="btn primary" data-save-flag>Add mine</button><button class="btn" data-flagdone>Done</button></div>';
+    h+='</div><div class="modal-f"><span class="spacer"></span><button class="btn primary" data-save-flag>Add mine</button><button class="btn" data-flagdone>Close</button></div>';
     openModal(h);
   }
   function toggleFlagPick(f){
@@ -4674,7 +4680,7 @@
         '<li>Faint, dizzy, confused, or a racing heart means stop and eat. That is not failure, it is the correct response.</li>'+
         '</ul>';
       h2+='<p style="font-size:13px;color:var(--muted);line-height:1.55;margin:14px 0 0">Ritsu records what you log. It cannot tell whether a long fast is safe for you.</p>';
-      h2+='</div><div class="modal-f"><span class="spacer"></span><button class="btn ghost" data-extback>Back</button><button class="btn primary" data-extok="'+ms.askExt+'">I understand</button></div>';
+      h2+='</div><div class="modal-f"><span class="spacer"></span><button class="btn ghost" data-extback>Previous step</button><button class="btn primary" data-extok="'+ms.askExt+'">I understand</button></div>';
       openModal(h2);return;
     }
     var h='<div class="modal-h"><h3>'+(a?"Change this fast\u0027s target":"Fasting window")+'</h3><button class="x" data-close>\u00d7</button></div><div class="modal-b">';
@@ -4686,7 +4692,7 @@
       h+='<button type="button" class="proto '+(cur===pr.h?"on":"")+'" data-protopick="'+pr.h+'"><span class="pn">'+(pr.h>=24?pr.h+"h":pr.h+":"+eat)+'</span><span class="pb"><b>'+pr.n+'</b><small>'+(pr.h>=24?pr.h+" hours, then eat normally":pr.h+" hours fasting \u00b7 "+eat+" hour window")+'</small></span></button>';
     });
     h+='<div class="field" style="margin-top:14px"><label>Or set your own</label><div class="two"><div><input type="number" id="pt-h" min="8" max="96" value="'+cur+'"><div class="hint">hours</div></div><div style="display:flex;align-items:flex-start"><button class="btn primary sm" data-protocustom style="margin-top:2px">Use this</button></div></div></div>';
-    h+='<div class="panel" style="margin-top:16px"><h4>What the stages mean</h4><div class="phaselist">'+
+    h+='<div class="panel" style="margin-top:16px"><h4 aria-level="2">What the stages mean</h4><div class="phaselist">'+
       phasesFor(Math.max(cur,16)).map(function(pz,ix){
         var on=(a&&phaseAt(fastHours(a))===ix);
         return '<div class="plrow '+(on?"on":"")+'"><span class="ph">'+pz[0]+(pz[1]>900?"h+":"-"+pz[1]+"h")+'</span><span class="pd"><b>'+pz[2]+'<span class="evtag '+(pz[4]==="est"?"est":"emg")+'">'+(pz[4]==="est"?"well established":"less settled")+'</span></b><small>'+pz[3]+'</small></span></div>';
@@ -4705,8 +4711,8 @@
   }
   function openPersonEditor(){ms={type:"person",data:{name:"",emoji:PERSON_EMOJIS[0],color:PERSON_COLORS[0]}};renderPersonModal();}
   function renderPersonModal(){var d=ms.data;openModal('<div class="modal-h"><h3>Add person</h3><button class="x" data-close>×</button></div><div class="modal-b"><div class="field"><label>Name</label><input type="text" id="pp-name" value="'+esc(d.name)+'" placeholder="Friend\'s name"></div><div class="field"><label>Avatar</label><div class="emoji-row" id="pp-emoji">'+PERSON_EMOJIS.map(function(e){return '<button type="button" data-v="'+e+'" class="'+(d.emoji===e?"on":"")+'">'+e+'</button>'}).join("")+'</div></div><div class="field"><label>Colour</label><div class="swatches" id="pp-color">'+PERSON_COLORS.map(function(c){return '<button type="button" data-v="'+c+'" class="'+(d.color===c?"on":"")+'" style="background:'+c+';color:'+c+'"></button>'}).join("")+'</div></div></div><div class="modal-f"><span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-person>Add</button></div>');}
-  function savePerson(){var d=ms.data;var n=$("#pp-name");if(n)d.name=n.value;if(!(d.name||"").trim()){toast("Name them");return;}Store.add("people",{name:d.name.trim(),emoji:d.emoji,color:d.color,createdAt:new Date().toISOString()}).then(function(id){if(id&&!state.me){state.me=id;try{localStorage.setItem("ritsu_me",id)}catch(x){}}});closeModal();}
-  function openMePicker(){var ppl=people();var h='<div class="modal-h"><h3>Who are you?</h3><button class="x" data-close>×</button></div><div class="modal-b">';if(!ppl.length)h+='<p class="kicker" style="color:var(--muted);margin-bottom:12px">No people yet.</p><button class="btn primary" data-action="add-person">＋ Add a person</button>';else{h+='<div class="pick-wrap">'+ppl.map(function(p){return '<button type="button" class="pick '+(p.id===state.me?"on":"")+'" data-setme="'+p.id+'">'+avatar(p,"sm")+esc(p.name)+'</button>'}).join("")+'</div>';}h+='</div><div class="modal-f"><span class="spacer"></span><button class="btn ghost" data-close>Done</button></div>';openModal(h);}
+  function savePerson(){var d=ms.data;var n=$("#pp-name");if(n)d.name=n.value;if(!(d.name||"").trim()){toast("Name them");return;}var nmL=d.name.trim().toLowerCase();if(!ms.dupOk&&people().some(function(p){return (p.name||"").trim().toLowerCase()===nmL})){ms.dupOk=true;toast("There is already someone called "+d.name.trim()+". Tap Add again to add another.");return;}Store.add("people",{name:d.name.trim(),emoji:d.emoji,color:d.color,createdAt:new Date().toISOString()}).then(function(id){if(id&&!state.me){state.me=id;try{localStorage.setItem("ritsu_me",id)}catch(x){}}});closeModal();}
+  function openMePicker(){var ppl=people();var h='<div class="modal-h"><h3>Who are you?</h3><button class="x" data-close>×</button></div><div class="modal-b">';if(!ppl.length)h+='<p class="kicker" style="color:var(--muted);margin-bottom:12px">No people yet.</p><button class="btn primary" data-action="add-person">＋ Add a person</button>';else{h+='<div class="pick-wrap">'+ppl.map(function(p){return '<button type="button" class="pick '+(p.id===state.me?"on":"")+'" data-setme="'+p.id+'">'+avatar(p,"sm")+esc(p.name)+'</button>'}).join("")+'</div>';}h+='</div><div class="modal-f"><span class="spacer"></span><button class="btn ghost" data-close>Close</button></div>';openModal(h);}
 
   function cloneEvents(i){var o={};Object.keys(i.events||{}).forEach(function(d){o[d]=(i.events[d]||[]).map(function(e){return {t:e.t,flags:(e.flags||[]).slice(),scale:e.scale==null?null:e.scale,note:e.note||""}})});return o}
   function newEvent(ds){return {t:ds===today()?nowHM():null,flags:[],scale:null,note:""}}
@@ -4808,7 +4814,7 @@
     if((el=e.target.closest("[data-backup-later]"))){try{localStorage.setItem("ritsu_backup_snooze",addDaysStr(today(),14))}catch(e5){}render();return;}
     if((el=e.target.closest("[data-restore-undo]"))){undoRestore();return;}
     if((el=e.target.closest("[data-persist-ask]"))){if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().then(function(ok){toast(ok?"Ritsu's data is now protected":"The browser said not yet");render();});return;}
-    if((el=e.target.closest("[data-welcome]"))){var wv=el.getAttribute("data-welcome");if(wv==="clean")startClean();else if(wv==="back")bringBack();else startExamples();return;}
+    if((el=e.target.closest("[data-welcome]"))){var wv=el.getAttribute("data-welcome"),wb=el.querySelector("b");if(wb)wb.textContent=wv==="back"?"Bringing it back…":"Setting up…";el.setAttribute("aria-busy","true");setTimeout(function(){if(wv==="clean")startClean();else if(wv==="back")bringBack();else startExamples();},60);return;}
     if((el=e.target.closest("[data-buddy]"))){var bk=el.getAttribute("data-buddy").split("-");if(bk[0]==="mode")Buddy.set("mode",bk[1]);else Buddy.set(bk[0],bk[1]==="1");render();return;}
     if((el=e.target.closest("[data-wipe-go]"))){wipeGo();return;}
     if((el=e.target.closest("[data-theme-set]"))){applyTheme(el.getAttribute("data-theme-set"));render();return;}
