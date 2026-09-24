@@ -798,6 +798,48 @@
   .hm-gauge .mid b.of{font-size:30px;letter-spacing:-.02em}
   .hm-hero .hm-gauge .mid b.of{font-size:30px}
   .home-grid.solo{max-width:680px;margin:0 auto}
+  .cbrow .pill.due{display:none}
+  .cb-x{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:-4px 0 12px 36px}
+  .cb-rep{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--muted);margin-right:4px}
+  .cb-rep svg{width:14px;height:14px;fill:currentColor}
+  .cb-b{min-height:38px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--panel-2);color:var(--ink);font:600 14px/1 var(--sans);cursor:pointer}
+  .cb-b.pri{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  .cbask{display:flex;align-items:center;gap:12px;margin:10px 0;padding:12px 14px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:16px;background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 8%,var(--panel-2)),var(--panel))}
+  .cbask .cbask-blob{flex:none;width:52px;height:48px}
+  .cbq{min-width:0;flex:1}.cbq b{display:block;font:600 16px/1.25 var(--sans)}.cbq small{display:block;margin-top:2px;font-size:13px;color:var(--muted)}
+  .cbbtns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .cb-read{margin:8px 2px 0;font-size:14px;color:var(--accent-ink)}
+  .su{padding-bottom:24px}
+  .su-steps{display:flex;gap:5px}.su-steps i{width:18px;height:4px;border-radius:4px;background:var(--line)}.su-steps i.on{background:var(--accent)}
+  .su-title{margin:16px 0 0;font:700 26px/1.15 var(--serif);letter-spacing:-.01em}
+  .su-sub{margin:6px 0 0;font-size:15px;color:var(--muted);line-height:1.45}
+  .su-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+  .su-tile{position:relative;text-align:left;display:flex;flex-direction:column;gap:2px;min-height:78px;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--panel);color:var(--ink);cursor:pointer}
+  .su-tile b{font-size:14.5px;font-weight:600;line-height:1.25;margin-top:6px}.su-tile small{font-size:13px;color:var(--muted)}
+  .su-tile.on{border-color:var(--accent);background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 12%,var(--panel)),var(--panel))}
+  .su-tic{color:var(--muted);display:inline-flex}.su-tile.on .su-tic{color:var(--accent)}.su-tic svg{width:22px;height:22px;fill:currentColor}
+  .su-ck{position:absolute;right:10px;top:10px;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--faint);display:grid;place-items:center}
+  .su-tile.on .su-ck{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}.su-ck svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .su-ask{grid-column:1/-1;padding:12px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:16px;background:var(--panel-2)}
+  .su-q{font-size:14px;color:var(--muted)}
+  .su-inp{width:100%;margin-top:8px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:500 16px var(--sans)}
+  .su-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .su-chip{min-height:36px;padding:0 13px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);font:500 14px var(--sans);cursor:pointer}
+  .su-chip.on{border-color:var(--accent);color:var(--accent-ink);background:color-mix(in srgb,var(--accent) 14%,transparent)}
+  .su-list{margin-top:10px}
+  .su-sw{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .su-ic{width:36px;height:36px;flex:none;border-radius:10px;background:var(--panel-2);display:grid;place-items:center;color:var(--muted)}.su-ic svg{width:20px;height:20px;fill:currentColor}
+  .su-sw.on .su-ic{color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--panel-2))}
+  .su-sw .tx{flex:1;min-width:0}.su-sw .tx b{display:block;font-size:15px;font-weight:600}.su-sw .tx small{font-size:13px;color:var(--muted)}
+  .su-tg{position:relative;flex:none;width:44px;height:26px;border:0;border-radius:999px;background:var(--line);cursor:pointer}
+  .su-tg::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:var(--muted);transition:transform 160ms ease-out}
+  .su-tg.on{background:var(--accent)}.su-tg.on::after{transform:translateX(18px);background:var(--on-accent)}
+  .su-subq{padding:2px 0 12px 48px;border-bottom:1px solid var(--line)}
+  .su-note{margin:12px 2px 0;font-size:13px;color:var(--faint);line-height:1.45}
+  .su-foot{display:flex;align-items:center;justify-content:space-between;margin-top:20px}
+  .su-skip{background:none;border:0;color:var(--muted);font:600 15px var(--sans);min-height:44px;padding:0 6px;cursor:pointer}
+  .su-next{padding:13px 32px;font-size:15px}
+  button.w-link{width:100%;background:none;border:0;font:inherit}
   .hm-nbtn.quiet{background:var(--panel-2);color:var(--ink);border:1px solid var(--line);box-shadow:none}
   .fast-when{margin:10px 2px 0;font-size:14px;color:var(--muted);text-align:center}
   .fh-r{display:block;font-size:12.5px;color:var(--muted);margin-top:1px}
@@ -2399,7 +2441,7 @@
     people:'<circle cx="9" cy="8.5" r="3.1"/><path d="M3.4 19a5.6 5.6 0 0 1 11.2 0"/><path d="M16 5.7a3.1 3.1 0 0 1 0 5.7"/><path d="M17.6 19a5.6 5.6 0 0 0-2.4-4.6"/>',
     settings:'<circle cx="7.5" cy="8" r="2.3"/><path d="M10.3 8H20M4 8h1.2"/><circle cx="15.5" cy="16" r="2.3"/><path d="M4 16h8.7M18.3 16H20"/>'
   };
-  var PHI={flame:'<path d="M173.79,51.48a221.25,221.25,0,0,0-41.67-34.34,8,8,0,0,0-8.24,0A221.25,221.25,0,0,0,82.21,51.48C54.59,80.48,40,112.47,40,144a88,88,0,0,0,176,0C216,112.47,201.41,80.48,173.79,51.48ZM96,184c0-27.67,22.53-47.28,32-54.3,9.48,7,32,26.63,32,54.3a32,32,0,0,1-64,0Zm77.27,15.93A47.8,47.8,0,0,0,176,184c0-44-42.09-69.79-43.88-70.86a8,8,0,0,0-8.24,0C122.09,114.21,80,140,80,184a47.8,47.8,0,0,0,2.73,15.93A71.88,71.88,0,0,1,56,144c0-34.41,20.4-63.15,37.52-81.19A216.21,216.21,0,0,1,128,33.54a215.77,215.77,0,0,1,34.48,29.27C193.49,95.5,200,125,200,144A71.88,71.88,0,0,1,173.27,199.93Z"/>',target:'<path d="M221.87,83.16A104.1,104.1,0,1,1,195.67,49l22.67-22.68a8,8,0,0,1,11.32,11.32l-96,96a8,8,0,0,1-11.32-11.32l27.72-27.72a40,40,0,1,0,17.87,31.09,8,8,0,1,1,16-.9,56,56,0,1,1-22.38-41.65L184.3,60.39a87.88,87.88,0,1,0,23.13,29.67,8,8,0,0,1,14.44-6.9Z"/>',repeat:'<path d="M224,48V96a8,8,0,0,1-8,8H168a8,8,0,0,1,0-16h28.69L182.06,73.37a79.56,79.56,0,0,0-56.13-23.43h-.45A79.52,79.52,0,0,0,69.59,72.71,8,8,0,0,1,58.41,61.27a96,96,0,0,1,135,.79L208,76.69V48a8,8,0,0,1,16,0ZM186.41,183.29a80,80,0,0,1-112.47-.66L59.31,168H88a8,8,0,0,0,0-16H40a8,8,0,0,0-8,8v48a8,8,0,0,0,16,0V179.31l14.63,14.63A95.43,95.43,0,0,0,130,222.06h.53a95.36,95.36,0,0,0,67.07-27.33,8,8,0,0,0-11.18-11.44Z"/>',bell:'<path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"/>',checklist:'<path d="M224,128a8,8,0,0,1-8,8H128a8,8,0,0,1,0-16h88A8,8,0,0,1,224,128ZM128,72h88a8,8,0,0,0,0-16H128a8,8,0,0,0,0,16Zm88,112H128a8,8,0,0,0,0,16h88a8,8,0,0,0,0-16ZM82.34,42.34,56,68.69,45.66,58.34A8,8,0,0,0,34.34,69.66l16,16a8,8,0,0,0,11.32,0l32-32A8,8,0,0,0,82.34,42.34Zm0,64L56,132.69,45.66,122.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32,0l32-32a8,8,0,0,0-11.32-11.32Zm0,64L56,196.69,45.66,186.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32,0l32-32a8,8,0,0,0-11.32-11.32Z"/>',barbell:'<path d="M248,120h-8V88a16,16,0,0,0-16-16H208V64a16,16,0,0,0-16-16H168a16,16,0,0,0-16,16v56H104V64A16,16,0,0,0,88,48H64A16,16,0,0,0,48,64v8H32A16,16,0,0,0,16,88v32H8a8,8,0,0,0,0,16h8v32a16,16,0,0,0,16,16H48v8a16,16,0,0,0,16,16H88a16,16,0,0,0,16-16V136h48v56a16,16,0,0,0,16,16h24a16,16,0,0,0,16-16v-8h16a16,16,0,0,0,16-16V136h8a8,8,0,0,0,0-16ZM32,168V88H48v80Zm56,24H64V64H88V192Zm104,0H168V64h24V175.82c0,.06,0,.12,0,.18s0,.12,0,.18V192Zm32-24H208V88h16Z"/>',drop:'<path d="M174,47.75a254.19,254.19,0,0,0-41.45-38.3,8,8,0,0,0-9.18,0A254.19,254.19,0,0,0,82,47.75C54.51,79.32,40,112.6,40,144a88,88,0,0,0,176,0C216,112.6,201.49,79.32,174,47.75ZM128,216a72.08,72.08,0,0,1-72-72c0-57.23,55.47-105,72-118,16.53,13,72,60.75,72,118A72.08,72.08,0,0,1,128,216Zm55.89-62.66a57.6,57.6,0,0,1-46.56,46.55A8.75,8.75,0,0,1,136,200a8,8,0,0,1-1.32-15.89c16.57-2.79,30.63-16.85,33.44-33.45a8,8,0,0,1,15.78,2.68Z"/>',house:'<path d="M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48V120l80-80,80,80Z"/>',brain:'<path d="M248,124a56.11,56.11,0,0,0-32-50.61V72a48,48,0,0,0-88-26.49A48,48,0,0,0,40,72v1.39a56,56,0,0,0,0,101.2V176a48,48,0,0,0,88,26.49A48,48,0,0,0,216,176v-1.41A56.09,56.09,0,0,0,248,124ZM88,208a32,32,0,0,1-31.81-28.56A55.87,55.87,0,0,0,64,180h8a8,8,0,0,0,0-16H64A40,40,0,0,1,50.67,86.27,8,8,0,0,0,56,78.73V72a32,32,0,0,1,64,0v68.26A47.8,47.8,0,0,0,88,128a8,8,0,0,0,0,16,32,32,0,0,1,0,64Zm104-44h-8a8,8,0,0,0,0,16h8a55.87,55.87,0,0,0,7.81-.56A32,32,0,1,1,168,144a8,8,0,0,0,0-16,47.8,47.8,0,0,0-32,12.26V72a32,32,0,0,1,64,0v6.73a8,8,0,0,0,5.33,7.54A40,40,0,0,1,192,164Zm16-52a8,8,0,0,1-8,8h-4a36,36,0,0,1-36-36V80a8,8,0,0,1,16,0v4a20,20,0,0,0,20,20h4A8,8,0,0,1,208,112ZM60,120H56a8,8,0,0,1,0-16h4A20,20,0,0,0,80,84V80a8,8,0,0,1,16,0v4A36,36,0,0,1,60,120Z"/>',pill:'<path d="M216.42,39.6a53.26,53.26,0,0,0-75.32,0L39.6,141.09a53.26,53.26,0,0,0,75.32,75.31h0L216.43,114.91A53.31,53.31,0,0,0,216.42,39.6ZM103.61,205.09h0a37.26,37.26,0,0,1-52.7-52.69L96,107.31,148.7,160ZM205.11,103.6,160,148.69,107.32,96l45.1-45.09a37.26,37.26,0,0,1,52.69,52.69ZM189.68,82.34a8,8,0,0,1,0,11.32l-24,24a8,8,0,1,1-11.31-11.32l24-24A8,8,0,0,1,189.68,82.34Z"/>',book:'<path d="M232,48H160a40,40,0,0,0-32,16A40,40,0,0,0,96,48H24a8,8,0,0,0-8,8V200a8,8,0,0,0,8,8H96a24,24,0,0,1,24,24,8,8,0,0,0,16,0,24,24,0,0,1,24-24h72a8,8,0,0,0,8-8V56A8,8,0,0,0,232,48ZM96,192H32V64H96a24,24,0,0,1,24,24V200A39.81,39.81,0,0,0,96,192Zm128,0H160a39.81,39.81,0,0,0-24,8V88a24,24,0,0,1,24-24h64Z"/>',lotus:'<path d="M245.83,121.63a15.53,15.53,0,0,0-9.52-7.33,73.51,73.51,0,0,0-22.17-2.22c4-19.85,1-35.55-2.06-44.86a16.15,16.15,0,0,0-18.79-10.88,85.53,85.53,0,0,0-28.55,12.12,94.58,94.58,0,0,0-27.11-33.25,16.05,16.05,0,0,0-19.26,0A94.48,94.48,0,0,0,91.26,68.46,85.53,85.53,0,0,0,62.71,56.34,16.15,16.15,0,0,0,43.92,67.22c-3,9.31-6,25-2.06,44.86a73.51,73.51,0,0,0-22.17,2.22,15.53,15.53,0,0,0-9.52,7.33,16,16,0,0,0-1.6,12.27c3.39,12.57,13.8,36.48,45.33,55.32S113.13,208,128.05,208s42.67,0,74-18.78c31.53-18.84,41.94-42.75,45.33-55.32A16,16,0,0,0,245.83,121.63ZM59.14,72.14a.2.2,0,0,1,.23-.15A70.43,70.43,0,0,1,85.18,83.66,118.65,118.65,0,0,0,80,119.17c0,18.74,3.77,34,9.11,46.28A123.59,123.59,0,0,1,69.57,140C51.55,108.62,55.3,84,59.14,72.14Zm3,103.35C35.47,159.57,26.82,140.05,24,129.7a59.82,59.82,0,0,1,22.5-1.17,129.08,129.08,0,0,0,9.15,19.41,142.28,142.28,0,0,0,34,39.56A114.92,114.92,0,0,1,62.1,175.49ZM128,190.4c-9.33-6.94-32-28.23-32-71.23C96,76.7,118.38,55.24,128,48c9.62,7.26,32,28.72,32,71.19C160,162.17,137.33,183.46,128,190.4ZM170.82,83.66A70.43,70.43,0,0,1,196.63,72a.2.2,0,0,1,.23.15C200.7,84,204.45,108.62,186.43,140a123.32,123.32,0,0,1-19.54,25.48c5.34-12.26,9.11-27.54,9.11-46.28A118.65,118.65,0,0,0,170.82,83.66ZM232,129.72c-2.77,10.25-11.4,29.81-38.09,45.77a114.92,114.92,0,0,1-27.55,12,142.28,142.28,0,0,0,34-39.56,129.08,129.08,0,0,0,9.15-19.41A59.69,59.69,0,0,1,232,129.71Z"/>',briefcase:'<path d="M216,56H176V48a24,24,0,0,0-24-24H104A24,24,0,0,0,80,48v8H40A16,16,0,0,0,24,72V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V72A16,16,0,0,0,216,56ZM96,48a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96ZM216,72v41.61A184,184,0,0,1,128,136a184.07,184.07,0,0,1-88-22.38V72Zm0,128H40V131.64A200.19,200.19,0,0,0,128,152a200.25,200.25,0,0,0,88-20.37V200ZM104,112a8,8,0,0,1,8-8h32a8,8,0,0,1,0,16H112A8,8,0,0,1,104,112Z"/>',user:'<path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"/>',pulse:'<path d="M240,128a8,8,0,0,1-8,8H204.94l-37.78,75.58A8,8,0,0,1,160,216h-.4a8,8,0,0,1-7.08-5.14L95.35,60.76,63.28,131.31A8,8,0,0,1,56,136H24a8,8,0,0,1,0-16H50.85L88.72,36.69a8,8,0,0,1,14.76.46l57.51,151,31.85-63.71A8,8,0,0,1,200,120h32A8,8,0,0,1,240,128Z"/>',broom:'<path d="M235.5,216.81c-22.56-11-35.5-34.58-35.5-64.8V134.73a15.94,15.94,0,0,0-10.09-14.87L165,110a8,8,0,0,1-4.48-10.34l21.32-53a28,28,0,0,0-16.1-37,28.14,28.14,0,0,0-35.82,16,.61.61,0,0,0,0,.12L108.9,79a8,8,0,0,1-10.37,4.49L73.11,73.14A15.89,15.89,0,0,0,55.74,76.8C34.68,98.45,24,123.75,24,152a111.45,111.45,0,0,0,31.18,77.53A8,8,0,0,0,61,232H232a8,8,0,0,0,3.5-15.19ZM67.14,88l25.41,10.3a24,24,0,0,0,31.23-13.45l21-53c2.56-6.11,9.47-9.27,15.43-7a12,12,0,0,1,6.88,15.92L145.69,93.76a24,24,0,0,0,13.43,31.14L184,134.73V152c0,.33,0,.66,0,1L55.77,101.71A108.84,108.84,0,0,1,67.14,88Zm48,128a87.53,87.53,0,0,1-24.34-42,8,8,0,0,0-15.49,4,105.16,105.16,0,0,0,18.36,38H64.44A95.54,95.54,0,0,1,40,152a85.9,85.9,0,0,1,7.73-36.29l137.8,55.12c3,18,10.56,33.48,21.89,45.16Z"/>'};
+  var PHI={alarm:'<path d="M128,40a96,96,0,1,0,96,96A96.11,96.11,0,0,0,128,40Zm0,176a80,80,0,1,1,80-80A80.09,80.09,0,0,1,128,216ZM61.66,37.66l-32,32A8,8,0,0,1,18.34,58.34l32-32A8,8,0,0,1,61.66,37.66Zm176,32a8,8,0,0,1-11.32,0l-32-32a8,8,0,0,1,11.32-11.32l32,32A8,8,0,0,1,237.66,69.66ZM184,128a8,8,0,0,1,0,16H128a8,8,0,0,1-8-8V80a8,8,0,0,1,16,0v48Z"/>',tooth:'<path d="M171,71.42,149.54,80,171,88.57A8,8,0,1,1,165,103.42L128,88.61,91,103.42A8,8,0,1,1,85,88.57L106.46,80,85,71.42A8,8,0,1,1,91,56.57l37,14.81,37-14.81A8,8,0,1,1,171,71.42Zm53,8.33c0,42.72-8,75.4-14.69,95.28-8.73,25.8-20.63,45.49-32.65,54a15.69,15.69,0,0,1-15.95,1.41,16.09,16.09,0,0,1-9.18-13.36C150.68,205.58,146.48,168,128,168s-22.68,37.59-23.53,49.11a16.09,16.09,0,0,1-16,14.9,15.67,15.67,0,0,1-9.13-2.95c-12-8.53-23.92-28.22-32.65-54C40,155.15,32,122.47,32,79.75A56,56,0,0,1,88,24h80A56,56,0,0,1,224,79.75Zm-16,0A40,40,0,0,0,168,40H88A40,40,0,0,0,48,79.76c0,40.55,7.51,71.4,13.85,90.14,11.05,32.66,23,43.37,26.61,46C91.57,174.67,105.59,152,128,152s36.45,22.71,39.49,63.94h0c3.6-2.59,15.57-13.26,26.66-46C200.49,151.16,208,120.31,208,79.76Z"/>',eye:'<path d="M247.31,124.76c-.35-.79-8.82-19.58-27.65-38.41C194.57,61.26,162.88,48,128,48S61.43,61.26,36.34,86.35C17.51,105.18,9,124,8.69,124.76a8,8,0,0,0,0,6.5c.35.79,8.82,19.57,27.65,38.4C61.43,194.74,93.12,208,128,208s66.57-13.26,91.66-38.34c18.83-18.83,27.3-37.61,27.65-38.4A8,8,0,0,0,247.31,124.76ZM128,192c-30.78,0-57.67-11.19-79.93-33.25A133.47,133.47,0,0,1,25,128,133.33,133.33,0,0,1,48.07,97.25C70.33,75.19,97.22,64,128,64s57.67,11.19,79.93,33.25A133.46,133.46,0,0,1,231.05,128C223.84,141.46,192.43,192,128,192Zm0-112a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z"/>',car:'<path d="M240,104H229.2L201.42,41.5A16,16,0,0,0,186.8,32H69.2a16,16,0,0,0-14.62,9.5L26.8,104H16a8,8,0,0,0,0,16h8v80a16,16,0,0,0,16,16H64a16,16,0,0,0,16-16V184h96v16a16,16,0,0,0,16,16h24a16,16,0,0,0,16-16V120h8a8,8,0,0,0,0-16ZM69.2,48H186.8l24.89,56H44.31ZM64,200H40V184H64Zm128,0V184h24v16Zm24-32H40V120H216ZM56,144a8,8,0,0,1,8-8H80a8,8,0,0,1,0,16H64A8,8,0,0,1,56,144Zm112,0a8,8,0,0,1,8-8h16a8,8,0,0,1,0,16H176A8,8,0,0,1,168,144Z"/>',receipt:'<path d="M72,104a8,8,0,0,1,8-8h96a8,8,0,0,1,0,16H80A8,8,0,0,1,72,104Zm8,40h96a8,8,0,0,0,0-16H80a8,8,0,0,0,0,16ZM232,56V208a8,8,0,0,1-11.58,7.15L192,200.94l-28.42,14.21a8,8,0,0,1-7.16,0L128,200.94,99.58,215.15a8,8,0,0,1-7.16,0L64,200.94,35.58,215.15A8,8,0,0,1,24,208V56A16,16,0,0,1,40,40H216A16,16,0,0,1,232,56Zm-16,0H40V195.06l20.42-10.22a8,8,0,0,1,7.16,0L96,199.06l28.42-14.22a8,8,0,0,1,7.16,0L160,199.06l28.42-14.22a8,8,0,0,1,7.16,0L216,195.06Z"/>',arrows:'<path d="M224,48V96a8,8,0,0,1-8,8H168a8,8,0,0,1,0-16h28.69L182.06,73.37a79.56,79.56,0,0,0-56.13-23.43h-.45A79.52,79.52,0,0,0,69.59,72.71,8,8,0,0,1,58.41,61.27a96,96,0,0,1,135,.79L208,76.69V48a8,8,0,0,1,16,0ZM186.41,183.29a80,80,0,0,1-112.47-.66L59.31,168H88a8,8,0,0,0,0-16H40a8,8,0,0,0-8,8v48a8,8,0,0,0,16,0V179.31l14.63,14.63A95.43,95.43,0,0,0,130,222.06h.53a95.36,95.36,0,0,0,67.07-27.33,8,8,0,0,0-11.18-11.44Z"/>',heartbeat:'<path d="M72,144H32a8,8,0,0,1,0-16H67.72l13.62-20.44a8,8,0,0,1,13.32,0l25.34,38,9.34-14A8,8,0,0,1,136,128h24a8,8,0,0,1,0,16H140.28l-13.62,20.44a8,8,0,0,1-13.32,0L88,126.42l-9.34,14A8,8,0,0,1,72,144ZM178,40c-20.65,0-38.73,8.88-50,23.89C116.73,48.88,98.65,40,78,40a62.07,62.07,0,0,0-62,62c0,.75,0,1.5,0,2.25a8,8,0,1,0,16-.5c0-.58,0-1.17,0-1.75A46.06,46.06,0,0,1,78,56c19.45,0,35.78,10.36,42.6,27a8,8,0,0,0,14.8,0c6.82-16.67,23.15-27,42.6-27a46.06,46.06,0,0,1,46,46c0,53.61-77.76,102.15-96,112.8-10.83-6.31-42.63-26-66.68-52.21a8,8,0,1,0-11.8,10.82c31.17,34,72.93,56.68,74.69,57.63a8,8,0,0,0,7.58,0C136.21,228.66,240,172,240,102A62.07,62.07,0,0,0,178,40Z"/>',moon:'<path d="M233.54,142.23a8,8,0,0,0-8-2,88.08,88.08,0,0,1-109.8-109.8,8,8,0,0,0-10-10,104.84,104.84,0,0,0-52.91,37A104,104,0,0,0,136,224a103.09,103.09,0,0,0,62.52-20.88,104.84,104.84,0,0,0,37-52.91A8,8,0,0,0,233.54,142.23ZM188.9,190.34A88,88,0,0,1,65.66,67.11a89,89,0,0,1,31.4-26A106,106,0,0,0,96,56,104.11,104.11,0,0,0,200,160a106,106,0,0,0,14.92-1.06A89,89,0,0,1,188.9,190.34Z"/>',walk:'<path d="M152,80a32,32,0,1,0-32-32A32,32,0,0,0,152,80Zm0-48a16,16,0,1,1-16,16A16,16,0,0,1,152,32Zm64,112a8,8,0,0,1-8,8c-35.31,0-52.95-17.81-67.12-32.12-2.74-2.77-5.36-5.4-8-7.84l-13.43,30.88,37.2,26.57A8,8,0,0,1,160,176v56a8,8,0,0,1-16,0V180.12l-31.07-22.2L79.34,235.19A8,8,0,0,1,72,240a7.84,7.84,0,0,1-3.19-.67,8,8,0,0,1-4.15-10.52l54.08-124.37c-9.31-1.65-20.92,1.2-34.7,8.58a163.88,163.88,0,0,0-30.57,21.77,8,8,0,0,1-10.95-11.66c2.5-2.35,61.69-57.23,98.72-25.08,3.83,3.32,7.48,7,11,10.57C166.19,122.7,179.36,136,208,136A8,8,0,0,1,216,144Z"/>',bookopen:'<path d="M232,48H160a40,40,0,0,0-32,16A40,40,0,0,0,96,48H24a8,8,0,0,0-8,8V200a8,8,0,0,0,8,8H96a24,24,0,0,1,24,24,8,8,0,0,0,16,0,24,24,0,0,1,24-24h72a8,8,0,0,0,8-8V56A8,8,0,0,0,232,48ZM96,192H32V64H96a24,24,0,0,1,24,24V200A39.81,39.81,0,0,0,96,192Zm128,0H160a39.81,39.81,0,0,0-24,8V88a24,24,0,0,1,24-24h64Z"/>',phoneoff:'<path d="M213.92,210.62l-160-176A8,8,0,1,0,42.08,45.38L56,60.69V216a24,24,0,0,0,24,24h96a24,24,0,0,0,23.82-21.11l2.26,2.49a8,8,0,1,0,11.84-10.76ZM184,216a8,8,0,0,1-8,8H80a8,8,0,0,1-8-8V78.29l112,123.2ZM68.7,24a8,8,0,0,1,8-8H176a24,24,0,0,1,24,24V150.83a8,8,0,1,1-16,0V40a8,8,0,0,0-8-8H76.7A8,8,0,0,1,68.7,24Z"/>',flame:'<path d="M173.79,51.48a221.25,221.25,0,0,0-41.67-34.34,8,8,0,0,0-8.24,0A221.25,221.25,0,0,0,82.21,51.48C54.59,80.48,40,112.47,40,144a88,88,0,0,0,176,0C216,112.47,201.41,80.48,173.79,51.48ZM96,184c0-27.67,22.53-47.28,32-54.3,9.48,7,32,26.63,32,54.3a32,32,0,0,1-64,0Zm77.27,15.93A47.8,47.8,0,0,0,176,184c0-44-42.09-69.79-43.88-70.86a8,8,0,0,0-8.24,0C122.09,114.21,80,140,80,184a47.8,47.8,0,0,0,2.73,15.93A71.88,71.88,0,0,1,56,144c0-34.41,20.4-63.15,37.52-81.19A216.21,216.21,0,0,1,128,33.54a215.77,215.77,0,0,1,34.48,29.27C193.49,95.5,200,125,200,144A71.88,71.88,0,0,1,173.27,199.93Z"/>',target:'<path d="M221.87,83.16A104.1,104.1,0,1,1,195.67,49l22.67-22.68a8,8,0,0,1,11.32,11.32l-96,96a8,8,0,0,1-11.32-11.32l27.72-27.72a40,40,0,1,0,17.87,31.09,8,8,0,1,1,16-.9,56,56,0,1,1-22.38-41.65L184.3,60.39a87.88,87.88,0,1,0,23.13,29.67,8,8,0,0,1,14.44-6.9Z"/>',repeat:'<path d="M224,48V96a8,8,0,0,1-8,8H168a8,8,0,0,1,0-16h28.69L182.06,73.37a79.56,79.56,0,0,0-56.13-23.43h-.45A79.52,79.52,0,0,0,69.59,72.71,8,8,0,0,1,58.41,61.27a96,96,0,0,1,135,.79L208,76.69V48a8,8,0,0,1,16,0ZM186.41,183.29a80,80,0,0,1-112.47-.66L59.31,168H88a8,8,0,0,0,0-16H40a8,8,0,0,0-8,8v48a8,8,0,0,0,16,0V179.31l14.63,14.63A95.43,95.43,0,0,0,130,222.06h.53a95.36,95.36,0,0,0,67.07-27.33,8,8,0,0,0-11.18-11.44Z"/>',bell:'<path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"/>',checklist:'<path d="M224,128a8,8,0,0,1-8,8H128a8,8,0,0,1,0-16h88A8,8,0,0,1,224,128ZM128,72h88a8,8,0,0,0,0-16H128a8,8,0,0,0,0,16Zm88,112H128a8,8,0,0,0,0,16h88a8,8,0,0,0,0-16ZM82.34,42.34,56,68.69,45.66,58.34A8,8,0,0,0,34.34,69.66l16,16a8,8,0,0,0,11.32,0l32-32A8,8,0,0,0,82.34,42.34Zm0,64L56,132.69,45.66,122.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32,0l32-32a8,8,0,0,0-11.32-11.32Zm0,64L56,196.69,45.66,186.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32,0l32-32a8,8,0,0,0-11.32-11.32Z"/>',barbell:'<path d="M248,120h-8V88a16,16,0,0,0-16-16H208V64a16,16,0,0,0-16-16H168a16,16,0,0,0-16,16v56H104V64A16,16,0,0,0,88,48H64A16,16,0,0,0,48,64v8H32A16,16,0,0,0,16,88v32H8a8,8,0,0,0,0,16h8v32a16,16,0,0,0,16,16H48v8a16,16,0,0,0,16,16H88a16,16,0,0,0,16-16V136h48v56a16,16,0,0,0,16,16h24a16,16,0,0,0,16-16v-8h16a16,16,0,0,0,16-16V136h8a8,8,0,0,0,0-16ZM32,168V88H48v80Zm56,24H64V64H88V192Zm104,0H168V64h24V175.82c0,.06,0,.12,0,.18s0,.12,0,.18V192Zm32-24H208V88h16Z"/>',drop:'<path d="M174,47.75a254.19,254.19,0,0,0-41.45-38.3,8,8,0,0,0-9.18,0A254.19,254.19,0,0,0,82,47.75C54.51,79.32,40,112.6,40,144a88,88,0,0,0,176,0C216,112.6,201.49,79.32,174,47.75ZM128,216a72.08,72.08,0,0,1-72-72c0-57.23,55.47-105,72-118,16.53,13,72,60.75,72,118A72.08,72.08,0,0,1,128,216Zm55.89-62.66a57.6,57.6,0,0,1-46.56,46.55A8.75,8.75,0,0,1,136,200a8,8,0,0,1-1.32-15.89c16.57-2.79,30.63-16.85,33.44-33.45a8,8,0,0,1,15.78,2.68Z"/>',house:'<path d="M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48V120l80-80,80,80Z"/>',brain:'<path d="M248,124a56.11,56.11,0,0,0-32-50.61V72a48,48,0,0,0-88-26.49A48,48,0,0,0,40,72v1.39a56,56,0,0,0,0,101.2V176a48,48,0,0,0,88,26.49A48,48,0,0,0,216,176v-1.41A56.09,56.09,0,0,0,248,124ZM88,208a32,32,0,0,1-31.81-28.56A55.87,55.87,0,0,0,64,180h8a8,8,0,0,0,0-16H64A40,40,0,0,1,50.67,86.27,8,8,0,0,0,56,78.73V72a32,32,0,0,1,64,0v68.26A47.8,47.8,0,0,0,88,128a8,8,0,0,0,0,16,32,32,0,0,1,0,64Zm104-44h-8a8,8,0,0,0,0,16h8a55.87,55.87,0,0,0,7.81-.56A32,32,0,1,1,168,144a8,8,0,0,0,0-16,47.8,47.8,0,0,0-32,12.26V72a32,32,0,0,1,64,0v6.73a8,8,0,0,0,5.33,7.54A40,40,0,0,1,192,164Zm16-52a8,8,0,0,1-8,8h-4a36,36,0,0,1-36-36V80a8,8,0,0,1,16,0v4a20,20,0,0,0,20,20h4A8,8,0,0,1,208,112ZM60,120H56a8,8,0,0,1,0-16h4A20,20,0,0,0,80,84V80a8,8,0,0,1,16,0v4A36,36,0,0,1,60,120Z"/>',pill:'<path d="M216.42,39.6a53.26,53.26,0,0,0-75.32,0L39.6,141.09a53.26,53.26,0,0,0,75.32,75.31h0L216.43,114.91A53.31,53.31,0,0,0,216.42,39.6ZM103.61,205.09h0a37.26,37.26,0,0,1-52.7-52.69L96,107.31,148.7,160ZM205.11,103.6,160,148.69,107.32,96l45.1-45.09a37.26,37.26,0,0,1,52.69,52.69ZM189.68,82.34a8,8,0,0,1,0,11.32l-24,24a8,8,0,1,1-11.31-11.32l24-24A8,8,0,0,1,189.68,82.34Z"/>',book:'<path d="M232,48H160a40,40,0,0,0-32,16A40,40,0,0,0,96,48H24a8,8,0,0,0-8,8V200a8,8,0,0,0,8,8H96a24,24,0,0,1,24,24,8,8,0,0,0,16,0,24,24,0,0,1,24-24h72a8,8,0,0,0,8-8V56A8,8,0,0,0,232,48ZM96,192H32V64H96a24,24,0,0,1,24,24V200A39.81,39.81,0,0,0,96,192Zm128,0H160a39.81,39.81,0,0,0-24,8V88a24,24,0,0,1,24-24h64Z"/>',lotus:'<path d="M245.83,121.63a15.53,15.53,0,0,0-9.52-7.33,73.51,73.51,0,0,0-22.17-2.22c4-19.85,1-35.55-2.06-44.86a16.15,16.15,0,0,0-18.79-10.88,85.53,85.53,0,0,0-28.55,12.12,94.58,94.58,0,0,0-27.11-33.25,16.05,16.05,0,0,0-19.26,0A94.48,94.48,0,0,0,91.26,68.46,85.53,85.53,0,0,0,62.71,56.34,16.15,16.15,0,0,0,43.92,67.22c-3,9.31-6,25-2.06,44.86a73.51,73.51,0,0,0-22.17,2.22,15.53,15.53,0,0,0-9.52,7.33,16,16,0,0,0-1.6,12.27c3.39,12.57,13.8,36.48,45.33,55.32S113.13,208,128.05,208s42.67,0,74-18.78c31.53-18.84,41.94-42.75,45.33-55.32A16,16,0,0,0,245.83,121.63ZM59.14,72.14a.2.2,0,0,1,.23-.15A70.43,70.43,0,0,1,85.18,83.66,118.65,118.65,0,0,0,80,119.17c0,18.74,3.77,34,9.11,46.28A123.59,123.59,0,0,1,69.57,140C51.55,108.62,55.3,84,59.14,72.14Zm3,103.35C35.47,159.57,26.82,140.05,24,129.7a59.82,59.82,0,0,1,22.5-1.17,129.08,129.08,0,0,0,9.15,19.41,142.28,142.28,0,0,0,34,39.56A114.92,114.92,0,0,1,62.1,175.49ZM128,190.4c-9.33-6.94-32-28.23-32-71.23C96,76.7,118.38,55.24,128,48c9.62,7.26,32,28.72,32,71.19C160,162.17,137.33,183.46,128,190.4ZM170.82,83.66A70.43,70.43,0,0,1,196.63,72a.2.2,0,0,1,.23.15C200.7,84,204.45,108.62,186.43,140a123.32,123.32,0,0,1-19.54,25.48c5.34-12.26,9.11-27.54,9.11-46.28A118.65,118.65,0,0,0,170.82,83.66ZM232,129.72c-2.77,10.25-11.4,29.81-38.09,45.77a114.92,114.92,0,0,1-27.55,12,142.28,142.28,0,0,0,34-39.56,129.08,129.08,0,0,0,9.15-19.41A59.69,59.69,0,0,1,232,129.71Z"/>',briefcase:'<path d="M216,56H176V48a24,24,0,0,0-24-24H104A24,24,0,0,0,80,48v8H40A16,16,0,0,0,24,72V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V72A16,16,0,0,0,216,56ZM96,48a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96ZM216,72v41.61A184,184,0,0,1,128,136a184.07,184.07,0,0,1-88-22.38V72Zm0,128H40V131.64A200.19,200.19,0,0,0,128,152a200.25,200.25,0,0,0,88-20.37V200ZM104,112a8,8,0,0,1,8-8h32a8,8,0,0,1,0,16H112A8,8,0,0,1,104,112Z"/>',user:'<path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"/>',pulse:'<path d="M240,128a8,8,0,0,1-8,8H204.94l-37.78,75.58A8,8,0,0,1,160,216h-.4a8,8,0,0,1-7.08-5.14L95.35,60.76,63.28,131.31A8,8,0,0,1,56,136H24a8,8,0,0,1,0-16H50.85L88.72,36.69a8,8,0,0,1,14.76.46l57.51,151,31.85-63.71A8,8,0,0,1,200,120h32A8,8,0,0,1,240,128Z"/>',broom:'<path d="M235.5,216.81c-22.56-11-35.5-34.58-35.5-64.8V134.73a15.94,15.94,0,0,0-10.09-14.87L165,110a8,8,0,0,1-4.48-10.34l21.32-53a28,28,0,0,0-16.1-37,28.14,28.14,0,0,0-35.82,16,.61.61,0,0,0,0,.12L108.9,79a8,8,0,0,1-10.37,4.49L73.11,73.14A15.89,15.89,0,0,0,55.74,76.8C34.68,98.45,24,123.75,24,152a111.45,111.45,0,0,0,31.18,77.53A8,8,0,0,0,61,232H232a8,8,0,0,0,3.5-15.19ZM67.14,88l25.41,10.3a24,24,0,0,0,31.23-13.45l21-53c2.56-6.11,9.47-9.27,15.43-7a12,12,0,0,1,6.88,15.92L145.69,93.76a24,24,0,0,0,13.43,31.14L184,134.73V152c0,.33,0,.66,0,1L55.77,101.71A108.84,108.84,0,0,1,67.14,88Zm48,128a87.53,87.53,0,0,1-24.34-42,8,8,0,0,0-15.49,4,105.16,105.16,0,0,0,18.36,38H64.44A95.54,95.54,0,0,1,40,152a85.9,85.9,0,0,1,7.73-36.29l137.8,55.12c3,18,10.56,33.48,21.89,45.16Z"/>'};
   var CAT_ICON_DEFAULT={c_todo:"checklist",c_health:"barbell",c_hygiene:"drop",c_home:"house",c_mind:"brain"};
   var CAT_ICONS=["checklist","barbell","drop","house","brain","pill","book","lotus","briefcase","user","pulse","broom"];
   function PI(n){return phicon(n,"pi")}
@@ -2420,7 +2462,7 @@
   var calDates=false; try{calDates=localStorage.getItem("ritsu_caldates")==="1";}catch(e){}
   var todoList="work"; try{todoList=localStorage.getItem("ritsu_todolist")||"work";}catch(e){}
 
-  function render(){if(!Store.ready)return;document.body.classList.toggle("welcome",!!Store.welcome);Buddy.apply();if(Store.welcome){$("#view").innerHTML=viewWelcome();Buddy.temp($("#welcomeBlob"),"wave",true);return;}renderNav();var v=$("#view");
+  function render(){if(!Store.ready)return;document.body.classList.toggle("welcome",!!Store.welcome);Buddy.apply();if(Store.welcome){$("#view").innerHTML=viewWelcome();var wbEl=$("#welcomeBlob");if(wbEl)Buddy.temp(wbEl,"wave",true);return;}renderNav();var v=$("#view");
     if(state.view==="day")v.innerHTML=viewDay();else if(state.view==="fasting")v.innerHTML=viewFasting();else if(state.view==="medreport")v.innerHTML=viewMedReport(state.medId);else if(state.view==="reports")v.innerHTML=viewReports();else if(state.view==="people")v.innerHTML=viewPeople();else if(state.view==="settings")v.innerHTML=viewSettings();
     else if(state.view==="item"){var i=Store.get("items",state.itemId);if(!i){state.view="home";return render();}v.innerHTML=viewItem(i);}
     else if(state.view==="area"){var c=Store.get("cats",state.areaId);if(!c){state.view="home";return render();}v.innerHTML=viewArea(c);}
@@ -2734,7 +2776,7 @@
   function hmBody(){
     if(!$("#hmCards")||!_hmCons)return;
     var ds=hmDay(),st=hmStats(ds);
-    var nh=(ds===today())?hmNextHtml():"",nx=$("#hmNext");nx.innerHTML=nh;nx.hidden=!nh;
+    var nh=(ds===today())?hmNextHtml():"",nx=$("#hmNext");nx.innerHTML=nh;nx.hidden=!nh;cbAskFill(ds);
     $("#hmCards").innerHTML=hmCardsHtml(ds,st);
     $("#hmHint").hidden=!!state.homeOpen||!hmHintOn();$("#hmHint").textContent=visibleItems().length?"Tap a card to turn it over. Hold it to open the list.":"Nothing here yet. Tap the plus button to add your first task, or open an area to add a habit.";
     var hh=$("#hmHero");hh.innerHTML=hmHeroHtml(ds,st);hh.classList.toggle("complete",!!hh.querySelector(".hm-done-flag"));
@@ -2908,7 +2950,7 @@
       '<div class="hm-strip"><button class="hm-arrow" data-hmweek="-1" aria-label="Earlier week"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>'+
       '<div class="hm-scroll" id="hmScroll" aria-label="Pick a day">'+strip+'</div>'+
       '<button class="hm-arrow" data-hmweek="1" aria-label="Later week"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div>'+
-      '<div class="hm-next" id="hmNext" hidden></div>'+
+      '<div class="hm-next" id="hmNext" hidden></div>'+'<div id="cbAsk"></div>'+
       '<div class="hm-cards" id="hmCards"></div>'+
       '<p class="hm-hint" id="hmHint">Tap a card to turn it over. Hold it to open the list.</p>'+
       '<button class="hm-hero" id="hmHero" data-hmopen="all" aria-label="Open the full task list"></button>'+fastHomeCard()+backupNudge();
@@ -2954,7 +2996,7 @@
   function itemRow(i,opts){opts=opts||{};var dsR=opts.ds||today(),isT=dsR===today(),pastR=dCount(dsR)<0;var complete=isT?doneForNow(i):(pastR?creditOn(i,dsR)>=1:false);var cc=isT?countOn(i,today()):(pastR?countOn(i,dsR):0);var st;
     var stance=stanceOf(i);var pd=Math.max(1,normOf(i).max||perDayOf(i));
     var isDone=complete&&isRoutine(i)&&(i.kind==="todo"||i.kind==="measure"||i.kind==="med");
-    var h='<div class="row '+(isDone?"done":"")+'" data-open="'+i.id+'">';
+    var h='<div class="row '+(isDone?"done":"")+(i.cb?" cbrow":"")+'" data-open="'+i.id+'">';
 
     /* the control: a tick you satisfy (routine) vs a log you add (body / limit) */
     if(isEpisode(i)){
@@ -2970,7 +3012,7 @@
     else if(i.kind==="med")h+='<button aria-label="'+esc(tickLabel(i))+'" class="tick round '+(complete?"on"+(i.id===_justDone?" pop":""):"")+'" data-toggle="'+i.id+'">'+(complete?CHECK_SVG:"＋")+'</button>';
     else h+='<span class="tick" style="border-style:dashed">↻</span>';
 
-    h+='<div class="rb"><div class="rt"><button class="rtb" data-open="'+i.id+'">'+esc(i.title)+'</button>'+(i.private?LOCK:"")+(i.localOnly?'<span class="flagpill" style="margin-left:7px">this device</span>':"")+'</div><div class="rmeta">';
+    h+='<div class="rb"><div class="rt"><button class="rtb" data-open="'+i.id+'">'+esc(cbTitle(i))+'</button>'+(i.private?LOCK:"")+(i.localOnly?'<span class="flagpill" style="margin-left:7px">this device</span>':"")+'</div><div class="rmeta">';
     var ct=(complete&&isRoutine(i))?completionTime(i,dsR):null;
     if(ct)h+='<span class="time accent">'+(i.kind==="med"?"taken ":"done ")+esc(fmtTime(ct))+'</span>';
 
@@ -3012,6 +3054,7 @@
     else if(i.kind==="measure"){var tv=(i.values||{})[today()];h+='<span class="mval"><b class="'+(complete?"hit":"")+'">'+(tv!=null?tv:"-")+'</b><small>'+esc(i.unit||"")+'</small></span>';}
     else h+=avatarStack(i.assignees,3);
     h+='</div></div>';
+    if(i.cb)h+=cbRowExtra(i);
     if(state.mstrip===i.id)h+=markerStrip(i);
     return h;
   }
@@ -3376,6 +3419,7 @@
     var me=state.me?personById(state.me):null;
     h+='<div class="panel"><div class="setrow"><div class="info"><b>Appearance</b><small>Saved on this device. Auto follows your phone.</small></div><div class="themetoggle"><button class="'+(theme==="warm"?"on":"")+'" data-theme-set="warm">Light</button><button class="'+(theme==="dark"?"on":"")+'" data-theme-set="dark">Dark</button><button class="'+(theme==="auto"?"on":"")+'" data-theme-set="auto">Auto</button></div></div><div class="setrow"><div class="info"><b>You are</b><small>Used for “assigned to you”, and for who can see a task.</small></div><button class="btn sm" data-action="pick-me">'+(me?esc(me.name):"Set")+'</button></div><div class="setrow"><div class="info"><b>Export your data</b><small>A doctor-ready summary, or everything as JSON. It is your data, it should not be trapped in here.</small></div><button class="btn sm" data-action="export">Export</button></div><div class="setrow"><div class="info"><b>Start over</b><small>Clears this phone and takes you back to the Welcome screen. A copy is kept for one step, so you can bring it back.</small></div><button class="btn danger sm" data-action="reseed">Start fresh</button></div></div>';
     h+=areasPanel();
+    h+=cbPanel();
     h+='<div class="sec-h"><h2>More places</h2><span class="line"></span></div><div class="panel"><button class="setrow linkrow" data-nav="people"><div class="info"><b>People</b><small>Who is in your group</small></div><span class="chev">&rsaquo;</span></button><button class="setrow linkrow" data-nav="fasting"><div class="info"><b>Fasting</b><small>Start or end a fast, and see the last ones</small></div><span class="chev">&rsaquo;</span></button></div>';
     h+=buddyPanel();
     h+=dataPanel();
@@ -3479,15 +3523,299 @@
   /* first launch on a device with no data */
   var WELCOME_CATS=[["c_todo","To-do","🗒️","#8E97A3",0],["c_health","Health","💪","#34D399",1],["c_mind","Mind","📚","#10B981",2]];
   function viewWelcome(){
+    if(setupS)return setupHtml();
     var prev=false;try{prev=!!localStorage.getItem("ritsu_prev_backup")}catch(e){}
     return '<div class="welcome-card"><div class="blob-host welcome-blob" id="welcomeBlob"></div><h1 class="hm-greet">Welcome</h1><p class="w-sub">Ritsu keeps your habits, health and to-dos in one calm place. Everything stays on this device.</p>'+
-      (prev?'<button class="w-opt" data-welcome="back"><b>Bring back what was here</b><small>You wiped this phone a moment ago. The copy is still here.</small></button>':'')+'<button class="w-opt pri" data-welcome="clean"><b>Start clean</b><small>Body, Mind and To-do areas, ready for your own things.</small></button>'+
+      (prev?'<button class="w-opt" data-welcome="back"><b>Bring back what was here</b><small>You wiped this phone a moment ago. The copy is still here.</small></button>':'')+'<button class="w-opt pri" data-setup="start"><b>Set me up</b><small>About a minute, three short steps.</small></button>'+
       '<button class="w-opt" data-welcome="examples"><b>Show me around</b><small>Fills Ritsu with example habits so you can see how it works. You can wipe them later in Settings.</small></button>'+
-      '<label class="w-link" for="welcome-file">Already use Ritsu? <u>Restore a backup</u></label><input type="file" id="welcome-file" accept=".json,application/json" hidden></div>';
+      '<button class="w-link" data-welcome="clean">Skip setup and start empty</button><label class="w-link" for="welcome-file">Already use Ritsu? <u>Restore a backup</u></label><input type="file" id="welcome-file" accept=".json,application/json" hidden></div>';
   }
   function finishWelcome(){Store.welcome=false;Store._save();try{localStorage.setItem("ritsu_first_seen",today())}catch(e){}state.view="home";Store._emit();}
   function startClean(){WELCOME_CATS.forEach(function(c){Store.cache.cats[c[0]]={id:c[0],name:c[1],emoji:c[2],color:c[3],order:c[4]};});finishWelcome();}
   function startExamples(){seedLocal(Store);finishWelcome();}
+
+  /* ===== things that come back: dentist, car insurance, taxes ... =====
+     Each one is a single live task. Its own dueDate is the day it shows up, so every screen (Day, Home cards, counts, Undo)
+     already treats it like any other task. Quiet = a future date. All data is plain: dates "YYYY-MM-DD", time "HH:MM",
+     every = months, so the same rules can move to a server later. Shapes:
+       visit   Quiet, Book it (2 weeks before due), Booked (a day and time), Did you go?, Quiet again
+       simple  Quiet, Shows up (a few weeks before due), Done, Quiet again
+     Rules: "since" counts from when you did it (check-ups); "fixed" counts from a fixed date each year (insurance, taxes). */
+  var CB_LIB=[
+    {key:"dentist",name:"Dentist check-up",noun:"the dentist",book:"Book the dentist",kind:"visit",every:6,rule:"since",lead:14,icon:"tooth",tag:"Health",ask:"Last visit?"},
+    {key:"eye",name:"Eye test",noun:"the eye test",book:"Book an eye test",kind:"visit",every:12,rule:"since",lead:14,icon:"eye",tag:"Health",ask:"Last one?"},
+    {key:"insurance",name:"Car insurance",act:"Renew car insurance",kind:"simple",every:12,rule:"fixed",lead:21,icon:"car",tag:"Money",ask:"When does it expire?"},
+    {key:"taxes",name:"Taxes",act:"File taxes",kind:"simple",every:12,rule:"fixed",lead:21,icon:"receipt",tag:"Money",ask:"When are they due?"},
+    {key:"subs",name:"Subscriptions",act:"Review subscriptions",kind:"simple",every:3,rule:"since",lead:0,icon:"arrows",tag:"Money"},
+    {key:"checkup",name:"Yearly check-up",noun:"your check-up",book:"Book your yearly check-up",kind:"visit",every:12,rule:"since",lead:14,icon:"heartbeat",tag:"Health",ask:"Last one?"}
+  ];
+  function cbDef(key){return CB_LIB.filter(function(d){return d.key===key})[0]||null}
+  function cbMonths(ds,n){var d=new Date(ds+"T00:00:00"),day=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+n);var last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(day,last));return fmt(d)}
+  function cbEveryLabel(n){return n%12===0?(n===12?"year":(n/12)+" years"):(n===1?"month":n+" months")}
+  function cbShow(cb){return addDaysStr(cb.next,-(cb.lead||0))}
+  function cbItems(){return Store.all("items").filter(function(i){return i.cb})}
+  function cbFind(key){return cbItems().filter(function(i){return i.cb.key===key})[0]||null}
+  function cbWhen(cb){return dayShort(cb.booked)+(cb.at?", "+fmtTime(cb.at):"")}
+  function cbNoun(cb){return cb.noun||"it"}
+  /* what a thing is doing right now: quiet, book (visit is due), act (simple is due), booked, went (time to ask) */
+  function cbMode(i,now){
+    var cb=i.cb,t=today();now=now||new Date();
+    if(cb.stage==="booked"){
+      if(cb.booked<t)return "went";
+      if(cb.booked===t){
+        if(cb.at){if(now.getHours()*60+now.getMinutes()>=minsOf(cb.at)+60)return "went";}
+        else if(now.getHours()>=18)return "went";
+      }
+      return "booked";
+    }
+    if(cb.snooze&&cb.snooze>t)return "quiet";
+    return t>=cbShow(cb)?(cb.kind==="visit"?"book":"act"):"quiet";
+  }
+  function cbTitle(i){
+    if(!i.cb)return i.title;
+    return cbMode(i)==="went"?"Went to "+cbNoun(i.cb)+"?":i.title;
+  }
+  /* the task fields that show this stage */
+  function cbFields(cb){
+    var f={done:false,completedAt:null};
+    if(cb.stage==="booked"){f.title=cb.name+", "+cbWhen(cb);f.dueDate=cb.booked;f.reminder=cb.at||null;f.notes="";}
+    else{
+      f.title=cb.kind==="visit"?cb.book:cb.act;
+      var sh=cbShow(cb);f.dueDate=(cb.snooze&&cb.snooze>sh)?cb.snooze:sh;f.reminder=null;
+      f.notes=cb.kind==="visit"?"Check-up due by "+dayShort(cb.next):(cb.name+" is due "+dayShort(cb.next));
+    }
+    return f;
+  }
+  function cbEnsureTag(name){
+    var low=name.toLowerCase(),ts=Store.all("tags"),f=ts.filter(function(t){return (t.name||"").toLowerCase()===low})[0];
+    if(f)return f.id;
+    var id=uid("t");Store.cache.tags[id]={id:id,name:low,color:low==="money"?"#82BE97":"#E0A94A",createdAt:id};Store._save();return id;
+  }
+  function cbBuild(d,answer,stagger){
+    var t=today(),cb={key:d.key,kind:d.kind,name:d.name,noun:d.noun||null,book:d.book||null,act:d.act||null,every:d.every,rule:d.rule,lead:d.lead||0,stage:"quiet",booked:null,at:null,snooze:null,last:null,next:null};
+    var st=(stagger||0)*7;
+    if(d.rule==="fixed"){
+      var m={m0:20,m1:50,m4:120}[answer];
+      cb.next=addDaysStr(t,m!=null?m:(d.lead+14+st));
+    }else if(d.kind==="visit"){
+      if(answer==="recent"){cb.last=cbMonths(t,-Math.round(d.every/2));cb.next=cbMonths(cb.last,d.every);}
+      else if(answer==="old")cb.next=addDaysStr(t,d.lead+7+st);
+      else cb.next=addDaysStr(t,d.lead+21+st);
+    }else cb.next=addDaysStr(t,30+st);
+    return cb;
+  }
+  function cbNewItem(cb,tags,prio){
+    var it={catId:TODO_CAT,sub:"",title:"",akind:"oneoff",kind:"todo",notes:"",priority:prio||"med",tags:tags||[],assignees:[],private:false,done:false,dueDate:null,repeatEvery:0,perDay:1,reminder:null,duration:null,
+      stance:"routine",list:"personal",markers:[],expect:null,normal:{min:1,max:1,maxGapDays:null,maxPerWeek:null},cb:cb,
+      createdAt:new Date().toISOString(),createdDate:today(),order:Date.now(),owner:state.me||null};
+    Object.assign(it,cbFields(cb));return it;
+  }
+  function cbCreate(key,answer,stagger){
+    var d=cbDef(key);if(!d||cbFind(key))return;
+    return Store.add("items",cbNewItem(cbBuild(d,answer,stagger),[cbEnsureTag(d.tag)]));
+  }
+  /* typed: "renew passport every 2 years" */
+  function cbAddTyped(title,months,firstDate,tags,prio){
+    var t=today(),cb={key:"typed",kind:"simple",name:title,noun:null,book:null,act:title,every:months,rule:"since",lead:0,stage:"quiet",booked:null,at:null,snooze:null,last:null,next:firstDate||cbMonths(t,months)};
+    return Store.add("items",cbNewItem(cb,tags||[],prio==="none"?"med":prio));
+  }
+  function cbSnap(){return JSON.stringify({cache:Store.cache,priv:Store._priv,me:state.me})}
+  function cbUndo(snap){return function(){var p=JSON.parse(snap);Store.cache=p.cache;Store._priv=p.priv||{};Store._save();Store._savePriv();Store._emit();}}
+  function cbSave(i,cb,extra){Store.update("items",i.id,Object.assign({cb:cb},cbFields(cb),extra||{}))}
+  function cbClone(i){return JSON.parse(JSON.stringify(i.cb))}
+  function cbBackMonth(cb){return HM_MONTHS[new Date(cbShow(cb)+"T00:00:00").getMonth()]}
+  /* the answers */
+  function cbBooked(id,date,time){
+    var i=Store.get("items",id);if(!i||!i.cb)return;var snap=cbSnap(),cb=cbClone(i);
+    cb.stage="booked";cb.booked=date;cb.at=time||null;cb.snooze=null;cbSave(i,cb);
+    toast("Booked: "+cbWhen(cb)+". I will check in after.",cbUndo(snap),"happy");
+  }
+  function cbFinish(id,when){
+    var i=Store.get("items",id);if(!i||!i.cb)return;var snap=cbSnap(),cb=cbClone(i);
+    cb.last=when;
+    if(cb.rule==="fixed"){cb.next=cbMonths(cb.next,cb.every);while(cb.next<=today())cb.next=cbMonths(cb.next,cb.every);}
+    else cb.next=cbMonths(when,cb.every);
+    cb.stage="quiet";cb.booked=null;cb.at=null;cb.snooze=null;cbSave(i,cb);
+    toast((cb.kind==="visit"?"See you in ":"Done. Back in ")+cbBackMonth(cb)+". It comes back by itself.",cbUndo(snap),"joy");
+  }
+  function cbWent(id){var i=Store.get("items",id);if(i&&i.cb)cbFinish(id,i.cb.booked&&i.cb.booked<=today()?i.cb.booked:today())}
+  function cbLater(id,days){
+    var i=Store.get("items",id);if(!i||!i.cb)return;var snap=cbSnap(),cb=cbClone(i);
+    cb.snooze=addDaysStr(today(),days||3);cbSave(i,cb);
+    toast("No rush. I will ask again in "+(days||3)+" days.",cbUndo(snap));
+  }
+  function cbBookSheet(id){
+    var i=Store.get("items",id);if(!i||!i.cb)return;
+    ms={type:"cbbook",id:id};
+    openModal('<div class="modal-h"><h3>When is '+esc(cbNoun(i.cb))+'?</h3><button class="x" data-close aria-label="Close">×</button></div>'+
+      '<div class="modal-b"><div class="field"><label>Type it like a sentence</label><input type="text" id="cb-when" placeholder="e.g. friday 10am" autocomplete="off" enterkeyhint="done"><p class="cb-read" id="cb-read">Friday 10am, tomorrow at 5, 25 sep...</p></div></div>'+
+      '<div class="modal-f"><button class="btn ghost" data-cbact="later|'+id+'">Not booked yet</button><span class="spacer"></span><button class="btn primary" data-cbsave="'+id+'">Save</button></div>');
+    setTimeout(function(){var e=$("#cb-when");if(e)e.focus()},80);
+  }
+  function cbTick(i){
+    var m=cbMode(i);
+    if(i.cb.kind==="visit"&&m==="book")cbBookSheet(i.id);
+    else cbFinish(i.id,i.cb.booked&&i.cb.booked<=today()?i.cb.booked:today());
+  }
+  function cbAct(act,id){
+    if(ms&&ms.type==="cbbook")closeModal();
+    if(act==="booked"||act==="moved")cbBookSheet(id);
+    else if(act==="yes"||act==="done")cbWent(id);
+    else if(act==="already")cbFinish(id,today());
+    else if(act==="later")cbLater(id,3);
+  }
+  /* under a row on the Day list */
+  function cbRowExtra(i){
+    var cb=i.cb,m=cbMode(i),h='<div class="cb-x"><span class="cb-rep">'+PI("repeat")+'Every '+cbEveryLabel(cb.every)+(m==="booked"||m==="went"?"":" · due "+esc(dayShort(cb.next)))+'</span>';
+    var b=function(a,l,pri){return '<button class="cb-b'+(pri?" pri":"")+'" data-cbact="'+a+'|'+i.id+'">'+l+'</button>'};
+    if(m==="book")h+=b("booked","Booked",1)+b("already","Went already");
+    else if(m==="went")h+=b("yes","Yes",1)+b("moved","It moved");
+    else if(m==="act")h+=b("done","Done",1)+b("later","Later");
+    return h+'</div>';
+  }
+  /* the companion asks, one question at a time, on Home */
+  function cbPending(){
+    var its=cbItems().filter(function(i){return !i.private}),best=null,rank={went:0,book:1,act:1};
+    its.forEach(function(i){var m=cbMode(i);if(rank[m]==null)return;if(!best||rank[m]<rank[best.m]||(rank[m]===rank[best.m]&&cbShow(i.cb)<cbShow(best.i.cb)))best={i:i,m:m};});
+    return best;
+  }
+  function cbAskHtml(){
+    var p=cbPending();if(!p)return "";
+    var i=p.i,cb=i.cb,q,sub,btns,b=function(a,l,pri){return '<button class="cb-b'+(pri?" pri":"")+'" data-cbact="'+a+'|'+i.id+'">'+l+'</button>'};
+    if(p.m==="went"){q="Did you get to "+cbNoun(cb)+"?";sub="Booked for "+cbWhen(cb);btns=b("yes","Yes",1)+b("moved","It moved");}
+    else if(p.m==="book"){q="Time to book "+cbNoun(cb)+"?";sub="Due by "+dayShort(cb.next);btns=b("booked","Booked",1)+b("later","Later");}
+    else{q=cb.act+"?";sub="Due "+dayShort(cb.next);btns=b("done","Done",1)+b("later","Later");}
+    return '<div class="cbask"><span class="blob-host cbask-blob" aria-hidden="true"></span><div class="cbq"><b>'+esc(q)+'</b><small>'+esc(sub)+'</small><div class="cbbtns">'+btns+'</div></div></div>';
+  }
+  function cbAskFill(ds){
+    var el=$("#cbAsk");if(!el)return;
+    var h=ds===today()?cbAskHtml():"";
+    if(el._h===h)return;el._h=h;el.innerHTML=h;
+    var bl=el.querySelector(".cbask-blob");if(bl)Buddy.temp(bl,"happy",false,true);
+  }
+  /* Settings: switch them on and off later */
+  function cbPanel(){
+    var h='<div class="sec-h"><h2>Things that come back</h2><span class="line"></span></div><div class="panel">';
+    CB_LIB.forEach(function(d){
+      var on=cbFind(d.key);
+      h+='<div class="su-sw'+(on?" on":"")+'"><span class="su-ic">'+phicon(d.icon)+'</span><span class="tx"><b>'+esc(d.name)+'</b><small>'+(on?"Next: "+esc(dayShort(on.cb.next)):"Every "+cbEveryLabel(d.every))+'</small></span>'+
+         '<button class="su-tg'+(on?" on":"")+'" role="switch" aria-checked="'+(!!on)+'" aria-label="'+esc(d.name)+'" data-cbtoggle="'+d.key+'"></button></div>';
+    });
+    return h+'<p class="su-note">These are typical gaps, always editable. Ask your doctor for yours. Ritsu never gives medical advice.</p></div>';
+  }
+
+  /* ===== first run: a one minute setup (Set me up) ===== */
+  var setupS=null;
+  var SETUP_HABITS=[
+    {k:"wake",t:"Wake up on time",d:"7:00am",icon:"alarm",cat:"c_health",it:"Wake up on time",rem:"07:00"},
+    {k:"water",t:"Drink water",d:"8 glasses",icon:"drop",cat:"c_health",it:"Drink water"},
+    {k:"meds",t:"Take my meds",d:"",icon:"pill",med:true},
+    {k:"move",t:"Move every day",d:"20 minutes",icon:"walk",cat:"c_health",it:"Move for 20 minutes"},
+    {k:"read",t:"Read a little",d:"10 pages",icon:"bookopen",cat:"c_mind",it:"Read 10 pages"},
+    {k:"sleep",t:"Sleep on time",d:"11:00pm",icon:"moon",cat:"c_health",it:"Sleep by 11pm",rem:"23:00"},
+    {k:"tidy",t:"Keep the house tidy",d:"10 minutes",icon:"broom",cat:"c_todo",it:"Tidy up for 10 minutes"},
+    {k:"phone",t:"Less phone at night",d:"after 10pm",icon:"phoneoff",cat:"c_health",it:"Phone away after 10pm",rem:"22:00"}
+  ];
+  var SETUP_MEDTIMES=[["08:00","Morning"],["13:00","Afternoon"],["21:00","Evening"]];
+  var SETUP_ANS={visit:[["recent","This year"],["old","Last year"],["unsure","Not sure"]],fixed:[["m0","This month"],["m1","Next month"],["m4","Later this year"],["unsure","Not sure"]]};
+  function setupStart(){
+    setupS={step:2,h:{wake:true,water:true,read:true},medName:"",medTime:"08:00",cb:{dentist:{on:true,ans:"unsure"},insurance:{on:true,ans:"unsure"},subs:{on:true,ans:null}}};
+  }
+  function setupHtml(){
+    var S=setupS,h='<div class="welcome-card su"><div class="su-steps" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="'+(S.step>=3?"on":"")+'"></i></div>';
+    if(S.step===2){
+      h+='<h1 class="su-title">What would help most?</h1><p class="su-sub">Pick any. Each comes with a sensible time you can change later.</p><div class="su-tiles">';
+      SETUP_HABITS.forEach(function(x){
+        var on=!!S.h[x.k];
+        h+='<button class="su-tile'+(on?" on":"")+'" data-setup="tile|'+x.k+'" aria-pressed="'+on+'"><span class="su-ck">'+(on?CHECK_SVG:"")+'</span><span class="su-tic">'+phicon(x.icon)+'</span><b>'+esc(x.t)+'</b>'+(x.d?'<small>'+esc(x.d)+'</small>':'')+'</button>';
+        if(x.k==="meds"&&on){
+          h+='<div class="su-ask"><div class="su-q">Which medicine, and when?</div><div class="su-row"><input id="su-med" class="su-inp" type="text" placeholder="Name" value="'+esc(S.medName)+'" autocomplete="off"></div><div class="su-chips">'+
+             SETUP_MEDTIMES.map(function(t){return '<button class="su-chip'+(S.medTime===t[0]?" on":"")+'" data-setup="medtime|'+t[0]+'">'+t[1]+', '+esc(fmtTime(t[0]))+'</button>'}).join("")+'</div></div>';
+        }
+      });
+      h+='</div><div class="su-foot"><button class="su-skip" data-setup="skip2">Skip</button><button class="btn primary su-next" data-setup="next">Next</button></div>';
+    }else{
+      h+='<h1 class="su-title">Things that come back</h1><p class="su-sub">Ritsu stays quiet and shows these only when it is time.</p><div class="su-list">';
+      CB_LIB.forEach(function(d){
+        var c=S.cb[d.key]||{on:false,ans:null},on=!!c.on;
+        h+='<div class="su-sw'+(on?" on":"")+'"><span class="su-ic">'+phicon(d.icon)+'</span><span class="tx"><b>'+esc(d.name)+'</b><small>'+(d.rule==="fixed"?"Once a year":"Every "+cbEveryLabel(d.every))+'</small></span><button class="su-tg'+(on?" on":"")+'" role="switch" aria-checked="'+on+'" aria-label="'+esc(d.name)+'" data-setup="cb|'+d.key+'"></button></div>';
+        if(on&&d.ask){
+          var opts=SETUP_ANS[d.rule==="fixed"?"fixed":"visit"];
+          h+='<div class="su-subq"><div class="su-q">'+esc(d.ask)+'</div><div class="su-chips">'+opts.map(function(o){return '<button class="su-chip'+((c.ans||"unsure")===o[0]?" on":"")+'" data-setup="ans|'+d.key+'|'+o[0]+'">'+o[1]+'</button>'}).join("")+'</div></div>';
+        }
+      });
+      h+='</div><p class="su-note">Typical gaps, always editable. Ask your doctor for yours.</p><div class="su-foot"><button class="su-skip" data-setup="skip3">Skip</button><button class="btn primary su-next" data-setup="finish">Done</button></div>';
+    }
+    return h+'</div>';
+  }
+  function suItem(x,ix){
+    var t=today(),tag=x.cat==="c_health"?[cbEnsureTag("Health")]:[];
+    var it={catId:x.cat,sub:"",title:x.it,akind:"activity",kind:"todo",notes:"",priority:"none",tags:tag,assignees:[],private:false,done:false,dueDate:null,repeatEvery:1,perDay:1,reminder:x.rem||null,duration:null,stance:"routine",markers:[],expect:null,
+      normal:{min:1,max:1,maxGapDays:1,maxPerWeek:null},createdAt:new Date().toISOString(),createdDate:t,order:Date.now()+ix,owner:state.me||null};
+    if(x.cat===TODO_CAT)it.list="personal";
+    return it;
+  }
+  function setupFinish(){
+    var S=setupS;setupS=null;
+    WELCOME_CATS.forEach(function(c){Store.cache.cats[c[0]]={id:c[0],name:c[1],emoji:c[2],color:c[3],order:c[4]};});
+    Store.welcome=false;
+    SETUP_HABITS.forEach(function(x,ix){
+      if(!S.h[x.k])return;
+      if(x.med){
+        var nm=(S.medName||"").trim();if(!nm)return;
+        Store.add("items",{catId:"c_health",sub:"",title:nm,kind:"med",notes:"",priority:"med",tags:[cbEnsureTag("Health")],assignees:[],private:false,reminder:S.medTime,duration:null,stance:"routine",markers:[],expect:{at:S.medTime,slack:90,dir:"either"},
+          repeatEvery:1,perDay:1,dosesPerDay:1,stock:30,reorderTablets:0,reorderAt:7,courseDays:0,courseStart:today(),log:[],logTimes:{},done:false,dueDate:null,normal:{min:1,max:1,maxGapDays:1,maxPerWeek:null},
+          createdAt:new Date().toISOString(),createdDate:today(),order:Date.now()+ix,owner:state.me||null});
+      }else Store.add("items",suItem(x,ix));
+    });
+    var n=0;CB_LIB.forEach(function(d){var c=S.cb[d.key];if(c&&c.on){cbCreate(d.key,c.ans||"unsure",n);n++;}});
+    finishWelcome();
+    toast("That is it. Add anything else by typing it.",null,"happy");
+  }
+  /* one place for every tap and key that belongs to the pieces above */
+  function cbClick(e){
+    var el;
+    if((el=e.target.closest("[data-cbact]"))){var pa=el.getAttribute("data-cbact").split("|");cbAct(pa[0],pa[1]);return true;}
+    if((el=e.target.closest("[data-cbsave]"))){
+      var id=el.getAttribute("data-cbsave"),w=$("#cb-when"),P=parseTyped(w?w.value:"",new Date());
+      if(!P.date){toast("Tell me the day, like friday 10am");return true;}
+      closeModal();cbBooked(id,P.date,P.time);return true;
+    }
+    if((el=e.target.closest("[data-cbtoggle]"))){
+      var key=el.getAttribute("data-cbtoggle"),cur=cbFind(key),d=cbDef(key);
+      if(cur){if(gone("Removed "+d.name))Store.del("items",cur.id);}
+      else{var snap=cbSnap();cbCreate(key,"unsure",0);toast("I will bring it up when it is time.",cbUndo(snap));}
+      return true;
+    }
+    if((el=e.target.closest("[data-setup]"))){
+      var v=el.getAttribute("data-setup").split("|"),a=v[0];
+      if(a==="start"){setupStart();render();return true;}
+      if(!setupS)return true;
+      if(a==="tile"){setupS.h[v[1]]=!setupS.h[v[1]];render();return true;}
+      if(a==="medtime"){setupS.medTime=v[1];render();return true;}
+      if(a==="next"||a==="skip2"){if(a==="skip2")setupS.h={};setupS.step=3;render();window.scrollTo(0,0);return true;}
+      if(a==="cb"){var c=setupS.cb[v[1]]||(setupS.cb[v[1]]={on:false,ans:null});c.on=!c.on;render();return true;}
+      if(a==="ans"){setupS.cb[v[1]].ans=v[2];render();return true;}
+      if(a==="skip3"){setupS.cb={};setupFinish();return true;}
+      if(a==="finish"){setupFinish();return true;}
+      return true;
+    }
+    return false;
+  }
+  document.addEventListener("input",function(e){
+    var t=e.target;if(!t)return;
+    if(t.id==="su-med"&&setupS)setupS.medName=t.value;
+    if(t.id==="cb-when"){var P=parseTyped(t.value,new Date()),r=$("#cb-read");if(r)r.textContent=P.date?"Read as: "+dayShort(P.date)+(P.time?", "+fmtTime(P.time):""):"Friday 10am, tomorrow at 5, 25 sep...";}
+  });
+  document.addEventListener("keydown",function(e){if(e.key==="Enter"&&e.target&&e.target.id==="cb-when"){e.preventDefault();var b=document.querySelector("[data-cbsave]");if(b)b.click();}});
+  /* typed: "renew passport every 2 years" makes one that comes back */
+  var CB_EVERY_RE=/\bevery\s+(\d+|a|one|two|three|four|six|twelve)?\s*(months?|years?)\b/i;
+  function cbEveryIn(text){
+    var m=CB_EVERY_RE.exec(text||"");if(!m)return null;
+    var words={a:1,one:1,two:2,three:3,four:4,six:6,twelve:12},n=m[1]?(words[m[1].toLowerCase()]||parseInt(m[1],10)):1;
+    if(!n)return null;
+    return {months:n*(/^year/i.test(m[2])?12:1),cut:m[0]};
+  }
 
   var ms={};
   function openModal(html){var mo=$("#modal");mo.className="modal";mo.innerHTML=html;$("#overlay").classList.add("show");}
@@ -4137,7 +4465,9 @@
     var date=qa.touched?qa.date:(P.date||qa.date),time=qa.timeTouched?qa.time:(P.time||null),dur=qa.durTouched?qa.dur:(P.dur||null);
     if(!time)dur=null;
     var use={date:!!P.parts.date.length&&qa.rep===0,time:!!P.parts.time.length&&(!qa.timeTouched||qa.time!=null),dur:!!P.parts.dur.length&&!!time&&(!qa.durTouched||qa.dur!=null)};
-    return {P:P,text:txt,date:date,time:time,dur:dur,use:use,title:tyTitle(txt,P.parts,use)};
+    var ev=(qa.card==="todo"&&qa.rep===0)?cbEveryIn(txt):null,ttl=tyTitle(txt,P.parts,use);
+    if(ev)ttl=ttl.replace(ev.cut,"").replace(/\s{2,}/g," ").replace(/[\s,]+$/,"").trim();
+    return {P:P,text:txt,date:date,time:time,dur:dur,use:use,title:ttl,every:ev?ev.months:0};
   }
 
   function openAdd(date,cat){
@@ -4182,6 +4512,7 @@
     if(e.P.parts.time.length&&!qa.timeTouched&&e.time)bits.push(fmtTime(e.time));
     else if(e.P.time&&!e.P.parts.time.length&&!qa.timeTouched)bits.push(fmtTime(e.P.time));
     if(e.use.dur&&!qa.durTouched)bits.push(durLabel(e.dur));
+    if(e.every)bits.unshift("Comes back every "+cbEveryLabel(e.every));
     var h=$("#qa-hint");if(h){if(bits.length){h.textContent="Read as: "+bits.join(", ");h.hidden=false}else h.hidden=true}
   }
   function paintPanel(){
@@ -4197,6 +4528,7 @@
     var isTodo=qa.card==="todo",cat=isTodo?TODO_CAT:qa.cat;
     if(!cat){toast("Pick an area first");return}
     var date=qa.rep>0?null:e.date;
+    if(e.every&&isTodo&&qa.rep===0){var snapC=cbSnap(),nxC=e.use.date?e.date:cbMonths(today(),e.every);cbAddTyped(title,e.every,nxC,qa.tags.slice(),qa.prio);closeModal();toast("Added "+title+". It comes back every "+cbEveryLabel(e.every)+", next "+dayShort(nxC)+(e.every>=12?" "+nxC.slice(0,4):"")+".",cbUndo(snapC));return;}
     var d={catId:cat,sub:"",title:title,akind:qa.rep>0?"activity":"oneoff",kind:"todo",notes:qa.notes||"",priority:qa.prio,tags:qa.tags.slice(),assignees:[],private:false,done:false,
       dueDate:date,repeatEvery:qa.rep,perDay:1,reminder:e.time,duration:e.time?e.dur:null,stance:"routine",list:qa.list,markers:[],expect:null,normal:{min:1,max:1,maxGapDays:qa.rep||null,maxPerWeek:null}};
     var when=(qa.rep>0?qaRepLabel(qa.rep):qaDateLabel(date))+(e.time?" "+fmtTime(e.time):"");
@@ -4746,6 +5078,7 @@
 
   function logToggleDate(i,ds){ if(countOn(i,ds)>0)setDayCount(i,ds,0); else setDayCount(i,ds,1); }
   function tapTodo(i){
+    if(i.cb){cbTick(i);return;}
     if(!isRepeat(i)&&!isLimit(i)&&!isBody(i)){var was={done:!!i.done,completedAt:i.completedAt||null},nowDone=!i.done;_justDone=nowDone?i.id:null;setTimeout(function(){_justDone=null},900);if(nowDone)Buddy.react("done");Store.update("items",i.id,{done:nowDone,completedAt:nowDone?fmt(new Date())+"T"+nowHM()+":00":null});toast(nowDone?"Done: "+i.title:"Marked not done",function(){Store.update("items",i.id,was)},nowDone?(dayFinished()?"joy":"happy"):null);return;}
     if(isLimit(i)||isBody(i)){addEvent(i,today());openStrip(i.id);return;}   /* always adds, undo lives in the strip */
     var pd=Math.max(1,normOf(i).max||perDayOf(i));var c=countOn(i,today());
@@ -4795,6 +5128,7 @@
     document.addEventListener("contextmenu",function(e){if(e.target.closest&&e.target.closest(".hm-card"))e.preventDefault()});
   })();
   document.addEventListener("click",function(e){var el;
+    if(cbClick(e))return;
     if(state.homeOpen&&$("#hmCards")&&!e.target.closest("[data-hmcard]")){hmFlip(null);}   /* a tap anywhere else turns the card back over */
     if((el=e.target.closest("[data-hmopen]"))&&e.target.closest(".hm-card")){openDayList(el.getAttribute("data-hmopen"),hmDay());return;}
     if((el=e.target.closest("[data-hmcard]"))){if(_hmLong){_hmLong=false;return;}var hd=el.getAttribute("data-hmcard");if(state.homeOpen===hd)hmFlip(null);else hmFlip(hd);return;}
