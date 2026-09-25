@@ -1254,7 +1254,7 @@
   :root[data-theme="warm"] .row{border-bottom-color:var(--line-2)}
   :root[data-theme="warm"] .pill,:root[data-theme="warm"] .chip{border-color:var(--line)}
 
-  /* ===== POSH MOCK: calm canvas, flat cards, one quiet hero, glass only on what floats ===== */
+  /* ===== v5 look: calm canvas, flat cards, one quiet card on Home, glass only on what floats. Later rules refine earlier ones. ===== */
   :root:not([data-theme="warm"]){--bg:#0C0D0F;--panel:#141518;--panel-2:#191B1F;--line:#24272D;--gold:#E9C46A;--gold-ink:#E9C46A;--qc-glow:color-mix(in srgb,#34D399 9%,transparent)}
   :root[data-theme="warm"]{--bg:#ECE8E1;--panel:#FBF9F5;--panel-2:#F4F0E9;--raise:#FFFFFF;--line:#DDD7CC;--line-2:#E6E1D8;--ink:#1B1A17;--muted:#5E5A52;--faint:#6F6A61;
     --accent:#0F7A57;--accent-ink:#0B5E43;--gold:#B7862B;--gold-ink:#8A6420;--qc-glow:transparent}
@@ -2523,6 +2523,9 @@
   function isRoutine(i){return stanceOf(i)==="routine"}
   function isBody(i){return stanceOf(i)==="body"}
   function isLimit(i){return stanceOf(i)==="limit"}
+  /* trackers are logged, not done: body logs, things you are cutting down, and Body readings like water or sleep hours.
+     They never sit in the to-do list and never count toward the day. */
+  function isTracker(i){return isBody(i)||isLimit(i)||(i.kind==="measure"&&areaDomain(i.catId)==="body")}
   function logged(i){return i.kind==="todo"||i.kind==="med"}
   /* items that carry a day-by-day pattern worth scanning */
   function scannable(i){return !isEpisode(i)&&!isFast(i)&&logged(i)&&(isRepeat(i)||i.kind==="med"||isBody(i)||isLimit(i))}
@@ -2712,6 +2715,7 @@
   function dailyRoutine(ds){
     return routineItems().filter(function(i){
       if(!trackable(i))return false;
+      if(isTracker(i))return false;                      // trackers are logged, not scored
       if(i.count===false)return false;                 // opted out of the consistency score
       if(i.kind==="med"&&i.count!==true)return false;   // meds never dent consistency unless opted in
       if((i.repeatEvery||1)!==1)return false;
@@ -3265,15 +3269,6 @@
     if(r&&r.then)r.then(go2);else go2();
     toast("Fast started, "+target+"h");
   }
-  function fastHomeCardOld(){
-    var i=fastItem();var a=i?activeFast(i):null;
-    if(a){var tgt=a.target||16,h0=fastHours(a),pct=Math.round(Math.min(1,h0/tgt)*100);
-      return '<button class="card fasthome" data-nav="fasting"><span class="fh-ring" style="background:conic-gradient(var(--accent) '+pct+'%,var(--panel-2) 0)"><i>'+tgt+'h</i></span>'+
-        '<span class="fh-mid"><b>Fasting, '+esc(fmtHM(h0))+' in</b><small>'+esc(FPHASES[phaseAt(h0)][2])+' · '+pct+'% of '+tgt+'h target</small></span><span class="fh-go">View ›</span></button>';
-    }
-    return '<button class="card fasthome" data-nav="fasting"><span class="fh-ring" style="background:var(--panel-2)"><i>⏱</i></span>'+
-      '<span class="fh-mid"><b>Fasting</b><small>Start a fast, choose 16h, 24h, 36h…</small></span><span class="fh-go">Open ›</span></button>';
-  }
   function fastClock(ms){var d=new Date(ms);return fmtTime(String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"))}
   function fastStamp(ms){var d=new Date(ms),same=fmt(d)===today();return (same?"today":DOW[d.getDay()])+" at "+fastClock(ms)}
   /* ===== The Fasting page: the live fast on top, then what your fasting looks like over time.
@@ -3387,11 +3382,11 @@
   /* What counts in a domain on a given day. Today follows the same rules as the old rings;
      past days read the daily-routine history the calendar already uses; future days are what is planned. */
   function hmItems(dom,ds){
-    var off=dCount(ds),all=visibleItems().filter(function(i){return !qcTracker(i)});
+    var off=dCount(ds),all=visibleItems().filter(function(i){return !isTracker(i)});
     function inDom(i){return areaDomain(i.catId)===dom}
     if(off===0)return all.filter(function(i){return i.kind!=="med"&&!isFast(i)&&inDom(i)&&schedToday(i)});
     if(off<0){
-      var out=dailyRoutine(ds).filter(function(i){return inDom(i)&&!qcTracker(i)});
+      var out=dailyRoutine(ds).filter(inDom);
       all.forEach(function(i){
         if(i.kind==="todo"&&!isRepeat(i)&&inDom(i)&&(i.dueDate===ds||(i.done&&completedLocal(i).slice(0,10)===ds))&&out.indexOf(i)<0)out.push(i);
       });
@@ -3459,143 +3454,89 @@
   var DOW_LONG=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
   var QC_NUM=["no","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve"];
   function qcWord(n,cap){var w=n<QC_NUM.length?QC_NUM[n]:String(n);return cap?w.charAt(0).toUpperCase()+w.slice(1):w}
-  function qcAt(i,ds){var w=expectOf(i)||(i.reminder?{at:i.reminder}:null)||(i.dueTime?{at:i.dueTime}:null);if(!w||!w.at)return "";if(dCount(ds)===0){var q=minsOf(w.at),n=new Date();if(q<n.getHours()*60+n.getMinutes())return "";}var t=fmtTime(w.at);return t.replace(":00","")}
+  /* the time of the next thing, said only while it is still ahead */
+  function qcAt(i,ds){var w=expectOf(i)||(i.reminder?{at:i.reminder}:null);if(!w||!w.at)return "";if(dCount(ds)===0){var q=minsOf(w.at),n=new Date();if(q<n.getHours()*60+n.getMinutes())return "";}return fmtTime(w.at).replace(":00","")}
   function qcNext(ds,st){
     var pend=[];HM_DOMS.forEach(function(d){st[d[0]].its.forEach(function(i){if(!hmDone(i,ds))pend.push(i)})});
     if(dCount(ds)===0){var p=hmNextPick();if(p&&!p.c.fast&&pend.indexOf(p.c.i)>=0)return p.c.i;}
     pend.sort(hmPrio);return pend[0]||null;
   }
-  function hmHeroHtml(ds,st){
-    var off=dCount(ds),tot=0,done=0;
-    HM_DOMS.forEach(function(d){var s=st[d[0]];tot+=s.tot;done+=s.done;});
-    var d=new Date(ds+"T00:00:00"),left=tot-done,nx=qcNext(ds,st),at=nx?qcAt(nx,ds):"";
-    var kick=DOW_LONG[d.getDay()]+" \u00b7 "+d.getDate()+" "+HM_MONTHS[d.getMonth()];
-    var nm=nx?'<em>'+esc(nx.title)+'</em>':"";
-    var say;
-    if(!tot)say=off>0?"Nothing planned yet. <em>Room to breathe.</em>":off<0?"A quiet day.":"A clear day. <em>Enjoy the space.</em>";
-    else if(off<0)say=done===tot?"All "+qcWord(tot)+" done. <em>A full day.</em>":qcWord(done,1)+" of "+qcWord(tot)+" done that day.";
-    else if(off>0)say=qcWord(tot,1)+" planned. "+(nx?nm+" comes first.":"");
-    else if(done===tot)say="All "+qcWord(tot)+" done. <em>Go easy tonight.</em>";
-    else if(!done)say=qcWord(tot,1)+(tot===1?" thing":" things")+" today. "+nm+" is first"+(at?", at "+at:"")+".";
-    else if(left===1)say="One to go. "+nm+" is the last"+(at?", at "+at:"")+".";
-    else if(done*2<tot)say="Good start. "+qcWord(left,1)+" to go, and "+nm+" is next.";
-    else say=qcWord(left,1)+" to go. "+nm+" is next"+(at?", at "+at:"")+".";
-    var pieces="",ix=0,nxDom=nx?areaDomain(nx.catId):null;
-    HM_DOMS.forEach(function(dm){var s=st[dm[0]];if(!s.tot)return;var n=Math.min(s.tot,12),lit=s.tot>12?Math.round(s.done/s.tot*12):s.done,g="";
-      for(var k=0;k<n;k++)g+='<i class="'+(k<lit?"on":(k===lit&&off===0&&dm[0]===nxDom)?"nx":"")+'" style="--i:'+(ix++)+'"></i>';
-      pieces+='<div class="qc-grp" style="flex:'+n+'" data-hmopen="'+dm[0]+'"><div class="qc-seg">'+g+'</div><small><b>'+dm[1]+'</b> '+s.done+'/'+s.tot+'</small></div>';});
-    var foot="";if(0)foot=!tot?"":(done===tot?'<div class="qc-foot"><div><small>Tonight</small><b>Nothing left</b></div></div>':
-      nx?'<div class="qc-foot"><div data-open="'+nx.id+'" role="button" tabindex="0"><small>'+(off===0?"Next":off>0?"First":"Left over")+'</small><b>'+esc(nx.title)+(at?", "+esc(at):"")+'</b></div>'+
-      (off===0?'<button class="qc-check" data-toggle="'+nx.id+'" aria-label="Mark '+esc(nx.title)+' done">'+HM_CHECK+'</button>':'')+'</div>':"");
-    return '<div class="qc-top" data-hmopen="all" role="button" tabindex="0" aria-label="Open the full list"><p class="qc-kick">'+kick+'</p>'+
-      '<div class="qc-num"><b>'+(tot?done:"0")+'</b><span>of '+tot+' done</span></div><p class="qc-say">'+say+'</p>'+
-      (tot?'<div class="qc-line" aria-hidden="true">'+pieces+'</div>':'')+'</div>'+foot+(off===0&&tot>0&&done===tot?'<i class="hm-done-flag" hidden></i>':'');
-  }
-  function hmHeroHtmlOld(ds,st){
-    var off=dCount(ds),tot=0,done=0,over=0,con=_hmCons.con;
-    HM_DOMS.forEach(function(d){var s=st[d[0]];tot+=s.tot;done+=s.done;});
-    if(off===0)visibleItems().forEach(function(i){if(i.kind==="todo"&&!isRepeat(i)&&!i.done&&i.dueDate&&dCount(i.dueDate)<0)over++;});
-    var p=tot?done/tot:0,title=off===0?"Done today":off<0?"Done on "+hmLabel(ds):"Planned for "+hmLabel(ds);
-    return '<div class="hm-hero-h"><h3 aria-level="2">'+title+'</h3><span>Full list &rarr;</span></div>'+
-      '<div class="hm-gauge">'+hmArc(p,HM_ROWS_HERO,200,112,100,100)+'<div class="mid"><b class="of">'+(tot?done+" of "+tot:"-")+'</b><small>'+(tot?(off===0&&done===tot?"Day complete":off===0?"done today":"done"):"nothing due")+'</small></div></div>'+
-      '<div class="hm-cons"><span><b>'+(con==null?"-":con+"%")+'</b> consistency, last 30 days</span><span class="hm-spark" aria-hidden="true">'+_hmCons.spark+'</span></div>'+(off===0&&tot>0&&done===tot?'<i class="hm-done-flag" hidden></i>':'');
-  }
+  function qcWeekStart(){var d=new Date(today()+"T00:00:00");return addDaysStr(today(),-((d.getDay()+6)%7))}
+  function qcPct(ds){var s=dayScore(ds);return (s&&s.of)?Math.round(Math.min(1,s.r)*100):null}
+  function qcMonthAvg(y,m,upto){var n=0,t=0,last=new Date(y,m+1,0).getDate();for(var d=1;d<=last;d++){var ds=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");if(upto&&ds>upto)break;var s=dayScore(ds);if(s&&s.of){t+=Math.min(1,s.r);n++;}}return n?Math.round(t/n*100):null}
 
-  /* ===== MOCK: the card. Front = number + three light bars, back = the consistency calendar ===== */
-  /* trackers (water, sleep hours, bowel movement, bedtime, smoking) are logs, not things to do: never counted, never listed */
-  function qcTracker(i){return isBody(i)||isLimit(i)||(i.kind==="measure"&&areaDomain(i.catId)==="body")}
+  /* ===== The Home card. Front: the day's number, three LED lights (Body, Mind, To-do) and one kind sentence.
+     Back: this week in lights, and the blob says the one thing worth saying. Tap a light to filter the list,
+     tap anywhere else to turn the card. The card "switches on" when the whole day is done. ===== */
   var _qcWasFull={},_qcDayWas=null;
   function qcBar(dom,s,off){
     var p=s.tot?s.done/s.tot:0,full=!!s.tot&&s.done===s.tot,bloom=false;
-    if(off===0){bloom=full&&_qcWasFull[dom]===false;_qcWasFull[dom]=full;}
+    if(off===0){bloom=full&&_qcWasFull[dom]===false;_qcWasFull[dom]=full;}   /* glow once, only when it fills while Home is open */
     return '<span class="qb qb-'+dom+(full?" full":"")+(s.tot?"":" none")+(bloom?" bloom":"")+'" style="--p:'+p.toFixed(3)+'" aria-hidden="true"><i></i></span>';
   }
-  function qcCal(){
-    var t=new Date(today()+"T00:00:00"),y=t.getFullYear(),m=t.getMonth(),first=new Date(y,m,1),n=new Date(y,m+1,0).getDate(),lead=(first.getDay()+6)%7,con=_hmCons&&_hmCons.con;
-    var h='<div class="qcb-h"><p class="qc-kick">'+HM_MONTHS[m]+' '+y+'</p><span class="qcg-con">'+(con==null?"":'<b>'+con+'%</b> last 30 days')+'</span></div><div class="qcc">';
-    ["M","T","W","T","F","S","S"].forEach(function(x){h+='<span class="qcc-l">'+x+'</span>'});
-    for(var k=0;k<lead;k++)h+='<span></span>';
-    var good=0,seen=0;
-    for(var dd=1;dd<=n;dd++){
-      var ds=y+"-"+String(m+1).padStart(2,"0")+"-"+String(dd).padStart(2,"0"),off=dCount(ds),c="",r=0;
-      if(off>0)c="fut";else{var sc=dayScore(ds);if(sc&&sc.of){r=Math.min(1,sc.r);seen++;if(r>=0.8)good++;}else c="none";}
-      if(off===0)c+=" td";
-      h+='<span class="qcc-d '+c+'" style="--p:'+r.toFixed(3)+'">'+dd+'</span>';
-    }
-    h+='</div>';
-    var say=!seen?"Give it a few days. <em>The month fills in.</em>":good>=seen*0.7?"Most days, you show up. <em>That is the whole trick.</em>":good?qcWord(good,1)+(good===1?" strong day":" strong days")+" this month. <em>Each one counts.</em>":"Every day you add counts. <em>No need to be perfect.</em>";
-    return h+'<p class="qc-say sm">'+say+'</p>';
+  function qcSay(off,tot,done,nx,at){
+    var left=tot-done,nm=nx?'<em>'+esc(nx.title)+'</em>':"";
+    if(!tot)return off>0?"Nothing planned yet. <em>Room to breathe.</em>":off<0?"A quiet day.":"A clear day. <em>Enjoy the space.</em>";
+    if(off<0)return done===tot?"All "+qcWord(tot)+" done. <em>A full day.</em>":qcWord(done,1)+" of "+qcWord(tot)+" done that day.";
+    if(off>0)return qcWord(tot,1)+" planned. "+(nx?nm+" comes first.":"");
+    if(done===tot)return "All "+qcWord(tot)+" done. <em>Go easy tonight.</em>";
+    if(!done)return qcWord(tot,1)+(tot===1?" thing":" things")+" today. "+nm+" is first"+(at?", at "+at:"")+".";
+    if(left===1)return "One to go. "+nm+" is the last"+(at?", at "+at:"")+".";
+    if(done*2<tot)return "Good start. "+qcWord(left,1)+" to go, and "+nm+" is next.";
+    return qcWord(left,1)+" to go. "+nm+" is next"+(at?", at "+at:"")+".";
   }
   function hmHeroHtml(ds,st){
     var off=dCount(ds),tot=0,done=0;
-    HM_DOMS.forEach(function(d){var s=st[d[0]];tot+=s.tot;done+=s.done;});
-    var d=new Date(ds+"T00:00:00"),left=tot-done,nx=qcNext(ds,st),at=nx?qcAt(nx,ds):"";
-    var kick=DOW_LONG[d.getDay()]+" · "+d.getDate()+" "+HM_MONTHS[d.getMonth()];
-    var nm=nx?'<em>'+esc(nx.title)+'</em>':"",say;
-    if(!tot)say=off>0?"Nothing planned yet. <em>Room to breathe.</em>":off<0?"A quiet day.":"A clear day. <em>Enjoy the space.</em>";
-    else if(off<0)say=done===tot?"All "+qcWord(tot)+" done. <em>A full day.</em>":qcWord(done,1)+" of "+qcWord(tot)+" done that day.";
-    else if(off>0)say=qcWord(tot,1)+" planned. "+(nx?nm+" comes first.":"");
-    else if(done===tot)say="All "+qcWord(tot)+" done. <em>Go easy tonight.</em>";
-    else if(!done)say=qcWord(tot,1)+(tot===1?" thing":" things")+" today. "+nm+" is first"+(at?", at "+at:"")+".";
-    else if(left===1)say="One to go. "+nm+" is the last"+(at?", at "+at:"")+".";
-    else if(done*2<tot)say="Good start. "+qcWord(left,1)+" to go, and "+nm+" is next.";
-    else say=qcWord(left,1)+" to go. "+nm+" is next"+(at?", at "+at:"")+".";
-    var bars='<div class="qc-bars">'+HM_DOMS.map(function(dm){var s=st[dm[0]];
-      var on=state.qcDom===dm[0];return '<button class="qc-br'+(on?' on':'')+(state.qcDom&&!on?' dim':'')+'" data-qclight="'+dm[0]+'" aria-pressed="'+on+'" aria-label="Show only '+dm[1]+'">'+qcBar(dm[0],s,off)+'<b>'+dm[1]+'</b><small>'+(s.tot?s.done+"/"+s.tot:"0")+'</small></button>'}).join("")+'</div>';
-    var front='<p class="qc-kick">'+kick+'</p><div class="qc-split"><div><div class="qc-num"><b>'+done+'</b><span>'+(tot&&done===tot?'all<br>done':'of '+tot+'<br>done')+'</span></div></div>'+bars+'</div><p class="qc-say sm">'+say+'</p>';
-    var fl=!!state.qcFlip;
+    HM_DOMS.forEach(function(d){tot+=st[d[0]].tot;done+=st[d[0]].done;});
+    var d=new Date(ds+"T00:00:00"),nx=qcNext(ds,st),at=nx?qcAt(nx,ds):"",all=tot>0&&done===tot;
+    var bars='<div class="qc-bars">'+HM_DOMS.map(function(dm){var s=st[dm[0]],on=state.qcDom===dm[0];
+      return '<button class="qc-br'+(on?" on":"")+(state.qcDom&&!on?" dim":"")+'" data-qclight="'+dm[0]+'" aria-pressed="'+on+'" aria-label="Show only '+dm[1]+'">'+qcBar(dm[0],s,off)+'<b>'+dm[1]+'</b><small>'+(s.tot?s.done+"/"+s.tot:"0")+'</small></button>'}).join("")+'</div>';
+    var front='<p class="qc-kick">'+DOW_LONG[d.getDay()]+" \u00b7 "+d.getDate()+" "+HM_MONTHS[d.getMonth()]+'</p><div class="qc-split"><div><div class="qc-num"><b>'+done+'</b><span>'+(all?"all<br>done":"of "+tot+"<br>done")+'</span></div></div>'+bars+'</div><p class="qc-say sm">'+qcSay(off,tot,done,nx,at)+'</p>';
+    var fl=!!state.qcFlip,sw=off===0&&all&&_qcDayWas===false;
+    if(off===0)_qcDayWas=all;
     return '<div class="qc-flip'+(fl?" on":"")+'" data-qcflip role="button" tabindex="0" aria-pressed="'+fl+'" aria-label="Turn the card over">'+
       '<div class="qc-face qc-fr">'+front+'</div><div class="qc-face qc-bk">'+qcBackWeek()+'</div></div>'+
       '<div class="qc-dots" aria-hidden="true"><i'+(fl?'':' class="on"')+'></i><i'+(fl?' class="on"':'')+'></i></div>'+
-      (off===0&&tot>0&&done===tot?'<i class="hm-done-flag" hidden></i>'+(_qcDayWas===false?'<i class="qc-switch" hidden></i>':''):'')+(off===0?(_qcDayWas=(tot>0&&done===tot),''):'');
+      (off===0&&all?'<i class="hm-done-flag" hidden></i>':'')+(sw?'<i class="qc-switch" hidden></i>':'');
+  }
+  function qcBackWeek(){
+    var ws=qcWeekStart(),lit=0,past=0,rows="",perfect=[],best=-1,bestK=-1,dayAll=[1,1,1,1,1,1,1],dayAny=[0,0,0,0,0,0,0];
+    HM_DOMS.forEach(function(dm){var g="",d=0,t=0;
+      for(var k=0;k<7;k++){var ds=addDaysStr(ws,k),off=dCount(ds),c="fut",p=0;
+        if(off<=0){var s=hmStat(dm[0],ds);if(s.tot){dayAny[k]=1;p=s.done/s.tot;c=s.done===s.tot?"on":"part";t++;if(s.done===s.tot)d++;else dayAll[k]=0;}else c="none";}
+        g+='<i class="'+c+(off===0?" td":"")+'" style="--p:'+p.toFixed(2)+'"></i>';}
+      if(t>=3&&d===t)perfect.push(dm[1]);
+      rows+='<div class="q7-row qb-'+dm[0]+'"><b>'+dm[1]+'</b><span class="q7">'+g+'</span><small>'+d+'/'+t+'</small></div>';});
+    for(var k=0;k<7;k++){var ds=addDaysStr(ws,k);if(dCount(ds)>0)break;if(dayAny[k]){past++;if(dayAll[k])lit++;}var p=qcPct(ds);if(p!=null&&dCount(ds)<0&&p>best){best=p;bestK=k;}}
+    var line=perfect.length?perfect[0]+" has not missed a day this week.":lit>=2?qcWord(lit,1)+" full days so far. That is a good week.":bestK>=0?DOW_LONG[(bestK+1)%7]+" was your fullest day so far.":"A fresh week. Plenty of room.";
+    return '<div class="qcb-h"><p class="qc-kick">This week</p></div><div class="qc-split q7-split"><div><div class="qc-num"><b>'+lit+'</b><span>of '+past+'<br>days lit</span></div></div><div class="q7-rows">'+rows+'</div></div>'+
+      '<div class="q7-say"><span class="q7-blob blob-host" aria-hidden="true"></span><p>'+esc(line)+'</p></div>';
   }
   function qcTurn(){
     state.qcFlip=!state.qcFlip;var f=$(".qc-flip");if(!f)return;
     f.classList.toggle("on",state.qcFlip);f.setAttribute("aria-pressed",state.qcFlip);
     [].forEach.call(document.querySelectorAll(".qc-dots i"),function(x,k){x.classList.toggle("on",(k===1)===state.qcFlip)});
   }
-  document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("[data-qcflip]")&&!e.target.closest("[data-qclight]")){e.stopPropagation();qcTurn();}},true);
-  document.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&e.target.closest&&e.target.closest("[data-qcflip]")){e.preventDefault();qcTurn();}});
-  (function(){var x0=null,y0=0;
+  document.addEventListener("click",function(e){if(!e.target.closest)return;
+    var el=e.target.closest("[data-qclight]");if(el){e.stopPropagation();e.preventDefault();var dom=el.getAttribute("data-qclight");state.qcDom=state.qcDom===dom?null:dom;hmBody();return;}
+    if(e.target.closest("[data-qcall]")){e.stopPropagation();state.qcDom=null;hmBody();return;}
+    if(e.target.closest("[data-qcflip]")){e.stopPropagation();qcTurn();}},true);
+  document.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&e.target.closest&&e.target.closest("[data-qcflip]")&&!e.target.closest("[data-qclight]")){e.preventDefault();qcTurn();}});
+  (function(){var x0=null,y0=0;   /* a sideways swipe also turns the card */
     document.addEventListener("touchstart",function(e){var t=e.target.closest&&e.target.closest("[data-qcflip]");x0=t?e.touches[0].clientX:null;y0=t?e.touches[0].clientY:0},{passive:true});
     document.addEventListener("touchend",function(e){if(x0==null)return;var dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.5)qcTurn();},{passive:true});
   })();
 
-  function qcWeekStart(){var d=new Date(today()+"T00:00:00"),k=(d.getDay()+6)%7;return addDaysStr(today(),-k)}
-  /* ===== MOCK: back of the card = a short read of this week and month ===== */
-  function qcPct(ds){var s=dayScore(ds);return (s&&s.of)?Math.round(Math.min(1,s.r)*100):null}
-  function qcMonthAvg(y,m,upto){var n=0,t=0,last=new Date(y,m+1,0).getDate();for(var d=1;d<=last;d++){var ds=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");if(upto&&ds>upto)break;var s=dayScore(ds);if(s&&s.of){t+=Math.min(1,s.r);n++;}}return n?Math.round(t/n*100):null}
-  function qcBackWeek(){
-    var ws=qcWeekStart(),L=["M","T","W","T","F","S","S"],best=-1,bestK=-1,h='<div class="qcb-h"><p class="qc-kick">This week</p></div><div class="qcwk">';
-    for(var k=0;k<7;k++){var ds=addDaysStr(ws,k),off=dCount(ds),p=off>0?null:qcPct(ds);
-      if(p!=null&&off<0&&p>best){best=p;bestK=k;}
-      h+='<div class="qcwk-d'+(off===0?" td":"")+(off>0?" fut":"")+'" style="--p:'+((p||0)/100).toFixed(2)+'"><b>'+(p==null?"":p+"<small>%</small>")+'</b><span>'+L[k]+'</span></div>';}
-    h+='</div><ul class="qc-read">';
-    /* steadiest area this week, from real ticks only */
-    var rate={};HM_DOMS.forEach(function(dm){var d=0,t=0;for(var k=0;k<7;k++){var ds=addDaysStr(ws,k);if(dCount(ds)>0)break;var s=hmStat(dm[0],ds);d+=s.done;t+=s.tot;}rate[dm[0]]=t?{r:d/t,t:t,n:dm[1]}:null;});
-    var top=HM_DOMS.map(function(dm){return rate[dm[0]]}).filter(Boolean).sort(function(a,b){return b.r-a.r})[0];
-    if(top&&top.t>=3)h+='<li><i class="qb-'+(HM_DOMS.filter(function(dm){return dm[1]===top.n})[0][0])+'"></i><span><b>'+top.n+'</b> is your steadiest this week, '+Math.round(top.r*100)+'% done.</span></li>';
-    if(bestK>=0)h+='<li><i></i><span><b>'+DOW_LONG[(bestK+1)%7]+'</b> was your fullest day so far.</span></li>';
-    var t=new Date(today()+"T00:00:00"),y=t.getFullYear(),m=t.getMonth(),now=qcMonthAvg(y,m,today()),pm=m?m-1:11,py=m?y:y-1,prev=qcMonthAvg(py,pm);
-    if(now!=null)h+='<li><i></i><span><b>'+HM_MONTHS[m]+'</b> so far: '+now+'%'+(prev==null?".":Math.abs(now-prev)<3?", about the same as "+HM_MONTHS[pm]+".":now>prev?", up from "+prev+"% in "+HM_MONTHS[pm]+".":", a little under "+HM_MONTHS[pm]+" ("+prev+"%). Plenty of month left.")+'</span></li>';
-    return h+'</ul>';
-  }
-  /* ===== MOCK: tap a light to show only that area in the list ===== */
-  function qcSetDom(dom){state.qcDom=state.qcDom===dom?null:dom;hmBody();}
-  document.addEventListener("click",function(e){var el=e.target.closest&&e.target.closest("[data-qclight]");if(el){e.stopPropagation();e.preventDefault();qcSetDom(el.getAttribute("data-qclight"));return;}
-    if(e.target.closest&&e.target.closest("[data-qcall]")){e.stopPropagation();state.qcDom=null;hmBody();}},true);
-
-  /* ===== MOCK: the plus opens "Log or add": trackers you log in one tap, plus a way to add something new ===== */
+  /* ===== Log or add: the centre plus. Trackers are logged in one tap here; anything new goes to the add sheet. ===== */
   var QC_TICON={drop:/water|drink/i,moon:/sleep|bed|nap/i,pulse:/bowel|urin|pee|poo/i,flame:/smok|cigar/i,heartbeat:/weight|pressure|pulse/i};
   function qcTIcon(i){for(var k in QC_TICON)if(QC_TICON[k].test(i.title))return phicon(k);return phicon(catIcon(Store.get("cats",i.catId)||{}))}
-  function qcAgo(ms){var m=Math.round((Date.now()-ms)/60000);if(m<2)return "just now";if(m<60)return m+" min ago";var h=Math.round(m/60);return h+(h===1?" hour ago":" hours ago")}
   function qcLastLine(i){var ds=today(),c=countOn(i,ds);
     if(i.kind==="measure"){var v=(i.values||{})[ds];return v!=null?v+(i.unit?" "+i.unit:"")+" today":"Not logged today"}
-    var ev=((i.events||{})[ds]||[]);var last=ev.length?ev[ev.length-1].t:null;
+    var ev=(i.events||{})[ds]||[],last=ev.length?ev[ev.length-1].t:null;
     if(isLimit(i))return c?c+" today":"None today";
     return c?c+" today"+(last?", last at "+fmtTime(last):""):"Not yet today";}
   function qcLogHtml(){
-    var trk=visibleItems().filter(function(i){return qcTracker(i)&&!i.archived});
+    var trk=visibleItems().filter(function(i){return isTracker(i)&&!i.archived});
     var h='<div class="qcl"><div class="qcl-h"><h3>Log or add</h3><button class="qcl-x" data-qclclose aria-label="Close">&times;</button></div>'+
       '<button class="qcl-new" data-qcnew><span class="qcl-ic">+</span><span><b>Something new</b><small>A task, a habit or a medicine</small></span></button>';
     if(trk.length){h+='<p class="qcl-sub">Trackers</p><div class="qcl-list">';
@@ -3606,37 +3547,61 @@
   function qcOpenLog(){openModal(qcLogHtml());$("#modal").classList.add("qcl-modal");}
   document.addEventListener("click",function(e){var t=e.target.closest&&e.target.closest("[data-qcplus],[data-qcnew],[data-qclclose]");if(!t)return;e.stopPropagation();
     if(t.hasAttribute("data-qcplus"))qcOpenLog();else if(t.hasAttribute("data-qcnew")){closeModal();openAdd(state.view==="day"?state.day:today());}else closeModal();},true);
-  /* after a one-tap log, keep the sheet open and refresh its lines */
-  document.addEventListener("click",function(e){var r=e.target.closest&&e.target.closest(".qcl-row[data-toggle]");if(!r)return;setTimeout(function(){var m=$("#modal");if(m&&m.classList.contains("qcl-modal")&&$("#overlay").classList.contains("show")){m.innerHTML=qcLogHtml();}else{qcOpenLog();}},60);});
+  /* after a one-tap log the sheet stays open with fresh lines */
+  document.addEventListener("click",function(e){var r=e.target.closest&&e.target.closest(".qcl-row[data-toggle]");if(!r)return;setTimeout(function(){var m=$("#modal");if(m&&m.classList.contains("qcl-modal")&&$("#overlay").classList.contains("show"))m.innerHTML=qcLogHtml();else qcOpenLog();},60);});
 
-
-  /* ===== MOCK: one soft light at the top of the page that follows the time of day ===== */
+  /* one soft light at the top of the page that follows the time of day */
   function qcAmbient(){var h=new Date().getHours();document.documentElement.setAttribute("data-amb",(h<5||h>=20)?"n":h<11?"m":h<16?"d":"e")}
   qcAmbient();setInterval(qcAmbient,600000);
-  /* the card "switches on": play the glow once, only when the day becomes complete while Home is open */
-  var _qcBody=hmBody;hmBody=function(){_qcBody();var hh=$("#hmHero");if(hh)hh.classList.toggle("switching",!!hh.querySelector(".qc-switch"));};
 
-  /* ===== MOCK: fasting as an arc, a moon travelling along it to the target, live timer ===== */
+  /* ===== Fasting: one row under the Home card that opens in place into the arc (also the top of the Fasting page).
+     The marker on the arc is a sun by day and a moon by night. End fast asks to save or discard. ===== */
+  var QF_SUN='<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M5.3 18.7L7 17M17 7l1.7-1.7"/>';
   function qfPt(t){var a=Math.PI*(1-t);return {x:(150+120*Math.cos(a)).toFixed(1),y:(140-120*Math.sin(a)).toFixed(1)}}
   function qfClock(ms){var s=Math.max(0,Math.floor(ms/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return h+":"+String(m).padStart(2,"0")+":"+String(x).padStart(2,"0")}
+  function qfDay(ms){var n=dCount(fmt(new Date(ms)));return n===0?"Today":n===-1?"Yesterday":n===1?"Tomorrow":DOW_LONG[new Date(ms).getDay()]}
+  function qfIsDay(){var h=new Date().getHours();return h>=6&&h<18}
+  function qfGlyph(){return qfIsDay()?'<svg viewBox="0 0 24 24" class="qf-sun">'+QF_SUN+'</svg>':'<svg viewBox="0 0 256 256" class="qf-moon">'+(PHI.moon||"")+'</svg>'}
   function fastHomeCard(){
     var i=fastItem();if(!i)return "";var a=activeFast(i),tgt=a?(a.target||16):targetOf(i),h0=a?fastHours(a):0,p=Math.min(1,h0/tgt),e=qfPt(p),arc="M30 140 A120 120 0 0 1 270 140";
-    var len=Math.PI*120,done=a?(p*len).toFixed(1):0,last=doneFasts(i)[0];
-    var svg='<svg class="qf-arc" viewBox="0 0 300 156" aria-hidden="true"><path class="tr" d="'+arc+'"/>'+(a?'<path class="pr" d="'+arc+'" stroke-dasharray="'+done+' '+len.toFixed(1)+'"/>':'')+
-      '<circle class="st" cx="30" cy="140" r="5"/><circle class="en'+(p>=1?' hit':'')+'" cx="270" cy="140" r="5"/>'+
-      (a?'<g class="kn" transform="translate('+e.x+' '+e.y+')"><circle r="15"/><g transform="translate(-9 -9) scale(.07)">'+(PHI.moon||"")+'</g></g>':'')+'</svg>';
+    var len=Math.PI*120,last=doneFasts(i)[0],end=a?a.s+tgt*3600000:0;
+    var knob=a?'<g class="kn" transform="translate('+e.x+' '+e.y+')"><circle r="15"/>'+(qfIsDay()?'<svg x="-10" y="-10" width="20" height="20" viewBox="0 0 24 24" class="qf-sun">'+QF_SUN+'</svg>':'<svg x="-9" y="-9" width="18" height="18" viewBox="0 0 256 256" class="qf-moon">'+(PHI.moon||"")+'</svg>')+'</g>':'';
+    var svg='<svg class="qf-arc" viewBox="0 0 300 156" aria-hidden="true"><path class="tr" d="'+arc+'"/>'+(a?'<path class="pr" d="'+arc+'" stroke-dasharray="'+(p*len).toFixed(1)+' '+len.toFixed(1)+'"/>':'')+
+      '<circle class="st" cx="30" cy="140" r="5"/><circle class="en'+(p>=1?' hit':'')+'" cx="270" cy="140" r="5"/>'+knob+'</svg>';
     var mid=a?'<small>'+(p>=1?"Target reached":"Fasting for")+'</small><b class="qf-time" data-qfs="'+a.s+'">'+qfClock(Date.now()-a.s)+'</b><span>'+esc(FPHASES[phaseAt(h0)][2])+(p<1?" \u00b7 "+esc(fmtHM(tgt-h0))+" to go":"")+'</span>':
       '<small>Not fasting</small><b class="qf-time idle">'+tgt+'h</b><span>'+(last?"Last fast "+esc(fmtHM(fastHours(last))):"Your usual target")+'</span>';
-    var ends=a?'<div class="qf-ends"><span>Started<b>'+esc(fastClock(a.s))+'</b></span><span>'+tgt+'h at<b>'+esc(fastClock(a.s+tgt*3600000))+'</b></span></div>':'';
+    var ends=a?'<div class="qf-ends"><span>Started<b>'+qfDay(a.s)+', '+esc(fastClock(a.s))+'</b></span><span>'+tgt+'h target<b>'+qfDay(end)+', '+esc(fastClock(end))+'</b></span></div>':'';
     return '<div class="card qf"><div class="qf-top"><h3>Fasting</h3><span>'+(a?tgt+"h target":"")+'</span></div>'+
       '<div class="qf-g" data-nav="fasting" role="link" tabindex="0" aria-label="Open fasting">'+svg+'<div class="qf-mid">'+mid+'</div></div>'+ends+
-      '<div class="qf-act">'+(a?'<button class="qf-btn" data-fastend="'+i.id+'">End fast</button>':'<button class="qf-btn go" data-nav="fasting">Start a fast</button>')+'</div></div>';
+      '<div class="qf-act">'+(a?'<button class="qf-btn" data-qfend="'+i.id+'">End fast</button>':'<button class="qf-btn go" data-nav="fasting">Start a fast</button>')+'</div></div>';
   }
-  setInterval(function(){var t=document.querySelector(".qf-time[data-qfs]");if(t&&!document.hidden)t.textContent=qfClock(Date.now()-(+t.getAttribute("data-qfs")));},1000);
+  function qfStrip(){
+    var i=fastItem();if(!i)return "";var a=activeFast(i),open=!!state.qfOpen,row;
+    if(a){var tgt=a.target||16,h0=fastHours(a),p=Math.min(1,h0/tgt);
+      row='<button class="qfs" data-qftog aria-expanded="'+open+'"><span class="qfs-ic">'+qfGlyph()+'</span>'+
+        '<span class="qfs-tx"><b>Fasting <em class="qf-time" data-qfs="'+a.s+'">'+qfClock(Date.now()-a.s)+'</em></b><small>'+(p>=1?"Target reached":esc(fmtHM(tgt-h0))+" to your "+tgt+"h")+'</small></span>'+
+        '<span class="qfs-bar"><i style="width:'+Math.round(p*100)+'%"></i></span><span class="qfs-chev" aria-hidden="true">'+phicon("caretr")+'</span></button>';}
+    else row='<div class="qfs idle"><span class="qfs-ic">'+qfGlyph()+'</span><span class="qfs-tx"><b>Not fasting</b><small>Your usual is '+targetOf(i)+'h</small></span><button class="qfs-go" data-nav="fasting">Start</button></div>';
+    return '<div class="qfw'+(open&&a?" open":"")+'">'+row+(a?'<div class="qfw-body">'+(open?fastHomeCard():"")+'</div>':'')+'</div>';
+  }
+  setInterval(function(){if(document.hidden)return;[].forEach.call(document.querySelectorAll(".qf-time[data-qfs]"),function(t){t.textContent=qfClock(Date.now()-(+t.getAttribute("data-qfs")))})},1000);
+  function qfEndSheet(id){var i=Store.get("items",id),a=i&&activeFast(i);if(!a)return;var h0=fastHours(a);
+    openModal('<div class="qcl"><div class="qcl-h"><h3>End your fast?</h3><button class="qcl-x" data-qclclose aria-label="Close">&times;</button></div>'+
+      '<p class="qfe-t">'+esc(fmtHM(h0))+'<small>since '+qfDay(a.s).toLowerCase()+', '+esc(fastClock(a.s))+'</small></p>'+
+      '<button class="qcl-new" data-qfsave="'+id+'"><span class="qcl-ic">'+HM_CHECK+'</span><span><b>End and save</b><small>It counts toward your fasting history</small></span></button>'+
+      '<button class="qfe-b" data-qfdiscard="'+id+'">Discard this fast<small>Started by mistake? It will not be saved.</small></button>'+
+      '<button class="qfe-k" data-qclclose>Keep fasting</button></div>');$("#modal").classList.add("qcl-modal");}
+  document.addEventListener("click",function(e){var t=e.target.closest&&e.target.closest("[data-qftog],[data-qfend],[data-qfsave],[data-qfdiscard]");if(!t)return;e.stopPropagation();e.preventDefault();
+    if(t.hasAttribute("data-qftog")){state.qfOpen=!state.qfOpen;var w=t.closest(".qfw");if(w){var f=document.createElement("div");f.innerHTML=qfStrip();w.replaceWith(f.firstChild);}return;}
+    if(t.hasAttribute("data-qfend")){qfEndSheet(t.getAttribute("data-qfend"));return;}
+    var save=t.hasAttribute("data-qfsave"),i=Store.get("items",t.getAttribute(save?"data-qfsave":"data-qfdiscard"));if(!i){closeModal();return;}
+    if(save){var hrs=endFast(i);closeModal();render();toast("Saved, "+fmtHM(hrs),function(){undoEndFast(i.id)});}
+    else{var before=(i.fasts||[]).slice();Store.update("items",i.id,{fasts:before.filter(function(f){return f.e})});closeModal();render();toast("Fast discarded",function(){Store.update("items",i.id,{fasts:before});render();});}
+  },true);
 
-  /* ===== MOCK: Patterns calendar as frosted glass tiles, one month at a time ===== */
+  /* ===== Patterns: the calendar as frosted glass tiles, one month at a time ===== */
   function qcGlassCal(){
-    var o=state.qcCalM||0,t=new Date(today()+"T00:00:00"),y=t.getFullYear(),m=t.getMonth()+o;var d0=new Date(y,m,1);y=d0.getFullYear();m=d0.getMonth();
+    var o=state.qcCalM||0,t=new Date(today()+"T00:00:00"),d0=new Date(t.getFullYear(),t.getMonth()+o,1),y=d0.getFullYear(),m=d0.getMonth();
     var n=new Date(y,m+1,0).getDate(),lead=(d0.getDay()+6)%7,avg=qcMonthAvg(y,m,today());
     var h='<div class="gc"><div class="gc-h"><button class="gc-nav" data-qccal="-1" aria-label="Earlier month">'+phicon("caretl")+'</button><div><b>'+HM_MONTHS[m]+' '+y+'</b><small>'+(avg==null?"No days yet":avg+"% on average")+'</small></div><button class="gc-nav" data-qccal="1" aria-label="Later month"'+(o>=0?" disabled":"")+'>'+phicon("caretr")+'</button></div><div class="gc-grid">';
     ["M","T","W","T","F","S","S"].forEach(function(x){h+='<span class="gc-l">'+x+'</span>'});
@@ -3647,72 +3612,6 @@
   }
   document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-qccal]");if(!b)return;e.stopPropagation();state.qcCalM=Math.min(0,(state.qcCalM||0)+(+b.getAttribute("data-qccal")));var g=document.querySelector(".gc");if(g)g.outerHTML=qcGlassCal();},true);
 
-  /* ===== MOCK v2 of the card back: the week in lights, and the blob says the one thing worth saying ===== */
-  qcBackWeek=function(){
-    var ws=qcWeekStart(),L=["M","T","W","T","F","S","S"],lit=0,past=0,rows="",perfect=[],best=-1,bestK=-1;
-    var dayAll=[1,1,1,1,1,1,1],dayAny=[0,0,0,0,0,0,0];
-    HM_DOMS.forEach(function(dm){var g="",d=0,t=0;
-      for(var k=0;k<7;k++){var ds=addDaysStr(ws,k),off=dCount(ds),c="fut",p=0;
-        if(off<=0){var s=hmStat(dm[0],ds);if(s.tot){dayAny[k]=1;p=s.done/s.tot;c=s.done===s.tot?"on":"part";t++;if(s.done===s.tot)d++;else dayAll[k]=0;}else c="none";}
-        g+='<i class="'+c+(off===0?" td":"")+'" style="--p:'+p.toFixed(2)+'"></i>';}
-      if(t>=3&&d===t)perfect.push(dm[1]);
-      rows+='<div class="q7-row qb-'+dm[0]+'"><b>'+dm[1]+'</b><span class="q7">'+g+'</span><small>'+d+'/'+t+'</small></div>';});
-    for(var k=0;k<7;k++){var ds=addDaysStr(ws,k);if(dCount(ds)>0)break;if(dayAny[k]){past++;if(dayAll[k])lit++;}var p=qcPct(ds);if(p!=null&&dCount(ds)<0&&p>best){best=p;bestK=k;}}
-    var line=perfect.length?perfect[0]+" has not missed a day this week.":lit>=2?qcWord(lit,1)+" full days so far. That is a good week.":bestK>=0?DOW_LONG[(bestK+1)%7]+" was your fullest day so far.":"A fresh week. Plenty of room.";
-    var head='<div class="qcb-h"><p class="qc-kick">This week</p></div>';
-    return head+'<div class="qc-split q7-split"><div><div class="qc-num"><b>'+lit+'</b><span>of '+past+'<br>days lit</span></div></div><div class="q7-rows">'+rows+'</div></div>'+
-      '<div class="q7-say"><span class="q7-blob blob-host" aria-hidden="true"></span><p>'+esc(line)+'</p></div>';
-  };
-  var _qcBody2=hmBody;hmBody=function(){_qcBody2();[].forEach.call(document.querySelectorAll(".q7-blob:empty"),function(el){try{Buddy.temp(el,"happy",false,true)}catch(e){}});};
-
-  /* ===== MOCK: fasting details that read clearly ===== */
-  var QF_SUN='<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M5.3 18.7L7 17M17 7l1.7-1.7"/>';
-  function qfDay(ms){var d=fmt(new Date(ms)),n=dCount(d);return n===0?"Today":n===-1?"Yesterday":n===1?"Tomorrow":DOW_LONG[new Date(ms).getDay()]}
-  function qfIsDay(){var h=new Date().getHours();return h>=6&&h<18}
-  function qfIcon(){return qfIsDay()?'<svg x="-10" y="-10" width="20" height="20" viewBox="0 0 24 24" class="qf-sun">'+QF_SUN+'</svg>':'<svg x="-9" y="-9" width="18" height="18" viewBox="0 0 256 256" class="qf-moon">'+(PHI.moon||"")+'</svg>'}
-  var _qfCard=fastHomeCard;
-  fastHomeCard=function(){
-    var h=_qfCard(),i=fastItem(),a=i?activeFast(i):null;if(!a)return h;var tgt=a.target||16;
-    h=h.replace(/<g transform="translate\(-9 -9\) scale\(\.07\)">[\s\S]*?<\/g><\/g>/,qfIcon()+'</g>');
-    h=h.replace(/<div class="qf-ends">[\s\S]*?<\/div>/,'<div class="qf-ends"><span>Started<b>'+qfDay(a.s)+', '+esc(fastClock(a.s))+'</b></span><span>'+tgt+'h target<b>'+qfDay(a.s+tgt*3600000)+', '+esc(fastClock(a.s+tgt*3600000))+'</b></span></div>');
-    return h.replace(/data-fastend=/,'data-qfend=');
-  };
-  /* a slim strip under the Home card, so a running fast is visible without scrolling or tapping */
-  function qfStrip(){var i=fastItem(),a=i?activeFast(i):null;if(!a)return "";var tgt=a.target||16,h0=fastHours(a),p=Math.min(1,h0/tgt);
-    return '<button class="qfs" data-qfjump aria-label="Fasting, see details"><span class="qfs-ic">'+(qfIsDay()?'<svg viewBox="0 0 24 24" class="qf-sun">'+QF_SUN+'</svg>':'<svg viewBox="0 0 256 256" class="qf-moon">'+(PHI.moon||"")+'</svg>')+'</span>'+
-      '<span class="qfs-tx"><b>Fasting <em class="qf-time" data-qfs="'+a.s+'">'+qfClock(Date.now()-a.s)+'</em></b><small>'+(p>=1?"Target reached":esc(fmtHM(tgt-h0))+" to your "+tgt+"h")+'</small></span><span class="qfs-bar"><i style="width:'+Math.round(p*100)+'%"></i></span></button>';}
-  var _qcBody3=hmBody;hmBody=function(){_qcBody3();var hh=$("#hmHero");if(!hh)return;var old=document.querySelector(".qfs");if(old)old.remove();var s=qfStrip();if(s&&dCount(hmDay())===0)hh.insertAdjacentHTML("afterend",s);};
-  setInterval(function(){[].forEach.call(document.querySelectorAll(".qf-time[data-qfs]"),function(t){if(!document.hidden)t.textContent=qfClock(Date.now()-(+t.getAttribute("data-qfs")))})},1000);
-  /* End fast asks: save it, or discard it (started by mistake) */
-  function qfEndSheet(id){var i=Store.get("items",id),a=i&&activeFast(i);if(!a)return;var h0=fastHours(a);
-    openModal('<div class="qcl"><div class="qcl-h"><h3>End your fast?</h3><button class="qcl-x" data-qclclose aria-label="Close">&times;</button></div>'+
-      '<p class="qfe-t">'+esc(fmtHM(h0))+'<small>since '+qfDay(a.s).toLowerCase()+', '+esc(fastClock(a.s))+'</small></p>'+
-      '<button class="qcl-new" data-qfsave="'+id+'"><span class="qcl-ic">'+HM_CHECK+'</span><span><b>End and save</b><small>It counts toward your fasting history</small></span></button>'+
-      '<button class="qfe-b" data-qfdiscard="'+id+'">Discard this fast<small>Started by mistake? It will not be saved.</small></button>'+
-      '<button class="qfe-k" data-qclclose>Keep fasting</button></div>');$("#modal").classList.add("qcl-modal");}
-  document.addEventListener("click",function(e){var t=e.target.closest&&e.target.closest("[data-qfend],[data-qfsave],[data-qfdiscard],[data-qfjump]");if(!t)return;e.stopPropagation();e.preventDefault();
-    if(t.hasAttribute("data-qfjump")){var c=document.querySelector(".card.qf");if(c)c.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"center"});return;}
-    if(t.hasAttribute("data-qfend")){qfEndSheet(t.getAttribute("data-qfend"));return;}
-    var id=t.getAttribute(t.hasAttribute("data-qfsave")?"data-qfsave":"data-qfdiscard"),i=Store.get("items",id);if(!i){closeModal();return;}
-    if(t.hasAttribute("data-qfsave")){var hrs=endFast(i);closeModal();render();toast("Saved, "+fmtHM(hrs),function(){undoEndFast(i.id)});}
-    else{var before=(i.fasts||[]).slice();Store.update("items",i.id,{fasts:before.filter(function(f){return f.e})});closeModal();render();toast("Fast discarded",function(){Store.update("items",i.id,{fasts:before});render();});}
-  },true);
-
-  /* ===== one fasting card on Home: a slim row under the Home card that opens in place into the arc ===== */
-  qfStrip=function(){
-    var i=fastItem();if(!i)return "";var a=activeFast(i),open=!!state.qfOpen;
-    var icon=qfIsDay()?'<svg viewBox="0 0 24 24" class="qf-sun">'+QF_SUN+'</svg>':'<svg viewBox="0 0 256 256" class="qf-moon">'+(PHI.moon||"")+'</svg>';
-    var row;
-    if(a){var tgt=a.target||16,h0=fastHours(a),p=Math.min(1,h0/tgt);
-      row='<button class="qfs" data-qftog aria-expanded="'+open+'"><span class="qfs-ic">'+icon+'</span>'+
-        '<span class="qfs-tx"><b>Fasting <em class="qf-time" data-qfs="'+a.s+'">'+qfClock(Date.now()-a.s)+'</em></b><small>'+(p>=1?"Target reached":esc(fmtHM(tgt-h0))+" to your "+tgt+"h")+'</small></span>'+
-        '<span class="qfs-bar"><i style="width:'+Math.round(p*100)+'%"></i></span><span class="qfs-chev" aria-hidden="true">'+phicon("caretr")+'</span></button>';}
-    else row='<div class="qfs idle"><span class="qfs-ic">'+icon+'</span><span class="qfs-tx"><b>Not fasting</b><small>Your usual is '+targetOf(i)+'h</small></span><button class="qfs-go" data-nav="fasting">Start</button></div>';
-    return '<div class="qfw'+(open&&a?" open":"")+'">'+row+(a?'<div class="qfw-body">'+(open?fastHomeCard():"")+'</div>':'')+'</div>';
-  };
-  var _qcBody4=hmBody;hmBody=function(){var o=document.querySelector(".qfw");if(o)o.remove();_qcBody4();};
-  document.addEventListener("click",function(e){var t=e.target.closest&&e.target.closest("[data-qftog]");if(!t)return;e.stopPropagation();
-    state.qfOpen=!state.qfOpen;var w=t.closest(".qfw");if(!w)return;var fresh=document.createElement("div");fresh.innerHTML=qfStrip();w.replaceWith(fresh.firstChild);},true);
   /* Up next: the next timed thing today (medication, a timed task, a running fast) */
   function hmNextPick(){
     var now=Date.now(),cs=[];
@@ -3756,44 +3655,33 @@
     $("#hmTodayBtn").hidden=(ds===today());
   }
   function hmBody(){
-    if(!$("#hmCards")||!_hmCons)return;
+    var hh=$("#hmHero");if(!hh||!_hmCons)return;
     var ds=hmDay(),st=hmStats(ds);
-    var nh="",nx=$("#hmNext");qcListFill(ds);nx.innerHTML=nh;nx.hidden=!nh;cbAskFill(ds);hmSideFill(ds);
-    $("#hmCards").innerHTML=hmCardsHtml(ds,st);
-    $("#hmHint").hidden=true;$("#hmHint").textContent=visibleItems().length?"Tap a card to turn it over. Hold it to open the list.":"Nothing here yet. Tap the plus button to add your first task, or open an area to add a habit.";
-    var hh=$("#hmHero");hh.innerHTML=hmHeroHtml(ds,st);hh.classList.toggle("complete",!!hh.querySelector(".hm-done-flag"));
+    qcListFill(ds);cbAskFill(ds);hmSideFill(ds);
+    hh.innerHTML=hmHeroHtml(ds,st);
+    hh.classList.toggle("complete",!!hh.querySelector(".hm-done-flag"));
+    hh.classList.toggle("switching",!!hh.querySelector(".qc-switch"));   /* the day just became complete: play the glow once */
+    [].forEach.call(hh.querySelectorAll(".q7-blob:empty"),function(el){try{Buddy.temp(el,"happy",false,true)}catch(e){}});
+    var old=document.querySelector(".qfw");if(old)old.remove();
+    var fr=dCount(ds)===0?qfStrip():"";if(fr)hh.insertAdjacentHTML("afterend",fr);
     var bT=0,bD=0;HM_DOMS.forEach(function(d){bT+=st[d[0]].tot;bD+=st[d[0]].done;});Buddy.sync(ds,bT,bD);
   }
-  /* the list for the chosen day, shown beside Home on wide screens */
+  /* the day's list: under the card on phones, beside Home on wide screens */
   function qcListFill(ds,el0){
     var el=el0||$("#hmList");if(!el)return;
-    var off=dCount(ds),all0=visibleItems().filter(function(i){return dueOnDate(i,ds,off)&&!isFast(i)}),its=all0.filter(function(i){return !qcTracker(i)&&(!state.qcDom||areaDomain(i.catId)===state.qcDom)}).sort(hmListSort),trk=visibleItems().filter(function(i){return qcTracker(i)&&!i.archived});
+    var off=dCount(ds),its=visibleItems().filter(function(i){return dueOnDate(i,ds,off)&&!isFast(i)&&!isTracker(i)&&(!state.qcDom||areaDomain(i.catId)===state.qcDom)}).sort(hmListSort);
     var left=its.filter(function(i){return !(off===0?doneForNow(i):hmDone(i,ds))}).length;
     var dn=state.qcDom?HM_DOMS.filter(function(d){return d[0]===state.qcDom})[0][1]:"";var h='<div class="qc-lh"><h3 aria-level="2">'+(off===0?"Today":hmLabel(ds))+(dn?' <em class="qc-only qb-'+state.qcDom+'">'+dn+' only</em><button class="qc-all" data-qcall>Show all</button>':'')+'</h3><span>'+(its.length?(left?left+" left":"All done"):"")+'</span></div>';
     if(!its.length)h+='<div class="cat-empty">Nothing on the list for this day.</div>';
     else{h+='<div class="card">';its.forEach(function(i){h+=itemRow(i,{ds:ds})});h+='</div>';}
-    if(0&&trk.length){h+='<div class="qc-lh qc-th"><h3 aria-level="2">Trackers</h3><span>Log when it happens</span></div><div class="qc-trk">'+
-      trk.map(function(i){var c=countOn(i,ds),v=i.kind==="measure"?((i.values||{})[ds]):null;
-        return '<button class="qc-chip" '+(i.kind==="measure"?'data-measure':'data-toggle')+'="'+i.id+'"><b>'+esc(i.title)+'</b><small>'+(v!=null?esc(String(v))+(i.unit?" "+esc(i.unit):""):c?c+" today":"Log")+'</small></button>'}).join("")+'</div>';}
     el.innerHTML=h;
   }
   function hmSideFill(ds){
-    var el=$("#hmSide");if(!el||window.innerWidth<940)return;qcListFill(ds,el);return;
-    var off=dCount(ds),its=visibleItems().filter(function(i){return dueOnDate(i,ds,off)}).sort(hmListSort);
-    var h='<div class="hm-sidehead"><h3 aria-level="2">'+(off===0?"Today":hmLabel(ds))+'</h3><span>'+its.length+(its.length===1?" thing":" things")+'</span></div>';
-    if(!its.length)h+='<div class="cat-empty">Nothing on the list for this day.</div>';
-    else{h+='<div class="card">';its.forEach(function(i){h+=itemRow(i,{ds:ds})});h+='</div>';}
-    el.innerHTML=h;
+    var el=$("#hmSide");if(el&&window.innerWidth>=940)qcListFill(ds,el);
   }
   window.addEventListener("resize",function(){var el=$("#hmSide");if(el&&!el.firstChild&&state.view==="home")hmSideFill(hmDay())});
   function hmBodySoon(){clearTimeout(_hmT);_hmT=setTimeout(hmBody,90)}
   function hmRefresh(){clearTimeout(_hmT);hmHead();hmBody()}
-  /* keep "in 54 min" honest while the app stays open */
-  setInterval(function(){
-    if(document.hidden||state.view!=="home"||hmDay()!==today())return;
-    var nx=$("#hmNext");if(!nx)return;
-    var h=hmNextHtml();if(nx.innerHTML!==h&&0){nx.innerHTML=h;nx.hidden=!h;}
-  },30000);
   function hmSnap(i,instant){
     if(!_hmSc)return;
     i=Math.max(0,Math.min(HM_BACK+HM_FWD,i));
@@ -3954,9 +3842,7 @@
       '<div class="hm-strip"><button class="hm-arrow" data-hmweek="-1" aria-label="Previous day">'+phicon("caretl")+'</button>'+
       '<div class="hm-scroll" id="hmScroll" aria-label="Pick a day">'+strip+'</div>'+
       '<button class="hm-arrow" data-hmweek="1" aria-label="Next day">'+phicon("caretr")+'</button></div>'+
-      '<div class="hm-next" id="hmNext" hidden></div>'+'<div class="hm-hero qc" id="hmHero"></div>'+'<div id="cbAsk"></div>'+
-      '<div class="hm-cards" id="hmCards" hidden></div>'+'<div id="hmList" class="qc-list"></div>'+
-      '<p class="hm-hint" id="hmHint" hidden></p>'+backupNudge();
+      '<div class="hm-hero qc" id="hmHero"></div>'+'<div id="cbAsk"></div>'+'<div id="hmList" class="qc-list"></div>'+backupNudge();
 
     return '<div class="home-grid solo"><div class="home-main">'+main+'</div><aside class="home-side" id="hmSide" aria-label="The list for this day"></aside></div>';
   }
