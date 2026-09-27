@@ -1943,6 +1943,19 @@
   .lc-k{width:22px;height:22px;flex:none;display:grid;place-items:center;border:1.5px solid var(--line);border-radius:50%}
   .lc-o.on .lc-k{background:var(--ink);border-color:var(--ink)}
   .lc-o.on .lc-k::after{content:"";width:8px;height:4px;border:2px solid var(--bg);border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+  /* ===== the sky: a pale wash at the top of the page that follows the time of day =====
+     m dawn and morning, d day, e evening, n night. Two colours: the sky (top) and the horizon (just below). */
+  :root{--sky1:transparent;--sky2:transparent}
+  :root[data-amb="m"]{--sky1:rgba(251,176,96,.20);--sky2:rgba(120,150,200,.10)}
+  :root[data-amb="d"]{--sky1:rgba(90,160,210,.22);--sky2:rgba(52,211,153,.07)}
+  :root[data-amb="e"]{--sky1:rgba(240,120,80,.20);--sky2:rgba(150,110,210,.12)}
+  :root[data-amb="n"]{--sky1:rgba(60,85,160,.34);--sky2:rgba(110,90,190,.10)}
+  :root[data-theme="warm"][data-amb="m"]{--sky1:#F8E1CB;--sky2:#EEF0F2}
+  :root[data-theme="warm"][data-amb="d"]{--sky1:#D7E8F2;--sky2:#EDF2EF}
+  :root[data-theme="warm"][data-amb="e"]{--sky1:#F5D9C8;--sky2:#ECE3F1}
+  :root[data-theme="warm"][data-amb="n"]{--sky1:#D6DCEB;--sky2:#ECEAF1}
+  body,:root[data-theme="warm"] body{background-image:linear-gradient(180deg,var(--sky1) 0,var(--sky2) 240px,transparent 560px),radial-gradient(130% 480px at 50% 0%,var(--amb),transparent 75%)!important;background-repeat:no-repeat!important}
+  @media(prefers-contrast:more){body,:root[data-theme="warm"] body{background-image:none!important}}
 </style>
 </head>
 <body>
@@ -3182,7 +3195,7 @@
     $("#nav").innerHTML=h;
     var me=state.me?personById(state.me):null;
     $("#meCard").innerHTML=me?'<button class="me-btn" data-action="pick-me">'+avatar(me,"lg")+'<span class="who"><small>You are</small><b>'+esc(me.name)+'</b></span><span class="chev">⇅</span></button>':'<button class="me-btn" data-action="pick-me"><span class="av lg" style="background:var(--panel-2);color:var(--muted)">?</span><span class="who"><small>Tap to set</small><b>Who are you?</b></span><span class="chev">⇅</span></button>';
-    var bn='',_bi=function(x){return '<button class="gdock-item'+(state.view===x[0]?" on":"")+'" data-nav="'+x[0]+'" aria-label="'+x[1]+'" aria-current="'+(state.view===x[0]?"page":"false")+'"><span class="gdock-glyph"><svg viewBox="0 0 24 24">'+NAVICON[x[0]]+'</svg></span><span class="gdock-label">'+x[1]+'</span><i class="gdock-run"></i></button>'};bn='<div class="gd-grp">'+_bi(["reports","Patterns"])+_bi(["home","Home"])+'</div><button class="gd-plus" data-qcplus aria-label="Log or add">'+PHI_PLUS+'</button><div class="gd-grp">'+_bi(["day","Day"])+_bi(["settings","Settings"])+'</div>';[].forEach(function(x){bn+='<button class="gdock-item'+(state.view===x[0]?" on":"")+'" data-nav="'+x[0]+'" aria-label="'+x[1]+'" aria-current="'+(state.view===x[0]?"page":"false")+'"><span class="gdock-glyph"><svg viewBox="0 0 24 24">'+NAVICON[x[0]]+'</svg></span><span class="gdock-label">'+x[1]+'</span><i class="gdock-run"></i></button>';});var bnEl=$("#bottomnav"),NK=["home","day","reports","settings"];
+    var bn='',_bi=function(x){return '<button class="gdock-item'+(state.view===x[0]?" on":"")+'" data-nav="'+x[0]+'" aria-label="'+x[1]+'" aria-current="'+(state.view===x[0]?"page":"false")+'"><span class="gdock-glyph"><svg viewBox="0 0 24 24">'+NAVICON[x[0]]+'</svg></span><span class="gdock-label">'+x[1]+'</span><i class="gdock-run"></i></button>'};bn='<div class="gd-grp">'+_bi(["reports","Patterns"])+_bi(["home","Home"])+'</div><button class="gd-plus" data-qcplus aria-label="Add">'+PHI_PLUS+'</button><div class="gd-grp">'+_bi(["day","Day"])+_bi(["settings","Settings"])+'</div>';[].forEach(function(x){bn+='<button class="gdock-item'+(state.view===x[0]?" on":"")+'" data-nav="'+x[0]+'" aria-label="'+x[1]+'" aria-current="'+(state.view===x[0]?"page":"false")+'"><span class="gdock-glyph"><svg viewBox="0 0 24 24">'+NAVICON[x[0]]+'</svg></span><span class="gdock-label">'+x[1]+'</span><i class="gdock-run"></i></button>';});var bnEl=$("#bottomnav"),NK=["home","day","reports","settings"];
     if(0){[].forEach.call(bnEl.children,function(b,ix){var on=state.view===NK[ix];b.classList.toggle("on",on);b.setAttribute("aria-current",on?"page":"false");});}
     else bnEl.innerHTML=bn;
   }
@@ -3480,7 +3493,7 @@
     if(an==null&&bn!=null)return 1;if(bn==null&&an!=null)return -1;if(an!=null&&bn!=null&&an!==bn)return an-bn;
     return (a.order||0)-(b.order||0);
   }
-  function hmListSort(a,b){var ac=doneForNow(a)?1:0,bc=doneForNow(b)?1:0;if(ac!==bc)return ac-bc;return hmPrio(a,b)}
+  function hmListSort(a,b){var ac=doneForNow(a)&&a.id!==_justDone?1:0,bc=doneForNow(b)&&b.id!==_justDone?1:0;if(ac!==bc)return ac-bc;return hmPrio(a,b)}
   /* each card has a front (the dots) and a back (what is left, most important first) */
   function hmCardsHtml(ds,st){
     var h="";
@@ -3665,7 +3678,7 @@
   function qcGlassCal(){
     var o=state.qcCalM||0,t=new Date(today()+"T00:00:00"),d0=new Date(t.getFullYear(),t.getMonth()+o,1),y=d0.getFullYear(),m=d0.getMonth();
     var n=new Date(y,m+1,0).getDate(),lead=(d0.getDay()+6)%7,avg=qcMonthAvg(y,m,today());
-    var h='<div class="gc"><div class="gc-h"><button class="gc-nav" data-qccal="-1" aria-label="Earlier month">'+phicon("caretl")+'</button><div><b>'+HM_MONTHS[m]+' '+y+'</b><small>'+(avg==null?"No days yet":avg+"% on average")+'</small></div><button class="gc-nav" data-qccal="1" aria-label="Later month"'+(o>=0?" disabled":"")+'>'+phicon("caretr")+'</button></div><div class="gc-grid">';
+    var h='<div class="gc"><div class="gc-h"><button class="gc-nav" data-qccal="-1" aria-label="Earlier month">'+phicon("caretl")+'</button><div><b>'+HM_MONTHS[m]+' '+y+'</b><small>'+(avg==null?"No days yet":avg+"% across "+HM_MONTHS[m])+'</small></div><button class="gc-nav" data-qccal="1" aria-label="Later month"'+(o>=0?" disabled":"")+'>'+phicon("caretr")+'</button></div><div class="gc-grid">';
     ["M","T","W","T","F","S","S"].forEach(function(x){h+='<span class="gc-l">'+x+'</span>'});
     for(var k=0;k<lead;k++)h+='<span></span>';
     for(var dd=1;dd<=n;dd++){var ds=y+"-"+String(m+1).padStart(2,"0")+"-"+String(dd).padStart(2,"0"),off=dCount(ds),p=off>0?null:qcPct(ds);
@@ -4798,6 +4811,7 @@
   function openModal(html){var mo=$("#modal");mo.className="modal";mo.innerHTML=html;$("#overlay").classList.add("show");}
   function closeModal(){$("#overlay").classList.remove("show");ms={};}
   var _toastUndo=null,_justDone=null;
+  function jdClear(){if(!_justDone)return;_justDone=null;if(state.view==="home")hmBody();else if(state.view==="day")render();}
   /* ===== the light switch cord: pull it down to change between dark and light =====
      The rope is a small verlet simulation (points joined by fixed-length links), so it hangs under gravity, swings when
      you grab it and settles on its own. The physics numbers, the rope's proportions and the "clicks mid-pull, not on
@@ -6071,7 +6085,7 @@
   function logToggleDate(i,ds){ if(countOn(i,ds)>0)setDayCount(i,ds,0); else setDayCount(i,ds,1); }
   function tapTodo(i){
     if(i.cb){cbTick(i);return;}
-    if(!isRepeat(i)&&!isLimit(i)&&!isBody(i)){var was={done:!!i.done,completedAt:i.completedAt||null},nowDone=!i.done;_justDone=nowDone?i.id:null;setTimeout(function(){_justDone=null},900);if(nowDone)Buddy.react("done");Store.update("items",i.id,{done:nowDone,completedAt:nowDone?fmt(new Date())+"T"+nowHM()+":00":null});var fin=nowDone&&dayFinished();toast(nowDone?"Done: "+i.title:"Marked not done",function(){Store.update("items",i.id,was)},nowDone?(fin?"joy":"happy"):null,nowDone?winLine(fin):"");return;}
+    if(!isRepeat(i)&&!isLimit(i)&&!isBody(i)){var was={done:!!i.done,completedAt:i.completedAt||null},nowDone=!i.done;_justDone=nowDone?i.id:null;setTimeout(jdClear,1400);if(nowDone)Buddy.react("done");Store.update("items",i.id,{done:nowDone,completedAt:nowDone?fmt(new Date())+"T"+nowHM()+":00":null});var fin=nowDone&&dayFinished();toast(nowDone?"Done: "+i.title:"Marked not done",function(){Store.update("items",i.id,was)},nowDone?(fin?"joy":"happy"):null,nowDone?winLine(fin):"");return;}
     if(isLimit(i)||isBody(i)){addEvent(i,today());openStrip(i.id);return;}   /* always adds, undo lives in the strip */
     var pd=Math.max(1,normOf(i).max||perDayOf(i));var c=countOn(i,today());
     if(c<pd){addEvent(i,today());openStrip(i.id);}else setDayCount(i,today(),0);
@@ -6082,7 +6096,7 @@
     setDayCount(i,ds,countOn(i,ds)>0?0:1);
   }
   function toggleItem(id){var i=Store.get("items",id);if(!i)return;
-    if(i.kind==="med"){if(isLimit(i)||isBody(i)){addEvent(i,today());openStrip(i.id);}else{var was0=countOn(i,today())>0;if(!was0){_justDone=i.id;setTimeout(function(){_justDone=null},900);Buddy.react("done");}logToggleDate(i,today());toast(was0?"Marked not taken":"Taken: "+i.title,function(){var fi=Store.get("items",i.id);if(fi)logToggleDate(fi,today());},was0?null:(dayFinished()?"joy":"happy"));}}
+    if(i.kind==="med"){if(isLimit(i)||isBody(i)){addEvent(i,today());openStrip(i.id);}else{var was0=countOn(i,today())>0;if(!was0){_justDone=i.id;setTimeout(jdClear,1400);Buddy.react("done");}logToggleDate(i,today());toast(was0?"Marked not taken":"Taken: "+i.title,function(){var fi=Store.get("items",i.id);if(fi)logToggleDate(fi,today());},was0?null:(dayFinished()?"joy":"happy"));}}
     else if(i.kind==="todo")tapTodo(i);}
 
   $("#overlay").addEventListener("click",function(e){if(e.target===this)closeModal();});
