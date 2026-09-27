@@ -20,3 +20,10 @@ Not to copy: purple AI glow as a default, particle spheres (heavy on phones), 3D
 - The user is NOT happy with the split bottom menu (two pills with a centre plus): "feels a bit cheap". Kept in the mock for now; revisit the bottom menu design later.
 - The user likes the small tick lines under each day in the date strip and wants them clearly visible in both themes.
 - Back of the Home card: the user chose "mirror the front across the week" (three strips of seven small LEDs) plus the blob saying the one-line insight.
+
+## Notes added 2026-09-28
+
+- `wins-1.jpg` to `wins-6.jpg`: a "wins" journal app. Liked: the positive tone (a done thing is a "win", a small kind line under each one in handwriting), and the week strip where each day chip carries a small mountain-with-flag mark that fills in. Take: the tone, and our own version of a week strip (days as small LED marks, not mountains). Avoid: handwriting font (Space Grotesk stays), orange flood cards, a "14 wins" counter that only goes up.
+- `stack-dashboard.jpg` (Orbix, "Image 7"): wallet cards stacked with their tops peeking out. Idea: on Patterns, Body, Mind and To-do as three stacked cards; tap one to lift it and read its month.
+- `sky-1.jpg` to `sky-5.jpg` (Zenvest): a soft, pale sky photo wash behind the top of the page fading to white, frosted glass cards. Take: one calm pale wash behind the top of the page only. Avoid: stock photos, pink-orange streaks, glass on every card.
+- `weekly-reset-video.png` (video): "Sunday 10-minute reset challenge. This week: fridge shelves." Idea: one small weekly thing on Home that rotates each week. Avoid: the timer (user dislikes focus timers) and the social "comment DONE, tag someone".

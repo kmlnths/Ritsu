@@ -1906,6 +1906,20 @@
   /* phones: room at the bottom of every page so the floating menu never covers the last row */
   @media(max-width:820px){#view{padding-bottom:calc(112px + env(safe-area-inset-bottom))}}
   .qc-lh.qc-xh{margin-top:18px}
+  /* day strip lights: Body, Mind, To-do under every day */
+  .hmd .tk:not(.mo){display:none}
+  .hmd .tk.mo{height:auto;margin-top:0;font-size:10px;line-height:1}
+  .hmd .lz{display:flex;gap:3px;margin-top:5px;height:5px;align-items:center}
+  .hmd .lz i{--c:var(--c-body);width:9px;height:4px;border-radius:2px;background:var(--line);transition:background-color .3s,box-shadow .3s}
+  .hmd .lz i.lm{--c:var(--c-mind)} .hmd .lz i.lt{--c:var(--c-todo)}
+  .hmd .lz i.h{background:color-mix(in srgb,var(--c) 45%,var(--line))}
+  .hmd .lz i.f{background:var(--c);box-shadow:0 0 7px 1px color-mix(in srgb,var(--c) 75%,transparent)}
+  /* light mode: a glow does not show on ivory, so the lights get deeper colour and a crisp edge instead */
+  :root[data-theme="warm"] .hmd .lz i{width:10px;height:5px;background:color-mix(in srgb,var(--ink) 13%,transparent)}
+  :root[data-theme="warm"] .hmd .lz i.h{background:color-mix(in srgb,var(--c) 38%,#fff);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) 55%,transparent)}
+  :root[data-theme="warm"] .hmd .lz i.f{background:var(--c);box-shadow:0 1px 3px color-mix(in srgb,var(--c) 45%,transparent)}
+  /* the Undo bar's second line */
+  .toast .tx-sub{display:block;margin-top:2px;font-size:12.5px;font-weight:500;opacity:.72}
 </style>
 </head>
 <body>
@@ -3684,6 +3698,7 @@
     var old=document.querySelector(".qfw");if(old)old.remove();
     var fr=dCount(ds)===0?qfStrip():"";if(fr)hh.insertAdjacentHTML("afterend",fr);
     var bT=0,bD=0;HM_DOMS.forEach(function(d){bT+=st[d[0]].tot;bD+=st[d[0]].done;});Buddy.sync(ds,bT,bD);
+    lzFill();
   }
   /* the day's list: under the card on phones, beside Home on wide screens */
   function qcListFill(ds,el0){
@@ -3705,6 +3720,23 @@
     var el=$("#hmSide");if(el&&window.innerWidth>=940)qcListFill(ds,el);
   }
   window.addEventListener("resize",function(){var el=$("#hmSide");if(el&&!el.firstChild&&state.view==="home")hmSideFill(hmDay())});
+  /* the day strip lights: 0 nothing (or nothing due), 1 partly done, 2 all done; same numbers as the card */
+  var _lzCache={},_lzT=0;
+  function lzLevels(ds){var st=hmStats(ds);return HM_DOMS.map(function(d){var x=st[d[0]];return !x.tot?0:x.done>=x.tot?2:x.done>0?1:0})}
+  function lzPaint(el,lv){var is=el.children,nm=["Body","Mind","To-do"],say=[];
+    for(var k=0;k<3;k++){is[k].className=is[k].className.split(" ")[0]+(lv[k]===2?" f":lv[k]===1?" h":"");if(lv[k])say.push(nm[k]+(lv[k]===2?" done":" started"))}
+    var b=el.parentNode;b.classList.toggle("lzfull",lv.join()==="2,2,2");
+    var base=b.getAttribute("data-lab")||b.getAttribute("aria-label");b.setAttribute("data-lab",base);b.setAttribute("aria-label",base+(say.length?", "+say.join(", "):""));}
+  function lzFill(){
+    var sc=$("#hmScroll");if(!sc)return;var td=today();clearTimeout(_lzT);
+    var t=sc.querySelector('[data-lz="'+td+'"]');if(t)lzPaint(t,lzLevels(td));
+    var past=[].slice.call(sc.querySelectorAll(".lz")).filter(function(el){return el.getAttribute("data-lz")<td}).reverse();
+    (function step(n){var end=Math.min(past.length,n+12);
+      for(;n<end;n++){var ds=past[n].getAttribute("data-lz");if(!_lzCache[ds])_lzCache[ds]=lzLevels(ds);lzPaint(past[n],_lzCache[ds]);}
+      if(n<past.length)_lzT=setTimeout(function(){step(n)},16);})(0);
+  }
+  /* ticking a past day from the Day page changes that day; forget the saved lights whenever the data changes */
+
   function hmBodySoon(){clearTimeout(_hmT);_hmT=setTimeout(hmBody,90)}
   function hmRefresh(){clearTimeout(_hmT);hmHead();hmBody()}
   function hmSnap(i,instant){
@@ -3855,7 +3887,7 @@
     var strip='<span class="hm-pad"></span>';
     for(var k=0;k<=HM_BACK+HM_FWD;k++){
       var dsk=addDaysStr(today(),k-HM_BACK),dk=new Date(dsk+"T00:00:00"),first=dk.getDate()===1;
-      strip+='<button class="hmd'+(k===HM_BACK?" today":"")+'" data-hmi="'+k+'" aria-label="'+hmLabel(dsk)+'"><small>'+DOW[dk.getDay()]+'</small><b>'+dk.getDate()+'</b><span class="tk'+(first?" mo":"")+'">'+(first?MON[dk.getMonth()]:"")+'</span></button>';
+      strip+='<button class="hmd'+(k===HM_BACK?" today":"")+'" data-hmi="'+k+'" aria-label="'+hmLabel(dsk)+'"><small>'+DOW[dk.getDay()]+'</small><b>'+dk.getDate()+'</b>'+(first?'<span class="tk mo">'+MON[dk.getMonth()]+'</span>':'')+'<span class="lz" data-lz="'+dsk+'"><i class="lb"></i><i class="lm"></i><i class="lt"></i></span></button>';
     }
     strip+='<span class="hm-pad"></span>';
 
@@ -4837,10 +4869,13 @@
   /* a finished day: every item that counts is done */
   function dayFinished(){var sc=dayScore(today());return !!(sc&&sc.of>0&&sc.r>=1)}
   /* mood is optional: "happy", "joy" or "love" puts the small blob in the bar, where the feedback is */
-  function toast(m,undo,mood){var t=$("#toast");_toastUndo=undo||null;
+  /* short kind lines for a finished task: plain, never about what is left */
+  var WIN_LINES=["A small win. It still counts.","One more off the list.","Nice. That counts.","Small steps add up.","Done is done. Well played.","That is one less thing to carry."];
+  function winLine(joy){if(joy)return "That was the last one. A full day.";var n=+(localStorage.getItem("ritsu_winline")||0);try{localStorage.setItem("ritsu_winline",String((n+1)%WIN_LINES.length))}catch(e){}return WIN_LINES[n%WIN_LINES.length]}
+  function toast(m,undo,mood,sub){var t=$("#toast");_toastUndo=undo||null;
     var wantBlob=!!(mood&&Buddy.cfg.show&&(Buddy.cfg.mode!=="quiet"||mood==="joy"));
     t.innerHTML=(wantBlob?'<span class="blob-host toast-blob"></span>':"")+'<span class="tx"></span>'+(undo?'<button data-toastundo>Undo</button>':"");
-    t.querySelector(".tx").textContent=m;t.classList.toggle("has-undo",!!undo);t.classList.toggle("has-blob",wantBlob);
+    t.querySelector(".tx").textContent=m;if(sub){var sm=document.createElement("small");sm.className="tx-sub";sm.textContent=sub;t.querySelector(".tx").appendChild(sm);}t.classList.toggle("has-undo",!!undo);t.classList.toggle("has-blob",wantBlob);
     if(wantBlob)Buddy.temp(t.querySelector(".toast-blob"),mood,false,true);
     t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove("show");_toastUndo=null},undo?5500:2000);}
   /* ===== the companion: a small jelly blob that reacts to what happens ===== */
@@ -6007,7 +6042,7 @@
   function logToggleDate(i,ds){ if(countOn(i,ds)>0)setDayCount(i,ds,0); else setDayCount(i,ds,1); }
   function tapTodo(i){
     if(i.cb){cbTick(i);return;}
-    if(!isRepeat(i)&&!isLimit(i)&&!isBody(i)){var was={done:!!i.done,completedAt:i.completedAt||null},nowDone=!i.done;_justDone=nowDone?i.id:null;setTimeout(function(){_justDone=null},900);if(nowDone)Buddy.react("done");Store.update("items",i.id,{done:nowDone,completedAt:nowDone?fmt(new Date())+"T"+nowHM()+":00":null});toast(nowDone?"Done: "+i.title:"Marked not done",function(){Store.update("items",i.id,was)},nowDone?(dayFinished()?"joy":"happy"):null);return;}
+    if(!isRepeat(i)&&!isLimit(i)&&!isBody(i)){var was={done:!!i.done,completedAt:i.completedAt||null},nowDone=!i.done;_justDone=nowDone?i.id:null;setTimeout(function(){_justDone=null},900);if(nowDone)Buddy.react("done");Store.update("items",i.id,{done:nowDone,completedAt:nowDone?fmt(new Date())+"T"+nowHM()+":00":null});var fin=nowDone&&dayFinished();toast(nowDone?"Done: "+i.title:"Marked not done",function(){Store.update("items",i.id,was)},nowDone?(fin?"joy":"happy"):null,nowDone?winLine(fin):"");return;}
     if(isLimit(i)||isBody(i)){addEvent(i,today());openStrip(i.id);return;}   /* always adds, undo lives in the strip */
     var pd=Math.max(1,normOf(i).max||perDayOf(i));var c=countOn(i,today());
     if(c<pd){addEvent(i,today());openStrip(i.id);}else setDayCount(i,today(),0);
@@ -6181,7 +6216,7 @@
     if(!Store.ready||!anyActiveFast())return;
     if(state.view==="home"||state.view==="item"||state.view==="area"||state.view==="fasting")render();
   },30000);
-  Store.onChange=function(){render();};Store.init();
+  Store.onChange=function(){_lzCache={};render();};Store.init();
 })();
 </script>
 
