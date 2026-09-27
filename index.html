@@ -1956,6 +1956,20 @@
   :root[data-theme="warm"][data-amb="n"]{--sky1:#D6DCEB;--sky2:#ECEAF1}
   body,:root[data-theme="warm"] body{background-image:linear-gradient(180deg,var(--sky1) 0,var(--sky2) 240px,transparent 560px),radial-gradient(130% 480px at 50% 0%,var(--amb),transparent 75%)!important;background-repeat:no-repeat!important}
   @media(prefers-contrast:more){body,:root[data-theme="warm"] body{background-image:none!important}}
+  /* This week's one thing */
+  .wk1{margin:12px 0 4px;padding:16px 18px;border:1px solid var(--line);border-radius:22px;background:var(--panel)}
+  .wk1-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+  .wk1-h span{font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .wk1-h small{font-size:12px;color:var(--muted)}
+  .wk1-t{display:block;margin-top:8px;font-size:20px;font-weight:500;letter-spacing:-.01em}
+  .wk1 p{margin:4px 0 12px;font-size:14px;line-height:1.45;color:var(--muted)}
+  .wk1-b{display:flex;gap:8px}
+  .wk1.is-done{display:flex;align-items:center;gap:10px;padding:12px 16px;font-size:13.5px;color:var(--muted)}
+  .wk1.is-done b{color:var(--ink);font-weight:600}
+  .wk1-ok{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--c-body) 18%,transparent);color:var(--c-body)}
+  .wk1-ok svg{width:14px;height:14px}
+  .wk1.is-done > span:nth-child(2){flex:1;min-width:0}
+  .wk1-undo{flex:none;border:0;background:none;color:var(--ink);font:600 13px/1 var(--sans);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:8px 2px}
 </style>
 </head>
 <body>
@@ -3732,7 +3746,7 @@
   function hmBody(){
     var hh=$("#hmHero");if(!hh||!_hmCons)return;
     var ds=hmDay(),st=hmStats(ds);
-    qcListFill(ds);cbAskFill(ds);hmSideFill(ds);
+    qcListFill(ds);cbAskFill(ds);wk1Fill(ds);hmSideFill(ds);
     hh.innerHTML=hmHeroHtml(ds,st);
     hh.classList.toggle("complete",!!hh.querySelector(".hm-done-flag"));
     hh.classList.toggle("switching",!!hh.querySelector(".qc-switch"));   /* the day just became complete: play the glow once */
@@ -3941,7 +3955,7 @@
       '<div class="hm-strip"><button class="hm-arrow" data-hmweek="-1" aria-label="Previous day">'+phicon("caretl")+'</button>'+
       '<div class="hm-scroll" id="hmScroll" aria-label="Pick a day">'+strip+'</div>'+
       '<button class="hm-arrow" data-hmweek="1" aria-label="Next day">'+phicon("caretr")+'</button></div>'+
-      '<div class="hm-hero qc" id="hmHero"></div>'+'<div id="cbAsk"></div>'+'<div id="hmList" class="qc-list"></div>'+backupNudge();
+      '<div class="hm-hero qc" id="hmHero"></div>'+'<div id="cbAsk"></div>'+'<div id="wk1"></div>'+'<div id="hmList" class="qc-list"></div>'+backupNudge();
 
     return '<div class="home-grid solo"><div class="home-main">'+main+'</div><aside class="home-side" id="hmSide" aria-label="The list for this day"></aside></div>';
   }
@@ -4405,7 +4419,7 @@
   function viewSettings(){
     var h='<div class="day-h"><div class="d"><p class="kicker">Preferences</p><h1 class="title" style="font-size:32px">Settings</h1></div></div>';
     var me=state.me?personById(state.me):null;
-    h+='<div class="panel"><div class="setrow"><div class="info"><b>Appearance</b><small>Saved on this device. Auto follows your phone.</small></div><div class="themetoggle"><button class="'+(theme==="warm"?"on":"")+'" data-theme-set="warm">Light</button><button class="'+(theme==="dark"?"on":"")+'" data-theme-set="dark">Dark</button><button class="'+(theme==="auto"?"on":"")+'" data-theme-set="auto">Auto</button></div></div>'+lightsRow()+'<div class="setrow"><div class="info"><b>You are</b><small>Used for “assigned to you”, and for who can see a task.</small></div><button class="btn sm" data-action="pick-me">'+(me?esc(me.name):"Set")+'</button></div><div class="setrow"><div class="info"><b>Summary for your doctor</b><small>A plain list of what you logged, to show at an appointment. For a full backup, use Back up to a file below.</small></div><button class="btn sm" data-action="export">Make summary</button></div><div class="setrow"><div class="info"><b>Start over</b><small>Clears this phone and takes you back to the Welcome screen. A copy is kept for one step, so you can bring it back.</small></div><button class="btn danger sm" data-action="reseed">Start fresh</button></div></div>';
+    h+='<div class="panel"><div class="setrow"><div class="info"><b>Appearance</b><small>Saved on this device. Auto follows your phone.</small></div><div class="themetoggle"><button class="'+(theme==="warm"?"on":"")+'" data-theme-set="warm">Light</button><button class="'+(theme==="dark"?"on":"")+'" data-theme-set="dark">Dark</button><button class="'+(theme==="auto"?"on":"")+'" data-theme-set="auto">Auto</button></div></div>'+lightsRow()+'<div class="setrow"><div class="info"><b>This week\'s one thing</b><small>One small reset on Home, new each Sunday. Never counted in your day.</small></div><div class="themetoggle"><button class="'+(wk1Get().off?"":"on")+'" data-wk1="show">Show</button><button class="'+(wk1Get().off?"on":"")+'" data-wk1="hide">Hide</button></div></div><div class="setrow"><div class="info"><b>You are</b><small>Used for “assigned to you”, and for who can see a task.</small></div><button class="btn sm" data-action="pick-me">'+(me?esc(me.name):"Set")+'</button></div><div class="setrow"><div class="info"><b>Summary for your doctor</b><small>A plain list of what you logged, to show at an appointment. For a full backup, use Back up to a file below.</small></div><button class="btn sm" data-action="export">Make summary</button></div><div class="setrow"><div class="info"><b>Start over</b><small>Clears this phone and takes you back to the Welcome screen. A copy is kept for one step, so you can bring it back.</small></div><button class="btn danger sm" data-action="reseed">Start fresh</button></div></div>';
     h+=areasPanel();
     h+=cbPanel();
     h+='<div class="sec-h"><h2>More places</h2><span class="line"></span></div><div class="panel"><button class="setrow linkrow" data-nav="people"><div class="info"><b>People</b><small>Who is in your group</small></div><span class="chev">&rsaquo;</span></button><button class="setrow linkrow" data-nav="fasting"><div class="info"><b>Fasting</b><small>Start or end a fast, and see the last ones</small></div><span class="chev">&rsaquo;</span></button></div>';
@@ -4677,6 +4691,50 @@
     else{q=cb.act+"?";sub="Due "+dayShort(cb.next);btns=b("done","Done",1)+b("later","Later");}
     return '<div class="cbask"><span class="blob-host cbask-blob" aria-hidden="true"></span><div class="cbq"><b>'+esc(q)+'</b><small>'+esc(sub)+'</small><div class="cbbtns">'+btns+'</div></div></div>';
   }
+  /* ===== This week's one thing =====
+     One small reset a week, new each Sunday, chosen in turn from a short list. Kept on this device (ritsu_week1).
+     It never counts toward the day, has no timer, and ignoring it is fine: next Sunday brings a new one. */
+  var WK1_LIB=[
+    ["Fridge shelves","Wipe the sticky spots, group like with like, see what you actually have."],
+    ["Medicine box","Put aside anything past its date and note what is running low."],
+    ["Phone photos","Delete this month's screenshots and blurry shots."],
+    ["Your bag","Empty it out, keep what you use, bin the old receipts."],
+    ["One kitchen drawer","Pick the fullest one and sort it."],
+    ["Email inbox","Unsubscribe from three things you never read."],
+    ["Bedside table","Clear it so only what helps you sleep is left."],
+    ["Wardrobe","Take out one thing you have not worn in a year."],
+    ["Spice rack","Check the dates and bring what you use most to the front."],
+    ["Desk","Clear the top and keep only today's things out."],
+    ["Car","Empty the door pockets and the floor."],
+    ["Bathroom shelf","Toss empty bottles and old samples."],
+    ["Phone apps","Delete apps you have not opened in a month."],
+    ["Water bottle and lunchbox","Give them a proper scrub."],
+    ["Pantry","Move older packets to the front so they get used first."],
+    ["Shoes","Wipe the pair you wear most and air out the rest."],
+    ["Downloads folder","Clear out files you no longer need."],
+    ["Charging cables","Untangle them and bin the broken ones."],
+    ["Wallet","Clear old receipts and cards you do not use."],
+    ["Freezer","See what is in there and plan to use one thing this week."],
+    ["Pillows and covers","Wash the covers and flip the pillows."],
+    ["Cleaning cupboard","Check what has run out and add it to your list."],
+    ["The spot by the door","Clear the keys, mail and bits that pile up there."]
+  ];
+  function wk1Start(){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-d.getDay());return fmt(d)}   /* weeks start on Sunday */
+  function wk1Get(){var st={};try{st=JSON.parse(localStorage.getItem("ritsu_week1")||"{}")||{}}catch(e){}var w=wk1Start();if(st.wk!==w)st={wk:w,swap:0,done:null,off:st.off};return st}
+  function wk1Put(st){try{localStorage.setItem("ritsu_week1",JSON.stringify(st))}catch(e){}}
+  function wk1Pick(st){var n=Math.round(new Date(st.wk+"T12:00:00").getTime()/6048e5);return WK1_LIB[((n+(st.swap||0))%WK1_LIB.length+WK1_LIB.length)%WK1_LIB.length]}
+  function wk1Html(){var st=wk1Get();if(st.off)return "";var it=wk1Pick(st);
+    if(st.done)return '<div class="wk1 is-done"><span class="wk1-ok" aria-hidden="true">'+CHECK_SVG+'</span><span><b>'+esc(it[0])+'</b>, done this week. A new one comes on Sunday.</span><button class="wk1-undo" data-wk1="undo">Undo</button></div>';
+    return '<div class="wk1"><div class="wk1-h"><span>This week\'s one thing</span><small>New each Sunday</small></div><b class="wk1-t">'+esc(it[0])+'</b><p>'+esc(it[1])+'</p>'+
+      '<div class="wk1-b"><button class="cb-b pri" data-wk1="done">Done</button><button class="cb-b" data-wk1="swap">Another one</button></div></div>';}
+  function wk1Fill(ds){var el=$("#wk1");if(!el)return;var h=ds===today()?wk1Html():"";if(el._h===h)return;el._h=h;el.innerHTML=h;}
+  document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-wk1]");if(!b)return;
+    var a=b.getAttribute("data-wk1"),st=wk1Get(),it=wk1Pick(st);
+    if(a==="done"){st.done=today();wk1Put(st);Buddy.react("done");toast("Done: "+it[0],function(){var s2=wk1Get();s2.done=null;wk1Put(s2);wk1Fill(hmDay());},"happy",winLine(false));}
+    else if(a==="undo"){st.done=null;wk1Put(st);}
+    else if(a==="swap"){st.swap=(st.swap||0)+1;wk1Put(st);}
+    else if(a==="show"||a==="hide"){st.off=a==="hide";wk1Put(st);render();return;}
+    wk1Fill(hmDay());});
   function cbAskFill(ds){
     var el=$("#cbAsk");if(!el)return;
     var h=ds===today()?cbAskHtml():"";
