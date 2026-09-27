@@ -1905,6 +1905,7 @@
   .hm-top:has(.buddy-bubble.on) .hm-hello{visibility:hidden}
   /* phones: room at the bottom of every page so the floating menu never covers the last row */
   @media(max-width:820px){#view{padding-bottom:calc(112px + env(safe-area-inset-bottom))}}
+  .qc-lh.qc-xh{margin-top:18px}
 </style>
 </head>
 <body>
@@ -3687,11 +3688,17 @@
   /* the day's list: under the card on phones, beside Home on wide screens */
   function qcListFill(ds,el0){
     var el=el0||$("#hmList");if(!el)return;
-    var off=dCount(ds),its=visibleItems().filter(function(i){return dueOnDate(i,ds,off)&&!isFast(i)&&!isTracker(i)&&(!state.qcDom||areaDomain(i.catId)===state.qcDom)}).sort(hmListSort);
-    var left=its.filter(function(i){return !(off===0?doneForNow(i):hmDone(i,ds))}).length;
+    /* the list shows exactly the things the card counts, so "4 of 9" and "5 left" always agree;
+       medicine and anything else that never counts toward the day sits in its own group underneath */
+    var off=dCount(ds),doms=state.qcDom?[state.qcDom]:HM_DOMS.map(function(d){return d[0]}),its=[];
+    doms.forEach(function(d){hmItems(d,ds).forEach(function(i){if(its.indexOf(i)<0)its.push(i)})});
+    its.sort(hmListSort);
+    var extra=visibleItems().filter(function(i){return its.indexOf(i)<0&&dueOnDate(i,ds,off)&&!isFast(i)&&!isTracker(i)&&(!state.qcDom||areaDomain(i.catId)===state.qcDom)}).sort(hmListSort);
+    var left=its.filter(function(i){return !hmDone(i,ds)}).length;
     var dn=state.qcDom?HM_DOMS.filter(function(d){return d[0]===state.qcDom})[0][1]:"";var h='<div class="qc-lh"><h3 aria-level="2">'+(off===0?"Today":hmLabel(ds))+(dn?' <em class="qc-only qb-'+state.qcDom+'">'+dn+' only</em><button class="qc-all" data-qcall>Show all</button>':'')+'</h3><span>'+(its.length?(left?left+" left":"All done"):"")+'</span></div>';
-    if(!its.length)h+='<div class="cat-empty">Nothing on the list for this day.</div>';
-    else{h+='<div class="card">';its.forEach(function(i){h+=itemRow(i,{ds:ds})});h+='</div>';}
+    if(!its.length&&!extra.length)h+='<div class="cat-empty">Nothing on the list for this day.</div>';
+    if(its.length){h+='<div class="card">';its.forEach(function(i){h+=itemRow(i,{ds:ds})});h+='</div>';}
+    if(extra.length){h+='<div class="qc-lh qc-xh"><h3 aria-level="2">'+(extra.every(function(i){return i.kind==="med"})?"Medicine":"Also today")+'</h3><span>not counted in your day</span></div><div class="card">';extra.forEach(function(i){h+=itemRow(i,{ds:ds})});h+='</div>';}
     el.innerHTML=h;
   }
   function hmSideFill(ds){
