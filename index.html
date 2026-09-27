@@ -1970,6 +1970,49 @@
   .wk1-ok svg{width:14px;height:14px}
   .wk1.is-done > span:nth-child(2){flex:1;min-width:0}
   .wk1-undo{flex:none;border:0;background:none;color:var(--ink);font:600 13px/1 var(--sans);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:8px 2px}
+  /* Patterns: the stack of cards */
+  .pk{position:relative;margin:4px 0 22px}
+  .pk-c{--c:var(--c-body);position:relative;margin-top:-26px;border:1px solid var(--line);border-radius:22px;
+    background:linear-gradient(180deg,color-mix(in srgb,var(--c) 14%,var(--panel)) 0,var(--panel) 90px);
+    box-shadow:0 -10px 24px -14px rgba(0,0,0,.45);transition:margin-top .35s cubic-bezier(.32,.72,.24,1)}
+  .pk-c:first-child{margin-top:0}
+  .pk-c.pk-mind{--c:var(--c-mind)} .pk-c.pk-todo{--c:var(--c-todo)}
+  .pk-c.open + .pk-c{margin-top:10px}
+  :root[data-theme="warm"] .pk-c{box-shadow:0 -8px 20px -14px rgba(60,40,10,.28)}
+  .pk-top{display:flex;align-items:center;gap:12px;width:100%;padding:16px 18px 34px;border:0;background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+  .pk-c:last-child .pk-top,.pk-c.open .pk-top{padding-bottom:16px}
+  .pk-led{flex:none;width:22px;height:8px;border-radius:4px;background:var(--c);box-shadow:0 0 10px 1px color-mix(in srgb,var(--c) 70%,transparent)}
+  :root[data-theme="warm"] .pk-led{box-shadow:0 1px 3px color-mix(in srgb,var(--c) 45%,transparent)}
+  .pk-n{flex:1;min-width:0}
+  .pk-n b{display:block;font-size:17px;font-weight:600}
+  .pk-n small{display:block;margin-top:2px;font-size:12.5px;color:var(--muted)}
+  .pk-p{font-size:30px;font-weight:300;letter-spacing:-.02em}
+  .pk-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s cubic-bezier(.32,.72,.24,1)}
+  .pk-c.open .pk-body{grid-template-rows:1fr}
+  .pk-in{overflow:hidden;min-height:0;padding:0 18px}
+  .pk-c.open .pk-in{padding-bottom:18px}
+  .pk-days{display:flex;justify-content:space-between;gap:4px;padding:4px 0 14px}
+  .pk-days span{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
+  .pk-days i{width:100%;max-width:30px;height:8px;border-radius:4px;background:color-mix(in srgb,var(--ink) 12%,transparent)}
+  .pk-days.many{gap:3px}.pk-days.many i{height:14px;border-radius:3px}
+  .pk-days i.h{background:color-mix(in srgb,var(--c) 42%,transparent)}
+  .pk-days i.f{background:var(--c);box-shadow:0 0 7px color-mix(in srgb,var(--c) 60%,transparent)}
+  :root[data-theme="warm"] .pk-days i.f{box-shadow:none}
+  .pk-days small{font-size:11px;color:var(--muted)}
+  .pk-mons{display:flex;align-items:flex-end;gap:6px;height:84px;padding:4px 0 14px}
+  .pk-mons span{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px}
+  .pk-mons i{width:100%;border-radius:4px;background:var(--c)}
+  .pk-mons small{font-size:11px;color:var(--muted)}
+  .pk-facts{display:flex;gap:18px;padding:12px 0;border-top:1px solid var(--line)}
+  .pk-facts b{display:block;font-size:17px;font-weight:500}
+  .pk-facts small{font-size:12px;color:var(--muted)}
+  .pk-its{display:flex;flex-direction:column;gap:10px;padding-top:12px;border-top:1px solid var(--line)}
+  .pk-it{display:grid;grid-template-columns:minmax(0,1fr) 70px 38px;align-items:center;gap:10px;font-size:14px}
+  .pk-it span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pk-it i{height:5px;border-radius:3px;background:color-mix(in srgb,var(--ink) 10%,transparent);overflow:hidden}
+  .pk-it em{display:block;height:100%;border-radius:3px;background:var(--c)}
+  .pk-it b{font-size:13px;font-weight:600;text-align:right}
+  @media(prefers-reduced-motion:reduce){.pk-c,.pk-body{transition:none}}
 </style>
 </head>
 <body>
@@ -4333,6 +4376,37 @@
     return h;
   }
 
+  /* ===== Patterns: the stack of three cards (Body, Mind, To-do) =====
+     Same counting as the Home card (hmStat), over the chosen period. One card open at a time; the open one is
+     remembered in state.pkOpen so a redraw keeps it open. */
+  function pkData(dom,days){
+    var r={sd:0,st:0,full:0,act:0,lv:[],dow:[[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]],mon:{},items:{}};
+    for(var k=days-1;k>=0;k--){var ds=addDaysStr(today(),-k),x=hmStat(dom,ds);
+      r.lv.push(!x.tot?0:x.done>=x.tot?2:x.done>0?1:0);if(!x.tot)continue;
+      r.act++;r.st+=x.tot;r.sd+=x.done;if(x.done>=x.tot)r.full++;
+      var wd=new Date(ds+"T12:00:00").getDay();r.dow[wd][0]+=x.done;r.dow[wd][1]+=x.tot;
+      var mk=ds.slice(0,7);r.mon[mk]=r.mon[mk]||[0,0];r.mon[mk][0]+=x.done;r.mon[mk][1]+=x.tot;
+      x.its.forEach(function(i){var t=r.items[i.id]||(r.items[i.id]={i:i,d:0,t:0});t.t++;if(hmDone(i,ds))t.d++;});}
+    r.pct=r.st?Math.round(r.sd/r.st*100):null;return r;}
+  var DOW_PL=["Sundays","Mondays","Tuesdays","Wednesdays","Thursdays","Fridays","Saturdays"];
+  function pkCard(dom,name,days,per){
+    var d=pkData(dom,days),open=state.pkOpen===dom,cls="pk-c pk-"+dom+(open?" open":"");
+    var sub=!d.act?"Nothing to do in this "+per:d.full+" of "+d.act+(d.act===1?" day":" days")+" fully done";
+    var h='<div class="'+cls+'"><button class="pk-top" data-pk="'+dom+'" aria-expanded="'+open+'"><i class="pk-led" aria-hidden="true"></i><span class="pk-n"><b>'+name+'</b><small>'+sub+'</small></span><span class="pk-p">'+(d.pct==null?"-":d.pct+"%")+'</span></button>';
+    h+='<div class="pk-body"><div class="pk-in">';
+    if(days<=31){h+='<div class="pk-days'+(days>7?" many":"")+'" aria-hidden="true">'+d.lv.map(function(v,n){var ds=addDaysStr(today(),n-days+1),wd=new Date(ds+"T12:00:00").getDay();
+        return '<span><i class="'+(v===2?"f":v===1?"h":"")+'"></i>'+(days===7?'<small>'+DOW[wd][0]+'</small>':'')+'</span>'}).join("")+'</div>';}
+    else{var ks=Object.keys(d.mon).sort().slice(-12);h+='<div class="pk-mons" aria-hidden="true">'+ks.map(function(k){var m=d.mon[k],pc=m[1]?m[0]/m[1]:0;return '<span><i style="height:'+Math.max(6,Math.round(pc*100))+'%"></i><small>'+MON[+k.slice(5,7)-1][0]+'</small></span>'}).join("")+'</div>';}
+    var bestD=-1,bestR=-1;if(days>=14)d.dow.forEach(function(x,n){if(x[1]>=2){var rr=x[0]/x[1];if(rr>bestR){bestR=rr;bestD=n}}});
+    h+='<div class="pk-facts"><div><b>'+d.sd+'</b><small>things done</small></div><div><b>'+d.full+'</b><small>full days</small></div>'+(bestD>=0?'<div><b>'+DOW_PL[bestD]+'</b><small>your best day</small></div>':'')+'</div>';
+    var its=Object.keys(d.items).map(function(k){return d.items[k]}).sort(function(a,b){return b.d/b.t-a.d/a.t||b.t-a.t}).slice(0,6);
+    if(its.length){h+='<div class="pk-its">'+its.map(function(t){var pc=Math.round(t.d/t.t*100);return '<div class="pk-it"><span>'+esc(t.i.title)+'</span><i aria-hidden="true"><em style="width:'+pc+'%"></em></i><b>'+pc+'%</b></div>'}).join("")+'</div>';}
+    h+='</div></div></div>';return h;}
+  function pkStack(days,per){
+    return '<div class="sec-h"><h2>Body, Mind, To-do</h2><span class="line"></span></div><div class="pk">'+HM_DOMS.map(function(x){return pkCard(x[0],x[1],days,per)}).join("")+'</div>';}
+  document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-pk]");if(!b)return;
+    var dom=b.getAttribute("data-pk"),was=state.pkOpen===dom;state.pkOpen=was?null:dom;
+    [].forEach.call(document.querySelectorAll(".pk-c"),function(c){var on=!was&&c.classList.contains("pk-"+dom);c.classList.toggle("open",on);c.querySelector(".pk-top").setAttribute("aria-expanded",on);});});
   function viewReports(){
     var per=state.report;var days=per==="week"?7:per==="month"?30:365;var all=Store.all("items");
     var comps=[];all.filter(isRoutine).forEach(function(i){if(i.kind==="measure"){for(var d in(i.values||{}))if(measureHit(i,d))comps.push({d:d,t:null});}else if(i.kind==="todo"){if(isRepeat(i)){for(var d2 in(i.counts||{})){var c=i.counts[d2];for(var q=0;q<c;q++)comps.push({d:d2,t:(i.logTimes||{})[d2]||null});}}else if(i.done&&i.completedAt)comps.push({d:completedLocal(i).slice(0,10),t:completedLocal(i).slice(11,16)});}else if(i.kind==="med"){(i.log||[]).forEach(function(d3){comps.push({d:d3,t:(i.logTimes||{})[d3]||null});});}});
@@ -4348,6 +4422,7 @@
     var adh=null,adhI=all.filter(function(i){return i.kind==="med"&&isRoutine(i)})[0];
     if(adhI){var am=0,ad=per==="week"?7:30;for(var qa=0;qa<ad;qa++)if(didOn(adhI,addDaysStr(today(),-qa)))am++;adh=Math.round(am/ad*100);}
     h+='<div class="hm-hero rep-hero"><div class="hm-hero-h"><h3 aria-level="2">Consistency</h3><span>'+(per==="week"?"last 7 days":per==="year"?"last 12 months":"last 30 days")+'</span></div><div class="hm-gauge">'+hmArc(conR==null?0:conR/100,HM_ROWS_HERO,200,112,100,100)+'<div class="mid"><b>'+(conR==null?"-":conR+"%")+'</b><small>of the daily routine</small></div></div><div class="hm-facts f2"><div><b>'+total+'</b><small>things logged</small></div><div><b>'+(adh!=null?adh+"%":(avgSleep!=null?avgSleep+"h":"-"))+'</b><small>'+(adh!=null?"meds taken":"avg sleep")+'</small></div></div></div>';
+    h+=pkStack(days,per);
     h+=patternsExtra();
     var _meds=all.filter(function(mi){return mi.kind==="med"});
     if(_meds.length){h+='<div class="sec-h"><h2>Medication</h2><span class="line"></span><span class="meta">'+_meds.length+'</span></div><div class="panel" style="padding:2px 16px">';
