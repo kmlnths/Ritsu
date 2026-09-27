@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0D0E11" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#F7F8FA" media="(prefers-color-scheme: light)">
-<script>try{var _t=localStorage.getItem("ritsu_theme")||"dark";if(_t==="auto")_t=matchMedia("(prefers-color-scheme: light)").matches?"warm":"dark";document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
+<script>try{var _t=localStorage.getItem("ritsu_theme")||"dark";if(_t==="auto")_t=matchMedia("(prefers-color-scheme: light)").matches?"warm":"dark";document.documentElement.setAttribute("data-theme",_t);var _l=localStorage.getItem("ritsu_lights");if(_l)document.documentElement.setAttribute("data-lights",_l)}catch(e){}</script>
 <meta name="description" content="Ritsu - a shared to-do, habit and health tracker. Routines, body logs, episodes, fasting and things you're cutting down, each scored the way it deserves.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
@@ -1920,6 +1920,29 @@
   :root[data-theme="warm"] .hmd .lz i.f{background:var(--c);box-shadow:0 1px 3px color-mix(in srgb,var(--c) 45%,transparent)}
   /* the Undo bar's second line */
   .toast .tx-sub{display:block;margin-top:2px;font-size:12.5px;font-weight:500;opacity:.72}
+  /* Light colours (Settings): each set has a bright glowing version for dark and a deeper one for light */
+  :root[data-lights="ocean"]{--c-body:#2DD4BF;--c-mind:#818CF8;--c-todo:#7DD3FC}
+  :root[data-theme="warm"][data-lights="ocean"]{--c-body:#0F766E;--c-mind:#4338CA;--c-todo:#0369A1}
+  :root[data-lights="sunset"]{--c-body:#FDBA74;--c-mind:#F9A8D4;--c-todo:#FDE047}
+  :root[data-theme="warm"][data-lights="sunset"]{--c-body:#C8662E;--c-mind:#B8467E;--c-todo:#A7791A}
+  :root[data-lights="forest"]{--c-body:#86EFAC;--c-mind:#A7C4A0;--c-todo:#D6B48A}
+  :root[data-theme="warm"][data-lights="forest"]{--c-body:#15803D;--c-mind:#4D7C5A;--c-todo:#8A5A2B}
+  :root[data-lights="clear"]{--c-body:#56B4E9;--c-mind:#E69F00;--c-todo:#2EC4A0}
+  :root[data-theme="warm"][data-lights="clear"]{--c-body:#0072B2;--c-mind:#C67A00;--c-todo:#009E73}
+  .setrow.lc-row{flex-direction:column;align-items:stretch;gap:12px}
+  .lc-list{display:flex;flex-direction:column;gap:8px}
+  .lc-o{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:16px;background:var(--panel-2);color:var(--ink);font:inherit;text-align:left;cursor:pointer;transition:border-color .2s,transform 120ms cubic-bezier(.23,1,.32,1)}
+  .lc-o:active{transform:scale(.98)}
+  .lc-o.on{border-color:color-mix(in srgb,var(--ink) 55%,transparent)}
+  .lc-l{display:flex;gap:4px;flex:none}
+  .lc-l i{width:16px;height:6px;border-radius:3px;background:var(--c);box-shadow:0 0 8px 1px color-mix(in srgb,var(--c) 70%,transparent)}
+  :root[data-theme="warm"] .lc-l i{box-shadow:0 1px 3px color-mix(in srgb,var(--c) 45%,transparent)}
+  .lc-t{flex:1;min-width:0}
+  .lc-t b{display:block;font-size:14.5px;font-weight:600}
+  .lc-t small{display:block;margin-top:1px;font-size:12.5px;line-height:1.35;color:var(--muted)}
+  .lc-k{width:22px;height:22px;flex:none;display:grid;place-items:center;border:1.5px solid var(--line);border-radius:50%}
+  .lc-o.on .lc-k{background:var(--ink);border-color:var(--ink)}
+  .lc-o.on .lc-k::after{content:"";width:8px;height:4px;border:2px solid var(--bg);border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
 </style>
 </head>
 <body>
@@ -2250,6 +2273,12 @@
   var theme="dark"; try{theme=localStorage.getItem("ritsu_theme")||"dark";}catch(e){}
   var _mq=window.matchMedia?matchMedia("(prefers-color-scheme: light)"):null;
   function effTheme(t){return t==="auto"?((_mq&&_mq.matches)?"warm":"dark"):t}
+  var LIGHT_SETS=[["classic","Classic","Green, violet, amber. The Ritsu look.",["#34D399","#A78BFA","#FBBF24"],["#0F7A57","#6B5BD2","#B07A1E"]],["ocean","Ocean","Sea green, deep blue, sky.",["#2DD4BF","#818CF8","#7DD3FC"],["#0F766E","#4338CA","#0369A1"]],["sunset","Sunset","Peach, rose, gold. Warm and soft.",["#FDBA74","#F9A8D4","#FDE047"],["#C8662E","#B8467E","#A7791A"]],["forest","Forest","Moss, sage, bark.",["#86EFAC","#A7C4A0","#D6B48A"],["#15803D","#4D7C5A","#8A5A2B"]],["clear","Easy to tell apart","Blue, orange, green. Chosen so colour blind eyes can tell them apart too.",["#56B4E9","#E69F00","#2EC4A0"],["#0072B2","#C67A00","#009E73"]]];
+  var lights="classic";try{lights=localStorage.getItem("ritsu_lights")||"classic"}catch(e){}
+  function applyLights(id){lights=id;if(id==="classic")document.documentElement.removeAttribute("data-lights");else document.documentElement.setAttribute("data-lights",id);try{localStorage.setItem("ritsu_lights",id)}catch(e){}}
+  function lightsRow(){var dk=effTheme(theme)==="dark";
+    return '<div class="setrow lc-row"><div class="info"><b>Light colours</b><small>The colours of your three lights: Body, Mind, To-do. Pick what feels like you.</small></div><div class="lc-list" role="radiogroup" aria-label="Light colours">'+LIGHT_SETS.map(function(x){var c=dk?x[3]:x[4],on=x[0]===lights;
+      return '<button class="lc-o'+(on?" on":"")+'" role="radio" aria-checked="'+on+'" data-lights-set="'+x[0]+'"><span class="lc-l" aria-hidden="true">'+c.map(function(v){return '<i style="--c:'+v+'"></i>'}).join("")+'</span><span class="lc-t"><b>'+x[1]+'</b><small>'+x[2]+'</small></span><span class="lc-k" aria-hidden="true"></span></button>'}).join("")+'</div></div>';}
   function applyTheme(t){theme=t;document.documentElement.setAttribute("data-theme",effTheme(t));try{localStorage.setItem("ritsu_theme",t)}catch(e){}}
   applyTheme(theme);
   if(_mq&&_mq.addEventListener)_mq.addEventListener("change",function(){if(theme==="auto")document.documentElement.setAttribute("data-theme",effTheme("auto"))});
@@ -4363,7 +4392,7 @@
   function viewSettings(){
     var h='<div class="day-h"><div class="d"><p class="kicker">Preferences</p><h1 class="title" style="font-size:32px">Settings</h1></div></div>';
     var me=state.me?personById(state.me):null;
-    h+='<div class="panel"><div class="setrow"><div class="info"><b>Appearance</b><small>Saved on this device. Auto follows your phone.</small></div><div class="themetoggle"><button class="'+(theme==="warm"?"on":"")+'" data-theme-set="warm">Light</button><button class="'+(theme==="dark"?"on":"")+'" data-theme-set="dark">Dark</button><button class="'+(theme==="auto"?"on":"")+'" data-theme-set="auto">Auto</button></div></div><div class="setrow"><div class="info"><b>You are</b><small>Used for “assigned to you”, and for who can see a task.</small></div><button class="btn sm" data-action="pick-me">'+(me?esc(me.name):"Set")+'</button></div><div class="setrow"><div class="info"><b>Summary for your doctor</b><small>A plain list of what you logged, to show at an appointment. For a full backup, use Back up to a file below.</small></div><button class="btn sm" data-action="export">Make summary</button></div><div class="setrow"><div class="info"><b>Start over</b><small>Clears this phone and takes you back to the Welcome screen. A copy is kept for one step, so you can bring it back.</small></div><button class="btn danger sm" data-action="reseed">Start fresh</button></div></div>';
+    h+='<div class="panel"><div class="setrow"><div class="info"><b>Appearance</b><small>Saved on this device. Auto follows your phone.</small></div><div class="themetoggle"><button class="'+(theme==="warm"?"on":"")+'" data-theme-set="warm">Light</button><button class="'+(theme==="dark"?"on":"")+'" data-theme-set="dark">Dark</button><button class="'+(theme==="auto"?"on":"")+'" data-theme-set="auto">Auto</button></div></div>'+lightsRow()+'<div class="setrow"><div class="info"><b>You are</b><small>Used for “assigned to you”, and for who can see a task.</small></div><button class="btn sm" data-action="pick-me">'+(me?esc(me.name):"Set")+'</button></div><div class="setrow"><div class="info"><b>Summary for your doctor</b><small>A plain list of what you logged, to show at an appointment. For a full backup, use Back up to a file below.</small></div><button class="btn sm" data-action="export">Make summary</button></div><div class="setrow"><div class="info"><b>Start over</b><small>Clears this phone and takes you back to the Welcome screen. A copy is kept for one step, so you can bring it back.</small></div><button class="btn danger sm" data-action="reseed">Start fresh</button></div></div>';
     h+=areasPanel();
     h+=cbPanel();
     h+='<div class="sec-h"><h2>More places</h2><span class="line"></span></div><div class="panel"><button class="setrow linkrow" data-nav="people"><div class="info"><b>People</b><small>Who is in your group</small></div><span class="chev">&rsaquo;</span></button><button class="setrow linkrow" data-nav="fasting"><div class="info"><b>Fasting</b><small>Start or end a fast, and see the last ones</small></div><span class="chev">&rsaquo;</span></button></div>';
@@ -6114,6 +6143,7 @@
     if((el=e.target.closest("[data-buddy]"))){var bk=el.getAttribute("data-buddy").split("-");if(bk[0]==="mode")Buddy.set("mode",bk[1]);else Buddy.set(bk[0],bk[1]==="1");render();return;}
     if((el=e.target.closest("[data-wipe-go]"))){wipeGo();return;}
     if((el=e.target.closest("[data-theme-set]"))){applyTheme(el.getAttribute("data-theme-set"));render();return;}
+    if((el=e.target.closest("[data-lights-set]"))){applyLights(el.getAttribute("data-lights-set"));render();return;}
     if((el=e.target.closest("[data-caldates]"))){calDates=!calDates;try{localStorage.setItem("ritsu_caldates",calDates?"1":"0")}catch(e2){}render();return;}
     if((el=e.target.closest("[data-editrings]"))){state.editRings=!state.editRings;render();return;}
     if((el=e.target.closest("[data-ringcolor]"))){var rc=el.getAttribute("data-ringcolor").split("|");colorRing(rc[0],rc[1]);render();return;}
