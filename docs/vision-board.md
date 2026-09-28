@@ -27,3 +27,8 @@ Not to copy: purple AI glow as a default, particle spheres (heavy on phones), 3D
 - `stack-dashboard.jpg` (Orbix, "Image 7"): wallet cards stacked with their tops peeking out. Idea: on Patterns, Body, Mind and To-do as three stacked cards; tap one to lift it and read its month.
 - `sky-1.jpg` to `sky-5.jpg` (Zenvest): a soft, pale sky photo wash behind the top of the page fading to white, frosted glass cards. Take: one calm pale wash behind the top of the page only. Avoid: stock photos, pink-orange streaks, glass on every card.
 - `weekly-reset-video.png` (video): "Sunday 10-minute reset challenge. This week: fridge shelves." Idea: one small weekly thing on Home that rotates each week. Avoid: the timer (user dislikes focus timers) and the social "comment DONE, tag someone".
+
+## Ideas parked 2026-09-28 (for the + button)
+
+- Glass +: keep the same green, but make it look like a glass icon (translucent green body, a soft highlight on top, a faint inner edge, the page showing through a little), like Apple's newer Liquid Glass buttons. Not built; user asked to keep it in mind.
+- Ring on the +: three options drawn in docs/mockups/plus-ring.html (1 rainbow as pasted, 2 Ritsu colours calm, 3 the ring shows the day's progress with one glow when complete). Recommended 3. No decision yet.
