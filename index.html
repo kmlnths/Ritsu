@@ -2072,6 +2072,18 @@
   .fp-fb{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 12px}
   .fp-care{margin:0;font-size:13px;line-height:1.45;color:var(--muted)}
   .rep-new{margin:0 0 12px;font-size:14px;line-height:1.5;color:var(--muted)}
+  /* Patterns: Your numbers */
+  .panel.nm{padding:4px 18px}
+  .nm-r{padding:14px 0;border-top:1px solid var(--line)}
+  .nm-r:first-child{border-top:0}
+  .nm-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .nm-h b{font-size:15px;font-weight:600}
+  .nm-h small{font-size:12px;color:var(--muted)}
+  .nm-v{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .nm-v span{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .nm-v em{font-style:normal;font-size:12px;color:var(--muted)}
+  .nm-v b{font-size:20px;font-weight:500;letter-spacing:-.01em}
+  .nm-v small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 <body>
@@ -4466,6 +4478,20 @@
     var its=Object.keys(d.items).map(function(k){return d.items[k]}).sort(function(a,b){return b.d/b.t-a.d/a.t||b.t-a.t}).slice(0,6);
     if(its.length){h+='<div class="pk-its">'+its.map(function(t){var pc=Math.round(t.d/t.t*100);return '<div class="pk-it"><span>'+esc(t.i.title)+'</span><i aria-hidden="true"><em style="width:'+pc+'%"></em></i><b>'+pc+'%</b></div>'}).join("")+'</div>';}
     h+='</div></div></div>';return h;}
+  /* Your numbers: plain facts about amounts, no judgement; private items stay out */
+  function numRound(v){return Math.abs(v)>=100?Math.round(v):Math.round(v*10)/10}
+  function numsPanel(days,per){
+    var rows=visibleItems().filter(function(i){return i.kind==="measure"&&!i.archived}).map(function(i){
+      var vs=[],lo=null,hi=null,loD="",hiD="";
+      for(var k=days-1;k>=0;k--){var ds=addDaysStr(today(),-k),v=(i.values||{})[ds];if(v==null||isNaN(v))continue;v=+v;vs.push(v);
+        if(lo==null||v<lo){lo=v;loD=ds}if(hi==null||v>=hi){hi=v;hiD=ds}}
+      if(!vs.length)return null;var avg=vs.reduce(function(a,b){return a+b},0)/vs.length,u=i.unit?" "+esc(i.unit):"";
+      return '<div class="nm-r"><div class="nm-h"><b>'+esc(i.title)+'</b><small>'+vs.length+(vs.length===1?" day":" days")+' logged</small></div>'+
+        '<div class="nm-v"><span><em>Average</em><b>'+numRound(avg)+'</b><small>'+u+'</small></span><span><em>Lowest</em><b>'+numRound(lo)+'</b><small>'+esc(dayShort(loD))+'</small></span><span><em>Highest</em><b>'+numRound(hi)+'</b><small>'+esc(dayShort(hiD))+'</small></span></div></div>';
+    }).filter(Boolean);
+    if(!rows.length)return "";
+    return '<div class="sec-h"><h2>Your numbers</h2><span class="line"></span><span class="meta">this '+per+'</span></div><div class="panel nm">'+rows.join("")+'</div>';
+  }
   function pkStack(days,per){
     return '<div class="sec-h"><h2>Body, Mind, To-do</h2><span class="line"></span></div><div class="pk">'+HM_DOMS.map(function(x){return pkCard(x[0],x[1],days,per)}).join("")+'</div>';}
   document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-pk]");if(!b)return;
@@ -4488,6 +4514,7 @@
     if(conR==null&&!total)h+='<p class="rep-new">Patterns fill in as you use Ritsu. Give it a few days and this page starts to show your week.</p>';
     h+='<div class="hm-hero rep-hero"><div class="hm-hero-h"><h3 aria-level="2">Consistency</h3><span>'+(per==="week"?"last 7 days":per==="year"?"last 12 months":"last 30 days")+'</span></div><div class="hm-gauge">'+hmArc(conR==null?0:conR/100,HM_ROWS_HERO,200,112,100,100)+'<div class="mid"><b>'+(conR==null?"-":conR+"%")+'</b><small>of the daily routine</small></div></div><div class="hm-facts f2"><div><b>'+total+'</b><small>things logged</small></div><div><b>'+(adh!=null?adh+"%":(avgSleep!=null?avgSleep+"h":"-"))+'</b><small>'+(adh!=null?"meds taken":"avg sleep")+'</small></div></div></div>';
     h+=pkStack(days,per);
+    h+=numsPanel(days,per);
     h+=patternsExtra();
     var _meds=all.filter(function(mi){return mi.kind==="med"});
     if(_meds.length){h+='<div class="sec-h"><h2>Medication</h2><span class="line"></span><span class="meta">'+_meds.length+'</span></div><div class="panel" style="padding:2px 16px">';
