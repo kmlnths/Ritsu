@@ -2066,6 +2066,12 @@
   :root[data-theme="warm"]{--bg:#F1F1EE;--panel:#FFFFFF;--panel-2:#F6F6F3;--raise:#FFFFFF;--line:#E4E3DF;--line-2:#ECEBE8;--ink:#15161A;--muted:#55585E;--faint:#686B72}
   :root[data-theme="warm"] .hm-hero.qc{background:#FFFFFF;border-color:transparent;box-shadow:0 1px 2px rgba(20,20,30,.05),0 16px 36px -22px rgba(20,20,30,.22)}
   :root[data-theme="warm"] .card:not(.orbit-card),:root[data-theme="warm"] .panel,:root[data-theme="warm"] .qfw,:root[data-theme="warm"] .wk1,:root[data-theme="warm"] .tile{box-shadow:0 1px 2px rgba(20,20,30,.04)!important}
+  /* empty screens */
+  .fp-first{padding:20px}
+  .fp-ft{display:block;font-size:17px;font-weight:600;margin-bottom:4px}
+  .fp-fb{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 12px}
+  .fp-care{margin:0;font-size:13px;line-height:1.45;color:var(--muted)}
+  .rep-new{margin:0 0 12px;font-size:14px;line-height:1.5;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -3549,7 +3555,9 @@
   function viewFasting(){
     var i=fastItem();
     var h='<div class="day-h"><div class="d"><p class="kicker">Timer</p><h1 class="title" style="font-size:32px">Fasting</h1></div></div>';
-    if(!i)return h+'<div class="card fp-card"><p class="fp-line">Add a fasting item from the plus button to start timing your fasts.</p></div>';
+    if(!i)return h+'<div class="card fp-card fp-first"><b class="fp-ft">Start your first fast</b><p class="fp-line">Pick a length. It starts now, and you can end it any time. Ending early still counts.</p>'+
+      '<div class="fp-fb">'+[14,16,18].map(function(n){return '<button class="cb-b'+(n===16?" pri":"")+'" data-fastbegin="'+n+'">'+n+' hours</button>'}).join("")+'</div>'+
+      '<p class="fp-care">If you take medication with food, or have a health condition, check with your doctor first.</p></div>';
     var a=activeFast(i);
     if(a){var tgt=a.target||16,h0=fastHours(a);h+='<div class="fp-live">'+fastHomeCard()+'</div>'+fpStages(tgt,h0);if(h0>=20||tgt>=24)h+=careBox();}
     else h+=fpIdleHero(i);
@@ -3866,7 +3874,7 @@
     var extra=visibleItems().filter(function(i){return its.indexOf(i)<0&&dueOnDate(i,ds,off)&&!isFast(i)&&!isTracker(i)&&(!state.qcDom||areaDomain(i.catId)===state.qcDom)}).sort(hmListSort);
     var left=its.filter(function(i){return !hmDone(i,ds)}).length;
     var dn=state.qcDom?HM_DOMS.filter(function(d){return d[0]===state.qcDom})[0][1]:"";var h='<div class="qc-lh"><h3 aria-level="2">'+(off===0?"Today":hmLabel(ds))+(dn?' <em class="qc-only qb-'+state.qcDom+'">'+dn+' only</em><button class="qc-all" data-qcall>Show all</button>':'')+'</h3><span>'+(its.length?(left?left+" left":"All done"):"")+'</span></div>';
-    if(!its.length&&!extra.length)h+='<div class="cat-empty">Nothing on the list for this day.</div>';
+    if(!its.length&&!extra.length)h+='<div class="cat-empty">'+(off===0?"Nothing planned yet. Tap + to add your first thing.":off>0?"Nothing planned for this day yet.":"Nothing was on the list this day.")+'</div>';
     if(its.length){h+='<div class="card">';its.forEach(function(i){h+=itemRow(i,{ds:ds})});h+='</div>';}
     if(extra.length){h+='<div class="qc-lh qc-xh"><h3 aria-level="2">'+(extra.every(function(i){return i.kind==="med"})?"Medicine":"Also today")+'</h3><span>not counted in your day</span></div><div class="card">';extra.forEach(function(i){h+=itemRow(i,{ds:ds})});h+='</div>';}
     el.innerHTML=h;
@@ -4186,7 +4194,7 @@
     var due=all.filter(function(i){return dueOnDate(i,ds,off)});
     var loose=due.filter(function(i){return i.catId===TODO_CAT});var rest=due.filter(function(i){return i.catId!==TODO_CAT});
     var hsD=off===0?hmStats(ds):null,hsSel=hsD?(state.dayDomain?[hsD[state.dayDomain]]:[hsD.body,hsD.mind,hsD.todo]):[],poolTot=0,doneCount=0;hsSel.forEach(function(x){if(x){poolTot+=x.tot;doneCount+=x.done}});
-    var h='<div class="day-h"><div class="nav"><button data-day="-1" aria-label="Previous day">'+phicon("caretl")+'</button><button data-day="1" aria-label="Next day">'+phicon("caretr")+'</button></div><div class="d"><p class="kicker">'+(off===0?"Today":off===1?"Tomorrow":off===-1?"Yesterday":DOW[d.getDay()])+'</p><h1 class="title" style="font-size:32px">'+MON[d.getMonth()]+' '+d.getDate()+'</h1></div>'+(off===0?'<div class="prog"><b>'+(poolTot?Math.round(doneCount/poolTot*100):100)+'%</b><small>done</small></div>':'<button class="today-btn" data-day="0">Today</button>')+'</div>';
+    var h='<div class="day-h"><div class="nav"><button data-day="-1" aria-label="Previous day">'+phicon("caretl")+'</button><button data-day="1" aria-label="Next day">'+phicon("caretr")+'</button></div><div class="d"><p class="kicker">'+(off===0?"Today":off===1?"Tomorrow":off===-1?"Yesterday":DOW[d.getDay()])+'</p><h1 class="title" style="font-size:32px">'+MON[d.getMonth()]+' '+d.getDate()+'</h1></div>'+(off===0?(poolTot?'<div class="prog"><b>'+Math.round(doneCount/poolTot*100)+'%</b><small>done</small></div>':''):'<button class="today-btn" data-day="0">Today</button>')+'</div>';
     if(state.dayDomain){
       var _dl=(HM_DOMS.filter(function(x){return x[0]===state.dayDomain})[0]||["",""])[1];
       h+='<div class="dayfilter"><button class="df-back" data-hmback>&larr; Home</button><span>Showing <b>'+_dl+'</b></span><button class="df-add" data-action="add-day" data-date="'+ds+'">+ Add</button><button class="df-all" data-hmall>Show all</button></div>';
@@ -4196,10 +4204,10 @@
       return h;
     }
     if(!state.dayDomain||state.dayDomain==="todo")h+='<div class="sec-h"><h2>To-do list</h2><span class="meta">'+loose.length+'</span><span class="line"></span><button class="add" data-action="add-day" data-date="'+ds+'">+ add</button></div>';
-    if(!state.dayDomain||state.dayDomain==="todo"){if(!loose.length)h+='<div class="cat-empty">Nothing on the list for this day.</div>';else{h+='<div class="card">';loose.slice().sort(itemSort).forEach(function(i){h+=itemRow(i,{ds:ds});});h+='</div>';}}
+    if(!state.dayDomain||state.dayDomain==="todo"){if(!loose.length){if(due.length)h+='<div class="cat-empty">Nothing on the list for this day.</div>';}else{h+='<div class="card">';loose.slice().sort(itemSort).forEach(function(i){h+=itemRow(i,{ds:ds});});h+='</div>';}}
     var byCat={},corder=[];rest.forEach(function(i){if(!byCat[i.catId]){byCat[i.catId]=[];corder.push(i.catId);}byCat[i.catId].push(i);});
     corder.forEach(function(cid){var c=Store.get("cats",cid);if(!c)return;h+='<div class="sec-h"><h2 style="font-size:17px"><i class="adot" style="background:'+esc(c.color)+'"></i>'+esc(c.name)+'</h2><span class="line"></span></div><div class="card">';byCat[cid].slice().sort(itemSort).forEach(function(i){h+=itemRow(i,{ds:ds});});h+='</div>';});
-    if(!due.length)h+='<div class="empty"><h3>Clear day</h3><p>Nothing scheduled.</p></div>';
+    if(!due.length)h+='<div class="empty"><h3>'+(off<0?"Nothing was planned":"A clear day")+'</h3><p>'+(off<0?"Nothing was on the list for this day.":"Tap + to add something, or type a line like \u201ccall mum tomorrow at 5\u201d.")+'</p></div>';
     return h;
   }
   function dueOnDate(i,ds,off){
@@ -4477,6 +4485,7 @@
     var conR=consistency(per==="week"?7:per==="year"?365:30);
     var adh=null,adhI=all.filter(function(i){return i.kind==="med"&&isRoutine(i)})[0];
     if(adhI){var am=0,ad=per==="week"?7:30;for(var qa=0;qa<ad;qa++)if(didOn(adhI,addDaysStr(today(),-qa)))am++;adh=Math.round(am/ad*100);}
+    if(conR==null&&!total)h+='<p class="rep-new">Patterns fill in as you use Ritsu. Give it a few days and this page starts to show your week.</p>';
     h+='<div class="hm-hero rep-hero"><div class="hm-hero-h"><h3 aria-level="2">Consistency</h3><span>'+(per==="week"?"last 7 days":per==="year"?"last 12 months":"last 30 days")+'</span></div><div class="hm-gauge">'+hmArc(conR==null?0:conR/100,HM_ROWS_HERO,200,112,100,100)+'<div class="mid"><b>'+(conR==null?"-":conR+"%")+'</b><small>of the daily routine</small></div></div><div class="hm-facts f2"><div><b>'+total+'</b><small>things logged</small></div><div><b>'+(adh!=null?adh+"%":(avgSleep!=null?avgSleep+"h":"-"))+'</b><small>'+(adh!=null?"meds taken":"avg sleep")+'</small></div></div></div>';
     h+=pkStack(days,per);
     h+=patternsExtra();
