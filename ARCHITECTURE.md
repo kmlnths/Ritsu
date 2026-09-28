@@ -61,7 +61,7 @@ Dead code to remove later: `hmCardsHtml`, `hmArc`, `hmSpark`, `hmNextHtml`, `pro
 ### Rules that must agree everywhere
 
 - Trackers (`isTracker`), limits (`isLimit`) and medicine never count toward the day. `dailyRoutine` skips them, so the Home card, the card back and Patterns all show the same number.
-- One item, one home card. A tag is a window across cards, never a copy.
+- One item, one card, one group. No tags (removed 2026-09-29); old `tags` data can stay in storage but is not shown.
 
 ## 4. Where it is going
 

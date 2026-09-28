@@ -88,8 +88,8 @@ What exists, what is planned, what was dropped. Update this list whenever someth
 
 Each has a "done when" line. It is not finished until that is true.
 
-1. **Default list and starter tags.** New tasks go to Personal. Starter tags Money, Home, Car, Admin (To-do) and Health, Care, Fitness, Sleep, Food (Body). Typing suggests a tag.
-   Done when: typing "dentist" shows Health in the green "Read as" line, one tap removes it, and a new task with no list lands in Personal.
+1. **New structure: cards and groups, no tags** (decided 2026-09-29, full map in the "Ritsu app structure" doc). Card, then Group, then Item, never deeper. Body: Health (logs and episodes: water, urine, bowel, cough, cold, fever, stomach pain), Medicine, Checkups, Fitness, Hygiene and care, Sleep and food. Mind: Reading, Learning, Calm, Creative. To-do: Work, Home, Personal, Family (later, shared). Sort by topic, never by kind: the dentist is Body, Checkups. Tags and the Tags chip are removed. New tasks with no group go to Personal. Typing files the item from a small word list.
+   Done when: typing "dentist" shows "Body, Checkups" in the green "Read as" line with "every 6 months?" offered, one tap changes the group, no Tags chip appears anywhere, and a new task with no group lands in To-do, Personal.
 2. **Full day helper and evening wrap-up.**
    Done when: adding the 8th open one-off task on a day shows the Full day pop-up once per day per date (Move to tomorrow, Pick another day, Keep all), and from 8pm Home shows leftover tasks each set to Tomorrow. Never red, never "overdue".
 3. **Clash warning** for items with a length.

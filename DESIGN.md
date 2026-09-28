@@ -57,7 +57,7 @@ Three colours plus a neutral canvas, in a 60 / 30 / 10 split: neutral canvas (60
 - **Home card**: date on top, big number (done of total) left, three LED lights right (Body, Mind, To-do) that brighten as things get done and glow when an area is complete, one kind sentence at the bottom. Tap a light to filter the list; tap elsewhere to turn the card. Back: this week as three strips of seven LEDs, days fully lit, the blob saying one line. When everything is done the card "switches on".
 - **Date strip**: one day per chip, three small lights under each day.
 - **Bottom menu (phones)**: a floating pill with five pages (Home, Patterns, Day, Fasting, Settings); only the open page shows its name. A separate round green + floats above it on the right. Tap + to add; press and hold for quick logs. The user wants to redesign this later.
-- **Add sheet**: rises from the bottom. Title box on top with a green "Read as" line, To-do / Body / Mind switch, then chips (Date, Time, Length, Priority, Repeat, Tags, Note) that show their value. Picker sheets for each chip; a scroll wheel for time.
+- **Add sheet**: rises from the bottom. Title box on top with a green "Read as" line, To-do / Body / Mind switch, then chips (Date, Time, Length, Priority, Repeat, Note) that show their value. No Tags chip: tags were removed on 2026-09-29. Picker sheets for each chip; a scroll wheel for time.
 - **Undo bar**: every one-tap change of data (tick, take a med, delete, end a fast) shows it for 5.5s, with a kind second line for finished tasks.
 - **Fasting**: an arc with a live timer and a sun or moon.
 - **Patterns**: Body, Mind, To-do as stacked cards that lift open; frosted glass month tiles.

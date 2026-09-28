@@ -33,7 +33,7 @@ Read this first in every chat. Rules only; history lives in `docs/history.md`.
 
 - No em dashes or en dashes anywhere in UI text. Check before shipping.
 - No nagging copy, no "overdue", no red pile-ups, no focus timers, nothing that looks AI-made.
-- Trackers, limits and medicine never count toward the day. One item, one home card; a tag is a window, not a copy.
+- Trackers, limits and medicine never count toward the day. One item, one card, one group (Card, Group, Item, never deeper). No tags. Sort by topic, never by kind.
 - Every addition must take under five seconds and be fine if ignored for a week.
 - Never give medical advice. Health gaps are starting points: "ask your doctor for yours".
 - Keep the MIT credits for feral-blob and pullcord in Settings.
