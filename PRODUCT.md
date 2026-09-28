@@ -67,3 +67,42 @@ Health and to-dos in one place, instead of a pill app, a habit app, a body log a
 - Tap targets reach 44px (small controls get an invisible larger hit area).
 - Reduced motion, reduced transparency and higher contrast settings are respected.
 - Private items (bowel and similar logs) never appear on share cards or anywhere shown to others.
+
+## Features
+
+What exists, what is planned, what was dropped. Update this list whenever something ships or a decision changes. Small problems and loose ideas go in `docs/future-improvements.md`.
+
+### Built (v5, live)
+
+- Home card with Body, Mind, To-do lights, the day's list, card back with this week, "all done" state.
+- Date strip with three small lights per day; soft top light that follows the time of day.
+- Add sheet for everything; typing a sentence fills in date, time and length ("call alex tom at 5 in the evening").
+- Log or add sheet for trackers; press and hold the + for quick logs.
+- Habits (normal, avoid, amount), medication with adherence report, body logs and trackers, episodes.
+- Fasting row on Home and a Fasting page (arc, stages, ranges, "When you fast" grid, records).
+- Things that come back (dentist, insurance, taxes) with the one minute setup.
+- Patterns: stacked Body, Mind, To-do cards, glass calendar, Your numbers.
+- This week's one thing; Light colours in Settings; companion blob; undo on every one-tap change; backup and restore.
+
+### Planned, in this order
+
+Each has a "done when" line. It is not finished until that is true.
+
+1. **Default list and starter tags.** New tasks go to Personal. Starter tags Money, Home, Car, Admin (To-do) and Health, Care, Fitness, Sleep, Food (Body). Typing suggests a tag.
+   Done when: typing "dentist" shows Health in the green "Read as" line, one tap removes it, and a new task with no list lands in Personal.
+2. **Full day helper and evening wrap-up.**
+   Done when: adding the 8th open one-off task on a day shows the Full day pop-up once per day per date (Move to tomorrow, Pick another day, Keep all), and from 8pm Home shows leftover tasks each set to Tomorrow. Never red, never "overdue".
+3. **Clash warning** for items with a length.
+   Done when: adding "meeting at 12 for an hour" over an existing 12 to 1 item shows the day strip with the clash and three buttons (Pick another time, See the day, Add anyway). Items with only a time never clash.
+4. **Templates library.**
+   Done when: one list of entries (dentist check-up 6 months, eye test 12, car service 6, ...) drives tag suggestions, the usual gap ("every 6 months?") and the Templates page. Health gaps say "ask your doctor for yours".
+5. **Remove dead code** (list in `ARCHITECTURE.md`).
+   Done when: the file is smaller, the syntax check passes and every screen looks the same as before.
+6. **Later:** glass + and day ring on the +, bottom menu redesign, Shelf under Mind, fasting plan, share card, backend, native phone app.
+
+### Dropped (do not bring back)
+
+- Orbit / solar system tile; ring charts on Home; sun and moon slider on Home.
+- Focus timer, PIN lock, cover images, serif italic titles.
+- Monthly tidy of old saved Shelf items (an unread pile is not a debt).
+- Weight or fat estimates on the Fasting page.
