@@ -2095,13 +2095,16 @@
   /* the Undo bar sits above the floating + and never blocks taps once it has faded */
   .toast:not(.show),.toast:not(.show) *{pointer-events:none!important}
   @media(max-width:820px){.toast{bottom:calc(166px + env(safe-area-inset-bottom))!important}}
+  /* laptop: every page except Home reads in one comfortable column */
+  @media(min-width:821px){body:not([data-view="home"]) #view{max-width:860px;margin-left:auto;margin-right:auto}
+    body[data-view="reports"] .rep-hero .hm-gauge{max-width:420px;margin-left:auto;margin-right:auto}}
 </style>
 </head>
 <body>
 
 
 <div class="app">
-  <aside class="sidebar" id="sidebar"><div class="brand"><b class="serif">Ritsu</b><span>shared</span></div><div class="nav-scroll" id="nav"></div><div class="me" id="meCard"></div></aside>
+  <aside class="sidebar" id="sidebar"><div class="brand"><b class="serif">Ritsu</b></div><div class="nav-scroll" id="nav"></div><div class="me" id="meCard"></div></aside>
   <main class="main"><div class="topbar"><b class="serif">Ritsu</b><span class="sp"></span></div><div id="view"><div class="skeleton">loading…</div></div></main>
 </div>
 <nav class="bottomnav gdock" id="bottomnav" aria-label="Main"></nav>
@@ -3344,7 +3347,7 @@
   var calDates=false; try{calDates=localStorage.getItem("ritsu_caldates")==="1";}catch(e){}
   var todoList="work"; try{todoList=localStorage.getItem("ritsu_todolist")||"work";}catch(e){}
 
-  function render(){if(!Store.ready)return;document.body.classList.toggle("welcome",!!Store.welcome);Buddy.apply();if(Store.welcome){$("#view").innerHTML=viewWelcome();var wbEl=$("#welcomeBlob");if(wbEl)Buddy.temp(wbEl,"wave",true);return;}renderNav();var v=$("#view");
+  function render(){if(!Store.ready)return;document.body.classList.toggle("welcome",!!Store.welcome);Buddy.apply();if(Store.welcome){$("#view").innerHTML=viewWelcome();var wbEl=$("#welcomeBlob");if(wbEl)Buddy.temp(wbEl,"wave",true);return;}renderNav();document.body.setAttribute("data-view",state.view);var v=$("#view");
     if(state.view==="day")v.innerHTML=viewDay();else if(state.view==="fasting")v.innerHTML=viewFasting();else if(state.view==="medreport")v.innerHTML=viewMedReport(state.medId);else if(state.view==="reports")v.innerHTML=viewReports();else if(state.view==="people")v.innerHTML=viewPeople();else if(state.view==="settings")v.innerHTML=viewSettings();
     else if(state.view==="item"){var i=Store.get("items",state.itemId);if(!i){state.view="home";return render();}v.innerHTML=viewItem(i);}
     else if(state.view==="area"){var c=Store.get("cats",state.areaId);if(!c){state.view="home";return render();}v.innerHTML=viewArea(c);}
