@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plus Ring Options</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0D0E11;--panel:#16181D;--ink:#F4F5F7;--muted:#9CA3AF;--line:#282C34;--accent:#34D399;--on:#06281C;--b:#34D399;--m:#A78BFA;--t:#FBBF24}
+.light{--bg:#F6F2EB;--panel:#FFFFFF;--ink:#16181D;--muted:#4B5563;--line:#E4DED3;--accent:#047857;--on:#fff;--b:#0F7A57;--m:#6B5BD2;--t:#B07A1E}
+*{box-sizing:border-box}
+body{margin:0;background:#0A0B0D;font-family:"Space Grotesk",system-ui,sans-serif;color:#F4F5F7;padding:24px 16px}
+h1{font-size:20px;font-weight:600;margin:0 0 4px}
+p.sub{margin:0 0 20px;color:#9CA3AF;font-size:14px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.opt{border-radius:22px;padding:18px;background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+.opt h2{font-size:15px;margin:0 0 4px}
+.opt small{display:block;color:var(--muted);font-size:13px;line-height:1.4;min-height:54px}
+.stage{height:130px;display:grid;place-items:center}
+.fab{position:relative;width:62px;height:62px;border-radius:50%;border:0;display:grid;place-items:center;background:var(--accent);color:var(--on);cursor:pointer}
+.fab svg{position:relative;z-index:2;width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round}
+.ring{position:absolute;inset:-6px;border-radius:50%;pointer-events:none;
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2.5px),#000 calc(100% - 2.5px));
+          mask:radial-gradient(farthest-side,transparent calc(100% - 2.5px),#000 calc(100% - 2.5px))}
+/* 1: as pasted, spectrum, always moving */
+.r1{background:conic-gradient(from 0turn,transparent 0 58%,#ff6ea9 68%,#ffd36e 76%,#6ef0ff 84%,transparent 92%);animation:orbit 2.6s linear infinite,hue 7s linear infinite}
+.fab:hover .r1{animation-play-state:paused,running}
+/* 2: Ritsu's own three lights, slow, and only a short pass every few seconds */
+.r2{background:conic-gradient(from 0turn,transparent 0 60%,var(--b) 70%,var(--m) 78%,var(--t) 86%,transparent 94%);animation:orbit 1.8s cubic-bezier(.5,0,.3,1) infinite, rest 6s linear infinite}
+/* 3: the ring IS today's progress: three arcs, one per area, filled as much as that area is done */
+.r3{inset:-7px;background:conic-gradient(var(--b) 0 30%,color-mix(in srgb,var(--b) 18%,transparent) 30% 33.3%,
+  var(--m) 33.3% 48%,color-mix(in srgb,var(--m) 18%,transparent) 48% 66.6%,
+  var(--t) 66.6% 75%,color-mix(in srgb,var(--t) 18%,transparent) 75% 100%);
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 3px));mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 3px))}
+.r3::after{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(transparent 0 32.3%,var(--bg) 32.3% 33.3%,transparent 33.3% 65.6%,var(--bg) 65.6% 66.6%,transparent 66.6% 99%,var(--bg) 99%)}
+@keyframes orbit{to{transform:rotate(1turn)}}
+@keyframes hue{to{filter:hue-rotate(360deg)}}
+@keyframes rest{0%,30%{opacity:1}45%,100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.ring{animation:none!important}}
+</style></head><body>
+<h1>The + with a ring</h1>
+<p class="sub">Three ways to use the idea. Top row dark, bottom row light. Hover or tap to see the pasted one settle.</p>
+<div class="row">
+  <div class="opt"><h2>1. As pasted</h2><small>Rainbow arc that never stops. Eye-catching, but it moves all day on every screen.</small><div class="stage"><button class="fab"><span class="ring r1"></span><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+  <div class="opt"><h2>2. Ritsu's colours, calm</h2><small>Green, violet, amber. One soft pass every few seconds, then it rests.</small><div class="stage"><button class="fab"><span class="ring r2"></span><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+  <div class="opt"><h2>3. The ring is your day</h2><small>Three arcs fill as Body, Mind and To-do get done. Still, until you tick something.</small><div class="stage"><button class="fab"><span class="ring r3"></span><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+</div>
+<div class="row light" style="margin-top:14px">
+  <div class="opt"><h2>1. As pasted</h2><small>Rainbow arc that never stops.</small><div class="stage"><button class="fab"><span class="ring r1"></span><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+  <div class="opt"><h2>2. Ritsu's colours, calm</h2><small>One soft pass, then it rests.</small><div class="stage"><button class="fab"><span class="ring r2"></span><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+  <div class="opt"><h2>3. The ring is your day</h2><small>Arcs fill as you go.</small><div class="stage"><button class="fab"><span class="ring r3"></span><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+</div>
+</body></html>
