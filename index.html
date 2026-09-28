@@ -2014,21 +2014,23 @@
   @media(prefers-reduced-motion:reduce){.pk-c,.pk-body{transition:none}}
   /* ===== phones: floating pill menu and the floating + ===== */
   @media(max-width:820px){
-    .bottomnav.fnav{position:fixed;left:14px;right:14px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:40;display:flex;align-items:center;gap:2px;height:66px;padding:0 6px;border-radius:999px;
+    .bottomnav.fnav{position:fixed;left:14px;right:14px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:40;display:flex;align-items:center;justify-content:space-between;gap:2px;height:64px;padding:0 7px;border-radius:999px;
       background:color-mix(in srgb,var(--panel) 80%,transparent);-webkit-backdrop-filter:blur(22px) saturate(1.7);backdrop-filter:blur(22px) saturate(1.7);
       border:1px solid color-mix(in srgb,var(--ink) 9%,transparent);box-shadow:0 12px 32px -12px rgba(0,0,0,.5),inset 0 1px 0 color-mix(in srgb,#fff 8%,transparent);view-transition-name:gdock}
     :root[data-theme="warm"] .bottomnav.fnav{box-shadow:0 12px 30px -14px rgba(60,40,10,.28),inset 0 1px 0 rgba(255,255,255,.75)}
-    .fn-t{flex:1;min-width:0;height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:0;border-radius:999px;background:none;color:var(--muted);font:inherit;cursor:pointer;
-      transition:background-color .25s,color .25s;-webkit-tap-highlight-color:transparent}
+    .fn-t{flex:none;min-width:48px;height:50px;padding:0 12px;display:flex;align-items:center;justify-content:center;gap:0;border:0;border-radius:999px;background:none;color:var(--muted);font:inherit;cursor:pointer;
+      transition:background-color .3s,color .3s,padding .4s cubic-bezier(.32,.72,.24,1),gap .4s cubic-bezier(.32,.72,.24,1);-webkit-tap-highlight-color:transparent}
     .fn-t svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-    .fn-t span{font-size:11px;font-weight:600;line-height:1;letter-spacing:.01em}
-    .fn-t.on{color:var(--ink);background:color-mix(in srgb,var(--ink) 9%,transparent)}
+    .fn-t span{max-width:0;overflow:hidden;white-space:nowrap;opacity:0;font-size:14.5px;font-weight:600;line-height:1;transition:max-width .4s cubic-bezier(.32,.72,.24,1),opacity .25s}
+    .fn-t.on{color:var(--ink);background:color-mix(in srgb,var(--ink) 10%,transparent);padding:0 17px 0 15px;gap:8px}
+    .fn-t.on span{max-width:92px;opacity:1}
+    @media(max-width:360px){.fn-t{min-width:44px;padding:0 10px}.fn-t.on{padding:0 13px 0 12px}}
     .fn-t.on svg{stroke-width:2.2}
     .bottomnav.fnav button:active{transform:scale(.94)}
     #fab.fab{display:grid!important;place-items:center;position:fixed;right:18px;bottom:calc(92px + env(safe-area-inset-bottom));z-index:42;width:58px;height:58px;border-radius:50%;border:0;
-      background:var(--ink)!important;color:var(--bg)!important;font-size:0;box-shadow:0 14px 28px -10px rgba(0,0,0,.55),0 3px 8px rgba(0,0,0,.2);
+      background:var(--accent)!important;color:var(--on-accent)!important;font-size:0;box-shadow:0 14px 28px -10px color-mix(in srgb,var(--accent) 65%,transparent),0 3px 8px rgba(0,0,0,.22);
       transition:transform .35s cubic-bezier(.32,.72,.24,1);-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
-    :root[data-theme="warm"] #fab.fab{box-shadow:0 14px 26px -12px rgba(30,20,5,.45),0 3px 8px rgba(30,20,5,.15)}
+    :root[data-theme="warm"] #fab.fab{box-shadow:0 14px 26px -12px color-mix(in srgb,var(--accent) 60%,transparent),0 3px 8px rgba(30,20,5,.15)}
     #fab.fab svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round}
     #fab.fab:active{transform:scale(.93)}
     #fab.fab.open{transform:rotate(45deg)}
