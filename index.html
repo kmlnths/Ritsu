@@ -2149,13 +2149,59 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
 .ng .nav-btn{opacity:0;transform:translateY(-10px);transition:opacity .18s ease,transform .26s cubic-bezier(.32,.72,.24,1),background-color .2s,color .2s}
 .ng.open .nav-btn{opacity:1;transform:none;transition-delay:calc(var(--i)*40ms),calc(var(--i)*40ms),0s,0s}
 @media(prefers-reduced-motion:reduce){.ng-b,.ng-c,.ng .nav-btn{transition:none}}
+
+/* floating side panel (laptop) */
+:root{--sbw:262px}body.sb-mini{--sbw:104px}
+.app{grid-template-columns:var(--sbw) 1fr;transition:grid-template-columns .38s cubic-bezier(.32,.72,.24,1)}
+@media(min-width:821px){
+  .sidebar{z-index:30;top:14px;height:calc(100vh - 28px);margin:14px 0 14px 14px;padding:18px 12px 12px;border:1px solid var(--line);border-radius:28px;background:var(--panel);box-shadow:0 18px 40px -24px rgba(0,0,0,.55);overflow:visible}
+  :root[data-theme="warm"] .sidebar{box-shadow:0 14px 34px -22px rgba(30,30,20,.28)}
+  .sidebar .brand{padding:2px 8px 10px}
+  .sb-toggle{position:absolute;top:24px;right:-13px;width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--muted);display:grid;place-items:center;padding:0;z-index:5;box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer}
+  .sb-toggle:hover{color:var(--ink)}
+  .sb-toggle svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .38s cubic-bezier(.32,.72,.24,1)}
+  body.sb-mini .sb-toggle svg{transform:rotate(180deg)}
+  .nav-scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden}
+  .sidebar .nav-btn,.sidebar .ng-h{position:relative;border-radius:12px;padding:10px 12px}
+  .sidebar .nav-btn:hover,.sidebar .ng-h:hover{background:color-mix(in srgb,var(--ink) 6%,transparent);color:var(--ink)}
+  .sidebar .nav-btn.active{background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--ink)}.sidebar .nav-btn.active .g{background:none}
+  .ng-h{font-size:14px;font-weight:500;letter-spacing:0;gap:11px;margin-top:2px}
+  .ng-h span.g{flex:none;width:19px;height:19px;display:grid;place-items:center}.ng-h .g .phi{width:18px;height:18px}.ng-h .t{flex:1}
+  .ng.open>.ng-h{color:var(--ink)}
+  .ng-in{margin-left:21px;padding-left:10px}
+  .ng-in::before{content:"";position:absolute;left:0;top:2px;bottom:16px;width:1px;background:var(--line)}
+  .ng-in{position:relative}
+  .ng .nav-btn::before{content:"";position:absolute;left:-10px;top:50%;width:9px;height:1px;background:var(--line)}
+  .sidebar .me-btn{border-radius:16px;background:var(--panel-2);border-color:transparent}
+  /* the slim rail */
+  body.sb-mini .sidebar{padding:18px 10px 12px}
+  body.sb-mini .sidebar .brand{justify-content:center;padding-bottom:12px}
+  body.sb-mini .brand b{font-size:0}body.sb-mini .brand b::before{content:"律";font-size:24px;display:block;text-align:center}
+  body.sb-mini .nav-label{font-size:0;height:0;padding:0;margin:9px 8px 5px;border-top:1px solid var(--line-2)}
+  body.sb-mini .nav-scroll{overflow:visible}
+  body.sb-mini #nav>.nav-btn{font-size:0;justify-content:center;gap:0;padding:11px 0}
+  body.sb-mini .ng-h{justify-content:center;gap:0;padding:11px 0}
+  body.sb-mini .ng-h .t,body.sb-mini .ng-n,body.sb-mini .ng-c{display:none}
+  body.sb-mini .add-cat{font-size:0;justify-content:center;padding:10px 0}
+  body.sb-mini .add-cat::before{content:"+";font-size:17px}
+  body.sb-mini .me-btn .who,body.sb-mini .me-btn .chev{display:none}body.sb-mini .me-btn{justify-content:center;padding:8px 0}
+  body.sb-mini .ng{position:relative}
+  body.sb-mini .ng-b{position:absolute;left:calc(100% + 16px);top:0;display:block;opacity:0;pointer-events:none;transform:translateX(-8px);transition:opacity .2s,transform .28s cubic-bezier(.32,.72,.24,1);width:224px;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 40px -16px rgba(0,0,0,.6);padding:6px;z-index:70}
+  body.sb-mini .ng.open .ng-b{opacity:1;pointer-events:auto;transform:none}
+  body.sb-mini .ng-in{margin:0;padding:0}body.sb-mini .ng-in::before,body.sb-mini .ng .nav-btn::before{display:none}
+  body.sb-mini .ng-b .nav-btn{font-size:14px;justify-content:flex-start;gap:11px;padding:10px 12px}
+  /* the quick pill: only after you have scrolled away from the top */
+  .bottomnav.fnav{left:calc(var(--sbw) + (100vw - var(--sbw))/2)!important;opacity:0;pointer-events:none;transform:translate(-50%,26px);transition:opacity .3s,transform .42s cubic-bezier(.32,.72,.24,1)}
+  body.scrolled .bottomnav.fnav{opacity:1;pointer-events:auto;transform:translateX(-50%)}
+  #view{padding-bottom:60px}body:not(.scrolled) .toast{bottom:28px!important}
+}
 </style>
 </head>
 <body>
 
 
 <div class="app">
-  <aside class="sidebar" id="sidebar"><div class="brand"><b class="serif">Ritsu</b></div><div class="nav-scroll" id="nav"></div><div class="me" id="meCard"></div></aside>
+  <aside class="sidebar" id="sidebar"><button class="sb-toggle" id="sbToggle" data-sbt aria-label="Collapse the menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><div class="brand"><b class="serif">Ritsu</b></div><div class="nav-scroll" id="nav"></div><div class="me" id="meCard"></div></aside>
   <main class="main"><div class="topbar"><b class="serif">Ritsu</b><span class="sp"></span></div><div id="view"><div class="skeleton">loading…</div></div></main>
 </div>
 <nav class="bottomnav gdock" id="bottomnav" aria-label="Main"></nav>
@@ -3382,15 +3428,15 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function catIcon(c){return (c&&c.icon)||(c&&CAT_ICON_DEFAULT[c.id])||"checklist";}
   function navBtn(v,label){return '<button class="nav-btn '+(state.view===v?"active":"")+'" data-nav="'+v+'"><svg class="icon" viewBox="0 0 24 24">'+NAVICON[v]+'</svg>'+label+'</button>'}
   function renderNav(){
-    var h=navBtn("home","Home")+navBtn("day","Day");var NO=navOpenState();
-    var ng=function(key,title,btns,n,here){var open=NO[key]!=null?!!NO[key]:!!here;
-      return '<div class="ng'+(open?" open":"")+'"><button class="ng-h" data-ngt="'+key+'" aria-expanded="'+open+'"><span>'+title+'</span>'+(n?'<em class="ng-n">'+n+'</em>':'')+'<svg class="ng-c" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><div class="ng-b"><div class="ng-in">'+btns.map(function(b,i){return b.replace('<button class="nav-btn','<button style="--i:'+i+'" class="nav-btn')}).join("")+'</div></div></div>';};
+    var mini=false;try{mini=localStorage.getItem("ritsu_sbmini")==="1"}catch(e){}document.body.classList.toggle("sb-mini",mini);var h='<div class="nav-label">Main</div>'+navBtn("home","Home")+navBtn("day","Day");var NO=navOpenState();
+    var ng=function(key,title,btns,n,here,ico){var open=!mini&&(NO[key]!=null?!!NO[key]:!!here);
+      return '<div class="ng'+(open?" open":"")+'"><button class="ng-h" data-ngt="'+key+'" aria-expanded="'+open+'"><span class="g">'+phicon(ico||"checklist")+'</span><span class="t">'+title+'</span>'+(n?'<em class="ng-n">'+n+'</em>':'')+'<svg class="ng-c" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><div class="ng-b"><div class="ng-in">'+btns.map(function(b,i){return b.replace('<button class="nav-btn','<button style="--i:'+i+'" class="nav-btn')}).join("")+'</div></div></div>';};
     HM_DOMS.forEach(function(d){
       var cs=cats().filter(function(c){return c.id!==TODO_CAT&&areaDomain(c.id)===d[0]});if(!cs.length)return;var left=0,here=false;
       var btns=cs.map(function(c){var s=catToday(c.id);left+=Math.max(0,s.todayTotal-s.todayDone);if(state.view==="area"&&state.areaId===c.id)here=true;return '<button class="nav-btn '+(state.view==="area"&&state.areaId===c.id?"active":"")+'" data-area="'+c.id+'"><span class="g" style="color:'+esc(c.color)+'">'+phicon(catIcon(c))+'</span>'+esc(c.name)+(s.att?'<span class="count warn">'+s.att+'</span>':(s.todayTotal?'<span class="count">'+(s.todayTotal-s.todayDone)+'</span>':''))+'</button>';});
-      h+=ng(d[0],d[1],btns,left,here);
+      h+=ng(d[0],d[1],btns,left,here,{body:"barbell",mind:"brain",todo:"checklist"}[d[0]]);
     });
-    h+='<button class="add-cat" data-action="add-cat">＋ New area</button>'+ng("more","More",[navBtn("fasting","Fasting"),navBtn("reports","Patterns"),navBtn("people","People"),navBtn("settings","Settings")],0,["fasting","reports","people","settings"].indexOf(state.view)>-1);
+    h+='<button class="add-cat" data-action="add-cat">＋ New area</button><div class="nav-label">More</div>'+navBtn("fasting","Fasting")+navBtn("reports","Patterns")+navBtn("people","People")+navBtn("settings","Settings");
     $("#nav").innerHTML=h;
     var me=state.me?personById(state.me):null;
     $("#meCard").innerHTML=me?'<button class="me-btn" data-action="pick-me">'+avatar(me,"lg")+'<span class="who"><small>You are</small><b>'+esc(me.name)+'</b></span><span class="chev">⇅</span></button>':'<button class="me-btn" data-action="pick-me"><span class="av lg" style="background:var(--panel-2);color:var(--muted)">?</span><span class="who"><small>Tap to set</small><b>Who are you?</b></span><span class="chev">⇅</span></button>';
@@ -3403,6 +3449,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   }
   var calDates=false; try{calDates=localStorage.getItem("ritsu_caldates")==="1";}catch(e){}
   var todoList="personal";
+  window.addEventListener("scroll",function(){document.body.classList.toggle("scrolled",window.scrollY>260)},{passive:true});
   var navOpen=null;function navOpenState(){if(!navOpen){try{navOpen=JSON.parse(localStorage.getItem("ritsu_navopen")||"{}")}catch(e){navOpen={}}}return navOpen}
   function familyOn(){try{return localStorage.getItem("ritsu_family")==="1"}catch(e){return false}}
   function todoLists(){var a=[["work","Work"],["home","Home"],["personal","Personal"]];if(familyOn())a.push(["family","Family"]);return a}
@@ -6652,7 +6699,12 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if((el=e.target.closest("[data-restore-undo]"))){undoRestore();return;}
     if((el=e.target.closest("[data-persist-ask]"))){if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().then(function(ok){toast(ok?"Ritsu's data is now protected":"The browser said not yet");render();});return;}
     if((el=e.target.closest("[data-welcome]"))){var wv=el.getAttribute("data-welcome"),wb=el.querySelector("b");if(wb)wb.textContent=wv==="back"?"Bringing it back…":"Setting up…";el.setAttribute("aria-busy","true");setTimeout(function(){if(wv==="clean")startClean();else if(wv==="back")bringBack();else startExamples();},60);return;}
-    if((el=e.target.closest("[data-ngt]"))){var ngo=el.parentNode.classList.toggle("open");el.setAttribute("aria-expanded",ngo);navOpenState()[el.getAttribute("data-ngt")]=ngo?1:0;try{localStorage.setItem("ritsu_navopen",JSON.stringify(navOpen))}catch(x){}return;}
+    var railOn=document.body.classList.contains("sb-mini");
+    if(railOn&&!e.target.closest(".ng"))[].forEach.call(document.querySelectorAll(".ng.open"),function(g){g.classList.remove("open")});
+    if((el=e.target.closest("[data-sbt]"))){var mn=document.body.classList.toggle("sb-mini");[].forEach.call(document.querySelectorAll(".ng.open"),function(g){if(mn)g.classList.remove("open")});try{localStorage.setItem("ritsu_sbmini",mn?"1":"0")}catch(x){}el.setAttribute("aria-label",mn?"Open the menu":"Collapse the menu");if(!mn)renderNav();return;}
+    if((el=e.target.closest("[data-ngt]"))){
+      if(railOn){var me2=el.parentNode;[].forEach.call(document.querySelectorAll(".ng.open"),function(g){if(g!==me2)g.classList.remove("open")});var on2=me2.classList.toggle("open");el.setAttribute("aria-expanded",on2);return;}
+      var ngo=el.parentNode.classList.toggle("open");el.setAttribute("aria-expanded",ngo);navOpenState()[el.getAttribute("data-ngt")]=ngo?1:0;try{localStorage.setItem("ritsu_navopen",JSON.stringify(navOpen))}catch(x){}return;}
     if((el=e.target.closest("[data-family]"))){try{localStorage.setItem("ritsu_family",el.getAttribute("data-family"))}catch(x){}render();return;}
     if((el=e.target.closest("[data-buddy]"))){var bk=el.getAttribute("data-buddy").split("-");if(bk[0]==="mode")Buddy.set("mode",bk[1]);else Buddy.set(bk[0],bk[1]==="1");render();return;}
     if((el=e.target.closest("[data-wipe-go]"))){wipeGo();return;}
