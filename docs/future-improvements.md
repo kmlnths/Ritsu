@@ -31,3 +31,7 @@ Noticed: 2026-09-29, in real screenshots of the first-run flow (`docs/mockups/fl
 **What happens.** The floating + sits on top of the setup content. On step 2 it covers the "Keep the house tidy" tile, and on step 3 it sits over the "Finish setup" button. It also appears on the Welcome screen, where there is nothing to add yet.
 
 **Fix idea.** Hide `#fab` (and the bottom menu) while the Welcome or setup screens are showing. Small change, worth doing with the new setup step.
+
+## 3. Creative group uses a stand-in icon
+
+Noticed: 2026-09-29. The new Creative group (Mind) reuses the "pulse" icon because the icon set has no pencil or palette. Add a proper one when convenient.
