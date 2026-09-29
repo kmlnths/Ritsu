@@ -84,25 +84,55 @@ What exists, what is planned, what was dropped. Update this list whenever someth
 - Patterns: stacked Body, Mind, To-do cards, glass calendar, Your numbers.
 - This week's one thing; Light colours in Settings; companion blob; undo on every one-tap change; backup and restore.
 
+### Done 2026-09-29: the new structure
+
+Cards and groups, no tags (Body: Health, Medicine, Checkups, Fitness, Hygiene and care, Sleep and food; Mind: Reading, Learning, Calm, Creative; To-do lists Work, Home, Personal, and Family when chosen). The Home list is split by card then group, all visible, nothing to open (the user found group pages too many clicks). Setup starts with "Who is this for?" and files its choices into the groups. Typing files an item into its group (word list, `docs/tools/test-group.js`). "@name" assigns on this phone only. Full map: the "Ritsu app structure" doc.
+
 ### Planned, in this order
 
 Each has a "done when" line. It is not finished until that is true.
 
-1. **New structure: cards and groups, no tags** (decided 2026-09-29, full map in the "Ritsu app structure" doc). Card, then Group, then Item, never deeper. Body: Health (logs and episodes: water, urine, bowel, cough, cold, fever, stomach pain), Medicine, Checkups, Fitness, Hygiene and care, Sleep and food. Mind: Reading, Learning, Calm, Creative. To-do: Work, Home, Personal, Family (later, shared). Sort by topic, never by kind: the dentist is Body, Checkups. Tags and the Tags chip are removed. New tasks with no group go to Personal. Typing files the item from a small word list.
-   Done when: typing "dentist" shows "Body, Checkups" in the green "Read as" line with "every 6 months?" offered, one tap changes the group, no Tags chip appears anywhere, and a new task with no group lands in To-do, Personal.
-   First open (decided 2026-09-29): Welcome, then setup with a new first step "Who is this for?" (Just me, or Me and my family). Family switches on the Family group and the @ assign feature; until accounts exist the task stays on the phone and the app says so plainly. Steps 2 and 3 file into the new groups; calendar import is a small link on step 3. Done when: choosing Family shows the Family group, "@Priya" is read in the add sheet, and the "stays on your phone" line appears.
-   Build order for step 1, in small pieces, each shown as a picture before it is kept (decided 2026-09-29): (a) take tags out and hide the + and bottom menu on the Welcome and setup screens; (b) groups: Body, Mind and To-do open into their groups; (c) setup: the "Who is this for?" step, and steps 2 and 3 file into the groups; (d) typing files an item into its group. Safety: work happens directly on v5 (user decision 2026-09-29, no v6; the changes are small), pushed when the user says so, and take a backup from Settings before any piece that moves the user's real items into the new groups.
-   Progress 2026-09-29: ALL FOUR PIECES BUILT. (a) tags gone, no + on setup screens. (b) NO pages to open into groups (too many clicks): the Home list is split by card then group, all visible, and a light still filters. To-do lists are Work, Home, Personal (plus Family when chosen); new tasks default to Personal. (c) setup starts with "Who is this for?" (name, Just me or Me and my family); Family switches on the Family list and @name; things that come back file into Checkups, Home and Personal. (d) typing files an item into its group from a word list (`tyGroup`, tested by docs/tools/test-group.js) and "@name" assigns on this phone. Still not built: real sharing (needs accounts), Plan the week, calendar import, the app name.
-   Later, not now: `@name` assigning (needs accounts), Plan the week, calendar import, the app name (see `docs/competitors.md`: another app called Ritsu exists).
-2. **Full day helper and evening wrap-up.**
+**Phase A: finish the personal app (no accounts needed)**
+
+1. **Full day helper and evening wrap-up.**
    Done when: adding the 8th open one-off task on a day shows the Full day pop-up once per day per date (Move to tomorrow, Pick another day, Keep all), and from 8pm Home shows leftover tasks each set to Tomorrow. Never red, never "overdue".
-3. **Clash warning** for items with a length.
+2. **Clash warning** for items with a length.
    Done when: adding "meeting at 12 for an hour" over an existing 12 to 1 item shows the day strip with the clash and three buttons (Pick another time, See the day, Add anyway). Items with only a time never clash.
-4. **Templates library.**
-   Done when: one list of entries (dentist check-up 6 months, eye test 12, car service 6, ...) drives tag suggestions, the usual gap ("every 6 months?") and the Templates page. Health gaps say "ask your doctor for yours".
-5. **Remove dead code** (list in `ARCHITECTURE.md`).
+3. **Templates library** (one list of ready-made items, no tags).
+   Done when: one list of entries (dentist check-up 6 months, eye test 12, car service 6, ...) drives the usual gap ("every 6 months?") and the Templates page, each entry sits in a card and group, and each carries a fixed shared or private flag (see Phase C). Health gaps say "ask your doctor for yours".
+4. **Tidy what the new structure left behind.**
+   Done when: the laptop sidebar lists the groups under their card instead of one long "Areas" list (the old sample "Home" area is gone), a Settings switch turns Family on or off, Creative has a proper icon, "Call at venky 5" is read as a time (`docs/future-improvements.md`), and light and dark themes are checked on phone and laptop.
+5. **Plan the week and calendar import** (ideas borrowed from the other Ritsu, `docs/competitors.md`).
+   Done when: on Sundays Home shows a calm Plan the week card (spread tasks that have no day; skipping is safe), and a small link in setup step 3 reads a .ics or .csv file into cards and groups with each item tickable.
+6. **Remove dead code** (list in `ARCHITECTURE.md`, plus the old tag code paths).
    Done when: the file is smaller, the syntax check passes and every screen looks the same as before.
-6. **Later:** glass + and day ring on the +, bottom menu redesign, Shelf under Mind, fasting plan, share card, backend, native phone app.
+7. **Choose the app name** before any store listing or paid launch (`docs/competitors.md`: another app called Ritsu exists).
+
+**Phase B: accounts and a backend (Supabase or similar)**
+
+Sign-in, sync between devices, cloud backup, and real Family sharing (an "@Priya" task appears on her phone). Everything social needs this first. Keep the existing Store API so screens do not change.
+
+**Phase C: friend gangs (decided 2026-09-30, friends first)**
+
+One app, not two. The social side is off until you join a gang, and Home shows one small row for it, so the personal app stays calm.
+- **Gang:** 3 to 10 friends, joined by an invite link. Family uses the same idea but shares assigned tasks instead of scores.
+- **What is shared is fixed by the library, with no switch.** Shared: Fitness, Reading, Learning, Calm (meditation and journal), Creative, and Sleep and food habits. Never shared: Health (water, bowel, urine, symptoms), Medicine, Checkups, Hygiene and care, mood, weight, and anything the user creates themselves. Only items chosen from the library can be shared, which also makes "workout" mean the same for everyone.
+- **Together goal:** one weekly goal for the whole gang, scored as each person's percent of their OWN target, never raw totals, so a beginner counts the same as an athlete. A daily cap per person keeps one fake entry from swinging the week.
+- **Sunday recap** for the gang ("your group did 23 workouts").
+- **Friendly dare:** one friend challenges another ("run 10 km"), proof by photo or screenshot, a teammate taps "I saw it" to vouch.
+- **Reactions are fixed** (a clap, a flame). No chat, no free text.
+- **Cheating:** no perfect answer yet. Team scoring, the daily cap and friends vouching are the defences for now.
+Done when: two phones join one gang by link, see each other's Body and Mind lights and only shared-library items, and complete one Together goal and one dare with a vouch.
+
+**Phase D: the phone app**
+
+Native app with widgets and iCloud or Google backup. Apple Health and Health Connect give a "verified" badge on workouts. Strava cannot be used to show a user's data to other people (its rules since November 2024; recheck before building). Google Fit is closing (supported to the end of 2026).
+
+**Phase E: gang against gang, worldwide (only after moderation and verified data exist)**
+
+Anonymous names, weekly matches between gangs of similar size and level, "Find a gang" for people who are alone. Needs report and block, fixed reactions only, and a privacy policy for fitness data.
+
+**Later, not scheduled:** glass + and day ring on the +, bottom menu redesign, Shelf under Mind, fasting plan, share card.
 
 ### Dropped (do not bring back)
 

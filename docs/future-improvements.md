@@ -35,3 +35,7 @@ Noticed: 2026-09-29, in real screenshots of the first-run flow (`docs/mockups/fl
 ## 3. Creative group uses a stand-in icon
 
 Noticed: 2026-09-29. The new Creative group (Mind) reuses the "pulse" icon because the icon set has no pencil or palette. Add a proper one when convenient.
+
+## 4. Laptop sidebar lists every group under "Areas"
+
+Noticed: 2026-09-30. On a laptop the left sidebar shows all 11 groups in one long list and the old sample "Home" area sits among them. Group them under Body, Mind and To-do. Listed as Phase A item 4 in PRODUCT.md.
