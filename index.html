@@ -3323,7 +3323,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function tagPills(ids){return "";var h="";(ids||[]).forEach(function(id){var t=tagById(id);if(t)h+='<span class="tag"><span class="dot" style="background:'+snapTag(t.color)+'"></span>'+esc(t.name)+'</span>';});return h}
   var LOCK='<span class="lk"><svg class="icon" viewBox="0 0 24 24" style="width:13px;height:13px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>';
 
-  function go(v,id){var tb=$("#toast");if(tb&&tb.classList.contains("show")){tb.classList.remove("show");_toastUndo=null;}state.view=v;state.dayDomain=null;state.homeOpen=null;if(v==="home")state.homeDay=null;if(v==="area")state.areaId=id;else if(v==="domain")state.domId=id;else if(v==="item")state.itemId=id;if(v!=="item"&&v!=="area")state.filterTag=null;render();window.scrollTo(0,0)}
+  function go(v,id){var tb=$("#toast");if(tb&&tb.classList.contains("show")){tb.classList.remove("show");_toastUndo=null;}state.view=v;state.dayDomain=null;state.homeOpen=null;if(v==="home")state.homeDay=null;if(v==="area")state.areaId=id;else if(v==="domain")state.domId=id;else if(v==="todolist")state.listId=id;else if(v==="item")state.itemId=id;if(v!=="item"&&v!=="area")state.filterTag=null;render();window.scrollTo(0,0)}
 
   var NAVICON={
     home:'<path d="M3.6 11 12 4l8.4 7"/><path d="M5.6 9.5V20h12.8V9.5"/><path d="M9.8 20v-4.6a2.2 2.2 0 0 1 4.4 0V20"/>',
@@ -3355,12 +3355,12 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     else bnEl.innerHTML=bn;
   }
   var calDates=false; try{calDates=localStorage.getItem("ritsu_caldates")==="1";}catch(e){}
-  var todoList="work"; try{todoList=localStorage.getItem("ritsu_todolist")||"work";}catch(e){}
+  var todoList="personal";
 
   function render(){if(!Store.ready)return;document.body.classList.toggle("welcome",!!Store.welcome);Buddy.apply();if(Store.welcome){$("#view").innerHTML=viewWelcome();var wbEl=$("#welcomeBlob");if(wbEl)Buddy.temp(wbEl,"wave",true);return;}renderNav();document.body.setAttribute("data-view",state.view);var v=$("#view");
     if(state.view==="day")v.innerHTML=viewDay();else if(state.view==="fasting")v.innerHTML=viewFasting();else if(state.view==="medreport")v.innerHTML=viewMedReport(state.medId);else if(state.view==="reports")v.innerHTML=viewReports();else if(state.view==="people")v.innerHTML=viewPeople();else if(state.view==="settings")v.innerHTML=viewSettings();
     else if(state.view==="item"){var i=Store.get("items",state.itemId);if(!i){state.view="home";return render();}v.innerHTML=viewItem(i);}
-    else if(state.view==="domain")v.innerHTML=viewDomain(state.domId);
+    else if(state.view==="domain")v.innerHTML=viewDomain(state.domId);else if(state.view==="todolist")v.innerHTML=viewTodoList(state.listId);
     else if(state.view==="area"){var c=Store.get("cats",state.areaId);if(!c){state.view="home";return render();}v.innerHTML=viewArea(c);}
     else v.innerHTML=viewHome();
     if(state.view==="home"){homeMount();Buddy.mount($("#buddySlot"));Pull.mount();}
@@ -3723,7 +3723,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     HM_DOMS.forEach(function(d){tot+=st[d[0]].tot;done+=st[d[0]].done;});
     var d=new Date(ds+"T00:00:00"),nx=qcNext(ds,st),at=nx?qcAt(nx,ds):"",all=tot>0&&done===tot;
     var bars='<div class="qc-bars">'+HM_DOMS.map(function(dm){var s=st[dm[0]],on=state.qcDom===dm[0];
-      return '<button class="qc-br'+(on?" on":"")+(state.qcDom&&!on?" dim":"")+'" data-qclight="'+dm[0]+'" aria-pressed="'+on+'" aria-label="Show only '+dm[1]+'">'+qcBar(dm[0],s,off)+'<b>'+dm[1]+'</b><small>'+(s.tot?s.done+"/"+s.tot:"0")+'</small></button>'}).join("")+'</div>';
+      return '<button class="qc-br'+(on?" on":"")+(state.qcDom&&!on?" dim":"")+'" data-qclight="'+dm[0]+'" aria-pressed="'+on+'" aria-label="Open '+dm[1]+'">'+qcBar(dm[0],s,off)+'<b>'+dm[1]+'</b><small>'+(s.tot?s.done+"/"+s.tot:"0")+'</small></button>'}).join("")+'</div>';
     var front='<p class="qc-kick">'+DOW_LONG[d.getDay()]+" \u00b7 "+d.getDate()+" "+HM_MONTHS[d.getMonth()]+'</p><div class="qc-split"><div><div class="qc-num"><b>'+done+'</b><span>'+(all?"all<br>done":"of "+tot+"<br>done")+'</span></div></div>'+bars+'</div><p class="qc-say sm">'+qcSay(off,tot,done,nx,at)+'</p>';
     var fl=!!state.qcFlip,sw=off===0&&all&&_qcDayWas===false;
     if(off===0)_qcDayWas=all;
@@ -3751,7 +3751,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     [].forEach.call(document.querySelectorAll(".qc-dots i"),function(x,k){x.classList.toggle("on",(k===1)===state.qcFlip)});
   }
   document.addEventListener("click",function(e){if(!e.target.closest)return;
-    var el=e.target.closest("[data-qclight]");if(el){e.stopPropagation();e.preventDefault();var dom=el.getAttribute("data-qclight");state.qcDom=state.qcDom===dom?null:dom;hmBody();return;}
+    var el=e.target.closest("[data-qclight]");if(el){e.stopPropagation();e.preventDefault();var dom=el.getAttribute("data-qclight");state.qcDom=null;go("domain",dom);return;}
     if(e.target.closest("[data-qcall]")){e.stopPropagation();state.qcDom=null;hmBody();return;}
     if(e.target.closest("[data-qcflip]")){e.stopPropagation();qcTurn();}},true);
   document.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&e.target.closest&&e.target.closest("[data-qcflip]")&&!e.target.closest("[data-qclight]")){e.preventDefault();qcTurn();}});
@@ -4210,19 +4210,35 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function viewDomain(dom){
     var d=HM_DOMS.filter(function(x){return x[0]===dom})[0]||HM_DOMS[0],dm=d[0],st=hmStats(today())[dm];
     var rows=[];
-    if(dm==="todo"){
-      var open=function(list){return itemsOf(TODO_CAT).filter(function(i){return (i.list||"work")===list&&!isRepeat(i)&&!i.done}).length};
-      [["work","Work"],["personal","Personal"]].forEach(function(l){var n=open(l[0]);rows.push('<button class="dg-row" data-domday="todo"><span><b>'+l[1]+'</b><small>'+(n?n+" open":"Nothing open")+'</small></span><i>›</i></button>')});
-    }
-    cats().filter(function(c){return c.id!==TODO_CAT&&areaDomain(c.id)===dm}).forEach(function(c){
+    if(dm==="todo")[["work","Work"],["home","Home"],["personal","Personal"]].forEach(function(l){var n=todoListItems(l[0]).filter(function(i){return !isRepeat(i)&&!i.done}).length;rows.push('<button class="dg-row" data-listgo="'+l[0]+'"><span><b>'+l[1]+'</b><small>'+(n?n+" open":"Nothing open")+'</small></span><i>›</i></button>')});
+    if(dm!=="todo")cats().filter(function(c){return c.id!==TODO_CAT&&areaDomain(c.id)===dm}).forEach(function(c){
       var s=catToday(c.id),ds=today(),cn=hmItems(dm,ds).filter(function(i){return i.catId===c.id}),cd=cn.filter(function(i){return hmDone(i,ds)}).length,line=!s.n?"Nothing yet":cn.length?cd+" of "+cn.length+" today":s.n+(s.n===1?" item, not counted":" items, not counted");
       rows.push('<button class="dg-row" data-area="'+c.id+'"><span><b>'+esc(c.name)+'</b><small>'+line+'</small></span><i>›</i></button>');
     });
-    return '<button class="back" data-nav="home">← Home</button><div class="dg-top"><h1 class="title" style="font-size:30px">'+d[1]+'</h1><span class="qb qb-'+dm+(st.tot&&st.done===st.tot?" full":"")+'" style="--p:'+(st.tot?(st.done/st.tot).toFixed(3):0)+'" aria-hidden="true"><i></i></span></div><p class="kicker" style="color:var(--muted);margin:2px 0 14px">'+(st.tot?st.done+" of "+st.tot+" done today":"Nothing counted today")+'</p><div class="dg-list">'+rows.join("")+'</div>';
+    return '<button class="back" data-nav="home">← Home</button><div class="dg-top"><h1 class="title" style="font-size:30px">'+d[1]+'</h1><span class="qb qb-'+dm+(st.tot&&st.done===st.tot?" full":"")+'" style="--p:'+(st.tot?(st.done/st.tot).toFixed(3):0)+'" aria-hidden="true"><i></i></span></div><p class="kicker" style="color:var(--muted);margin:2px 0 14px">'+(st.tot?st.done+" of "+st.tot+" done today":"Nothing counted today")+'</p><div class="dg-list">'+rows.join("")+'</div>'+domToday(dm);
+  }
+  function domToday(dm){
+    var ds=today(),its=hmItems(dm,ds).sort(hmListSort),h="";
+    var extra=visibleItems().filter(function(i){return its.indexOf(i)<0&&dueOnDate(i,ds,0)&&!isFast(i)&&!isTracker(i)&&areaDomain(i.catId)===dm}).sort(hmListSort);
+    var left=its.filter(function(i){return !hmDone(i,ds)}).length;
+    if(its.length){h+='<div class="sec-h" style="margin-top:22px"><h2>Today</h2><span class="meta">'+(left?left+" left":"All done")+'</span><span class="line"></span></div><div class="card">';its.forEach(function(i){h+=itemRow(i,{ds:ds})});h+='</div>';}
+    if(extra.length){h+='<div class="sec-h" style="margin-top:22px"><h2>'+(extra.every(function(i){return i.kind==="med"})?"Medicine":"Also today")+'</h2><span class="meta">not counted in your day</span><span class="line"></span></div><div class="card">';extra.forEach(function(i){h+=itemRow(i,{ds:ds})});h+='</div>';}
+    return h;
+  }
+  function todoListItems(list){return Store.all("items").filter(function(i){return canSee(i)&&((i.catId===TODO_CAT&&(i.list||"work")===list)||(list==="home"&&i.catId==="c_home"))})}
+  function viewTodoList(list){
+    todoList=list;
+    var nm={work:"Work",home:"Home",personal:"Personal"}[list]||"To-do",ds=today(),its=todoListItems(list);
+    var open=its.filter(function(i){return !isRepeat(i)&&!i.done}).sort(itemSort),rep=its.filter(isRepeat).sort(itemSort),dn=its.filter(function(i){return !isRepeat(i)&&i.done}).sort(function(a,b){return (b.completedAt||"")<(a.completedAt||"")?-1:1}).slice(0,5);
+    var h='<button class="back" data-domgo="todo">← To-do</button><div class="dg-top"><h1 class="title" style="font-size:30px">'+nm+'</h1></div><p class="kicker" style="color:var(--muted);margin:2px 0 14px">'+(open.length?open.length+" open":"Nothing open")+'</p>';
+    var sec=function(t,a){if(a.length){h+='<div class="sec-h"><h2>'+t+'</h2><span class="meta">'+a.length+'</span><span class="line"></span></div><div class="card">';a.forEach(function(i){h+=itemRow(i,{ds:ds})});h+='</div>'}};
+    sec("Open",open);sec("Repeats",rep);sec("Done lately",dn);
+    if(!its.length)h+='<div class="cat-empty" style="padding:40px">Nothing here yet, tap + to add.</div>';
+    return h;
   }
   function viewArea(c){
     var its=itemsOf(c.id);var s=catToday(c.id);
-    var h='<button class="back" data-nav="home">← Home</button><div class="area-top" style="--tc:'+esc(c.color)+'"><span class="sw">'+phicon(catIcon(c))+'</span><div style="flex:1;min-width:0"><p class="kicker">Area</p><h1 class="title" style="font-size:30px">'+esc(c.name)+'</h1></div><button class="btn ghost sm" data-action="edit-cat" data-id="'+c.id+'">Edit</button><button class="btn sm" data-action="library" data-cat="'+c.id+'">Library</button><button class="btn primary sm" data-action="add-item" data-cat="'+c.id+'">＋ Add</button></div>';
+    var h='<button class="back" data-domgo="'+areaDomain(c.id)+'">← '+HM_DOMS.filter(function(x){return x[0]===areaDomain(c.id)})[0][1]+'</button><div class="area-top" style="--tc:'+esc(c.color)+'"><span class="sw">'+phicon(catIcon(c))+'</span><div style="flex:1;min-width:0"><p class="kicker">Area</p><h1 class="title" style="font-size:30px">'+esc(c.name)+'</h1></div><button class="btn ghost sm" data-action="edit-cat" data-id="'+c.id+'">Edit</button><button class="btn sm" data-action="library" data-cat="'+c.id+'">Library</button><button class="btn primary sm" data-action="add-item" data-cat="'+c.id+'">＋ Add</button></div>';
     h+='<div class="barwrap" style="--tc:'+esc(c.color)+';margin-bottom:8px"><i style="width:'+s.pct+'%"></i></div><p class="kicker" style="color:var(--muted)">'+its.length+' items · '+s.todayDone+' of '+s.todayTotal+' routine done today'+(s.extra?' · '+s.extra+' not scored':'')+'</p>';
     var used={};its.forEach(function(i){(i.tags||[]).forEach(function(t){used[t]=1})});var ut=Object.keys(used);
     if(false&&ut.length){h+='<div class="filters" style="margin-top:14px"><button class="chip '+(state.filterTag?"":"on")+'" data-tagf="">All</button>';ut.forEach(function(tid){var t=tagById(tid);if(t)h+='<button class="chip '+(state.filterTag===tid?"on":"")+'" data-tagf="'+tid+'"><span class="dot" style="background:'+snapTag(t.color)+'"></span>'+esc(t.name)+'</button>';});h+='</div>';}
@@ -5780,7 +5796,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function paintAdd(){
     $("#qa-seg").innerHTML=[["todo","To-do"],["body","Body"],["mind","Mind"]].map(function(o){var on=qa.card===o[0];return '<button type="button" data-qa="card" data-v="'+o[0]+'" aria-pressed="'+on+'" class="'+(on?"on":"")+'">'+o[1]+'</button>'}).join("");
     var w="";
-    if(qa.card==="todo")w=[["work","Work"],["personal","Personal"]].map(function(o){return '<button type="button" class="qa-chip'+(qa.list===o[0]?" on":"")+'" data-qa="list" data-v="'+o[0]+'" aria-pressed="'+(qa.list===o[0])+'">'+o[1]+'</button>'}).join("");
+    if(qa.card==="todo")w=[["work","Work"],["home","Home"],["personal","Personal"]].map(function(o){return '<button type="button" class="qa-chip'+(qa.list===o[0]?" on":"")+'" data-qa="list" data-v="'+o[0]+'" aria-pressed="'+(qa.list===o[0])+'">'+o[1]+'</button>'}).join("");
     else{var ar=qaAreas();w=ar.length?ar.map(function(c){var on=qa.cat===c.id;return '<button type="button" class="qa-chip'+(on?" on":"")+'" data-qa="cat" data-v="'+esc(c.id)+'" aria-pressed="'+on+'"><span class="qa-dot" style="background:'+esc(c.color||"var(--accent)")+'"></span>'+esc(c.name)+'</button>'}).join(""):'<span class="qa-none">No '+(qa.card==="body"?"body":"mind")+' areas yet. Make one from the menu first.</span>'}
     $("#qa-where").innerHTML=w;
     var t=$("#q-title");if(t)t.placeholder=qa.card==="todo"?"What needs doing?":qa.card==="body"?"e.g. Brush teeth":"e.g. Read 20 pages";
@@ -5988,7 +6004,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     }
     h+='<div class="two"><div class="field"><label for="i-due">Day</label><input type="date" id="i-due" value="'+esc(d.dueDate||"")+'"></div><div class="field"><label id="l-prio">Priority</label><div class="seg" id="i-prio" role="group" aria-labelledby="l-prio">'+prioBtns(d.priority)+'</div></div></div>';
     h+='<div class="field"><label>Time <span class="sub-lbl">(optional)</span></label>'+timeField("i-rem",d.reminder)+'</div>';
-    h+='<div class="field"><label id="l-list">List</label><div class="seg" id="i-list" role="group" aria-labelledby="l-list">'+[["work","Work"],["personal","Personal"]].map(function(o){return '<button type="button" data-listset="'+o[0]+'" class="'+((d.list||"work")===o[0]?"on":"")+'">'+o[1]+'</button>';}).join("")+'</div></div>';
+    h+='<div class="field"><label id="l-list">List</label><div class="seg" id="i-list" role="group" aria-labelledby="l-list">'+[["work","Work"],["home","Home"],["personal","Personal"]].map(function(o){return '<button type="button" data-listset="'+o[0]+'" class="'+((d.list||"work")===o[0]?"on":"")+'">'+o[1]+'</button>';}).join("")+'</div></div>';
     if(ppl.length)h+='<div class="field"><label id="l-asg">Assign to <span class="sub-lbl">(optional)</span></label><div class="pick-wrap" id="i-assign" role="group" aria-labelledby="l-asg">'+ppl.map(function(p){return '<button type="button" class="pick '+((d.assignees||[]).indexOf(p.id)>-1?"on":"")+'" data-pid="'+p.id+'">'+avatar(p,"sm")+esc(p.name)+'</button>'}).join("")+'</div></div>';
     h+='<div class="field"><label for="i-notes">Notes</label><input type="text" id="i-notes" value="'+esc(d.notes||"")+'" placeholder="Any details…"></div>';
     var see=d.localOnly?"device":(d.private?"private":"shared");
@@ -6470,7 +6486,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if((el=e.target.closest("[data-tagf]"))){state.filterTag=el.getAttribute("data-tagf")||null;render();return;}
     if((el=e.target.closest("[data-back-area]"))){var ba=el.getAttribute("data-back-area");if(ba===TODO_CAT)go("day");else go("area",ba);return;}
     if((el=e.target.closest("[data-domgo]"))){go("domain",el.getAttribute("data-domgo"));return;}
-    if((el=e.target.closest("[data-domday]"))){openDayList(el.getAttribute("data-domday"));return;}
+    if((el=e.target.closest("[data-listgo]"))){go("todolist",el.getAttribute("data-listgo"));return;}
     if((el=e.target.closest("[data-area]"))&&!e.target.closest("[data-action]")){go("area",el.getAttribute("data-area"));return;}
     if((el=e.target.closest("[data-toggle]"))){e.stopPropagation();toggleItem(el.getAttribute("data-toggle"));return;}
     if((el=e.target.closest("[data-measure]"))){e.stopPropagation();openMeasure(el.getAttribute("data-measure"));return;}
