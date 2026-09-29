@@ -10,6 +10,7 @@ Read this first in every chat. Rules only; history lives in `docs/history.md`.
 | `DESIGN.md` | Colours, type, shapes, main pieces, motion, access and word rules |
 | `ARCHITECTURE.md` | How the code and data work, code map, the backend and phone app plan, how to test |
 | `docs/future-improvements.md` | Small problems and ideas noticed along the way, not decided yet. When the user says "add it to future improvements", add it there |
+| `docs/competitors.md` | The other app called Ritsu, ideas worth borrowing, the naming risk |
 | `docs/vision-board.md` | Outside apps the user liked, with pictures in `docs/mockups/vision/` |
 | `docs/history.md` | The old long notes file: every past decision and build log. Search it when you need the why |
 | `docs/mockups/` | Pictures of built screens and options tried |
