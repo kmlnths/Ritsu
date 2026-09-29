@@ -18,7 +18,7 @@ Read this first in every chat. Rules only; history lives in `docs/history.md`.
 ## Current state
 
 - Working branch `v5`. **GitHub Pages serves `v5`**, so pushing v5 changes the live site (kmlnths.github.io/Ritsu). `main`, `v2`, `v3`, `v4` are old.
-- `sw.js` cache is `ritsu-v31`. Bump it on every push.
+- `sw.js` cache is `ritsu-v32`. Bump it on every push.
 - Next work: the "Planned" list in `PRODUCT.md`, top to bottom.
 
 ## How to talk with the user
@@ -49,7 +49,7 @@ Read this first in every chat. Rules only; history lives in `docs/history.md`.
 
 1. Syntax: `node docs/tools/chk.js` (it writes `main-check.js` in the current folder; delete it after).
 2. Run: `node docs/tools/serve-repo.js`, open `http://127.0.0.1:8766/index.html`. The service worker error there is a test server quirk.
-3. Sentence reader: `node docs/tools/test-parse.js` (all cases must pass).
+3. Sentence reader: `node docs/tools/test-parse.js` and group word list: `node docs/tools/test-group.js` (all cases must pass).
 4. Screenshots: in a scratch folder, `npm install puppeteer-core`, drive `C:/Program Files/Google/Chrome/Application/chrome.exe`, fake the clock to 9:40, phone (~390px) and laptop (~1240px), both themes. Look at the pictures and check for page errors.
 
 ## How to commit

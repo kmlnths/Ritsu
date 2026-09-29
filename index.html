@@ -2107,6 +2107,10 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
 
 .qc-ch{display:flex;align-items:center;gap:8px;margin:20px 0 2px;font-size:15px}.qc-ch:first-of-type{margin-top:8px}.qc-ch i{width:16px;height:6px;border-radius:3px;background:var(--c-body)}.qc-ch.qb-mind i{background:var(--c-mind)}.qc-ch.qb-todo i{background:var(--c-todo)}.qc-ch b{font-weight:600}.qc-ch span{margin-left:auto;font-size:13px;color:var(--muted)}
 .qc-gl{font-size:13px;color:var(--muted);margin:10px 4px 6px}
+
+.su-whos{display:flex;flex-direction:column;gap:10px;margin-top:14px}.su-whos .su-tile{width:100%;text-align:left}
+
+.su-sub+.su-ask{margin-top:18px}
 </style>
 </head>
 <body>
@@ -3355,6 +3359,8 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   }
   var calDates=false; try{calDates=localStorage.getItem("ritsu_caldates")==="1";}catch(e){}
   var todoList="personal";
+  function familyOn(){try{return localStorage.getItem("ritsu_family")==="1"}catch(e){return false}}
+  function todoLists(){var a=[["work","Work"],["home","Home"],["personal","Personal"]];if(familyOn())a.push(["family","Family"]);return a}
 
   function render(){if(!Store.ready)return;document.body.classList.toggle("welcome",!!Store.welcome);Buddy.apply();if(Store.welcome){$("#view").innerHTML=viewWelcome();var wbEl=$("#welcomeBlob");if(wbEl)Buddy.temp(wbEl,"wave",true);return;}renderNav();document.body.setAttribute("data-view",state.view);var v=$("#view");
     if(state.view==="day")v.innerHTML=viewDay();else if(state.view==="fasting")v.innerHTML=viewFasting();else if(state.view==="medreport")v.innerHTML=viewMedReport(state.medId);else if(state.view==="reports")v.innerHTML=viewReports();else if(state.view==="people")v.innerHTML=viewPeople();else if(state.view==="settings")v.innerHTML=viewSettings();
@@ -3918,7 +3924,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   /* card, then group: Body (Medicine, Fitness ...), Mind, To-do (Work, Home, Personal). Empty groups are not drawn. */
   function qcGroupOf(i){
     var d=areaDomain(i.catId);
-    if(d==="todo"){var l=i.catId==="c_home"?"home":(i.list||"work");return [{work:0,home:1,personal:2}[l]||0,{work:"Work",home:"Home",personal:"Personal"}[l]||"Work"];}
+    if(d==="todo"){var l=i.catId==="c_home"?"home":(i.list||"work");return [{work:0,home:1,personal:2,family:3}[l]||0,{work:"Work",home:"Home",personal:"Personal",family:"Family"}[l]||"Work"];}
     var c=Store.get("cats",i.catId);return [(c&&c.order)||0,(c&&c.name)||"Other"];
   }
   function qcGrouped(its,ds){
@@ -4769,12 +4775,12 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
        simple  Quiet, Shows up (a few weeks before due), Done, Quiet again
      Rules: "since" counts from when you did it (check-ups); "fixed" counts from a fixed date each year (insurance, taxes). */
   var CB_LIB=[
-    {key:"dentist",name:"Dentist check-up",noun:"the dentist",book:"Book the dentist",kind:"visit",every:6,rule:"since",lead:14,icon:"tooth",tag:"Health",ask:"Last visit?"},
-    {key:"eye",name:"Eye test",noun:"the eye test",book:"Book an eye test",kind:"visit",every:12,rule:"since",lead:14,icon:"eye",tag:"Health",ask:"Last one?"},
-    {key:"insurance",name:"Car insurance",act:"Renew car insurance",kind:"simple",every:12,rule:"fixed",lead:21,icon:"car",tag:"Money",ask:"When does it expire?"},
+    {key:"dentist",name:"Dentist check-up",noun:"the dentist",book:"Book the dentist",kind:"visit",every:6,rule:"since",lead:14,icon:"tooth",tag:"Health",cat:"c_checkups",ask:"Last visit?"},
+    {key:"eye",name:"Eye test",noun:"the eye test",book:"Book an eye test",kind:"visit",every:12,rule:"since",lead:14,icon:"eye",tag:"Health",cat:"c_checkups",ask:"Last one?"},
+    {key:"insurance",name:"Car insurance",act:"Renew car insurance",kind:"simple",every:12,rule:"fixed",lead:21,icon:"car",tag:"Money",list:"home",ask:"When does it expire?"},
     {key:"taxes",name:"Taxes",act:"File taxes",kind:"simple",every:12,rule:"fixed",lead:21,icon:"receipt",tag:"Money",ask:"When are they due?"},
     {key:"subs",name:"Subscriptions",act:"Review subscriptions",kind:"simple",every:3,rule:"since",lead:0,icon:"arrows",tag:"Money"},
-    {key:"checkup",name:"Yearly check-up",noun:"your check-up",book:"Book your yearly check-up",kind:"visit",every:12,rule:"since",lead:14,icon:"heartbeat",tag:"Health",ask:"Last one?"}
+    {key:"checkup",name:"Yearly check-up",noun:"your check-up",book:"Book your yearly check-up",kind:"visit",every:12,rule:"since",lead:14,icon:"heartbeat",tag:"Health",cat:"c_checkups",ask:"Last one?"}
   ];
   function cbDef(key){return CB_LIB.filter(function(d){return d.key===key})[0]||null}
   function cbMonths(ds,n){var d=new Date(ds+"T00:00:00"),day=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+n);var last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(day,last));return fmt(d)}
@@ -4839,7 +4845,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   }
   function cbCreate(key,answer,stagger){
     var d=cbDef(key);if(!d||cbFind(key))return;
-    return Store.add("items",cbNewItem(cbBuild(d,answer,stagger),[cbEnsureTag(d.tag)]));
+    var it=cbNewItem(cbBuild(d,answer,stagger),[]);it.catId=d.cat||TODO_CAT;it.list=d.list||"personal";return Store.add("items",it);
   }
   /* typed: "renew passport every 2 years" */
   function cbAddTyped(title,months,firstDate,tags,prio){
@@ -4990,10 +4996,16 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   var SETUP_MEDTIMES=[["08:00","Morning"],["13:00","Afternoon"],["21:00","Evening"]];
   var SETUP_ANS={visit:[["recent","This year"],["old","Last year"],["unsure","Not sure"]],fixed:[["m0","This month"],["m1","Next month"],["m4","Later this year"],["unsure","Not sure"]]};
   function setupStart(){
-    setupS={step:2,h:{wake:true,water:true,read:true},medName:"",medTime:"08:00",cb:{dentist:{on:true,ans:"unsure"},insurance:{on:true,ans:"unsure"},subs:{on:true,ans:null}}};
+    setupS={step:1,who:"me",name:"",h:{wake:true,water:true,read:true},medName:"",medTime:"08:00",cb:{dentist:{on:true,ans:"unsure"},insurance:{on:true,ans:"unsure"},subs:{on:true,ans:null}}};
   }
   function setupHtml(){
-    var S=setupS,h='<div class="welcome-card su"><div class="su-steps" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="'+(S.step>=3?"on":"")+'"></i></div>';
+    var S=setupS,h='<div class="welcome-card su"><div class="su-steps" aria-hidden="true"><i class="on"></i><i class="'+(S.step>=2?"on":"")+'"></i><i class="'+(S.step>=3?"on":"")+'"></i></div>';
+    if(S.step===1){
+      return h+'<h1 class="su-title">Who is this for?</h1><p class="su-sub">You can change this later.</p><div class="su-ask"><div class="su-q">Your name</div><div class="su-row"><input id="su-name" class="su-inp" type="text" placeholder="Name" value="'+esc(S.name)+'" autocomplete="given-name"></div></div><div class="su-whos">'+
+        [["me","Just me","Medicine, body, habits and tasks."],["family","Me and my family","Adds a Family list and lets you type @name."]].map(function(o){var on=S.who===o[0];return '<button class="su-tile'+(on?" on":"")+'" data-setup="who|'+o[0]+'" aria-pressed="'+on+'"><span class="su-ck">'+(on?CHECK_SVG:"")+'</span><b>'+o[1]+'</b><small>'+o[2]+'</small></button>'}).join("")+'</div>'+
+        (S.who==="family"?'<p class="su-note">Sharing comes with accounts. Until then family tasks stay on your phone.</p>':'')+
+        '<div class="su-foot"><button class="su-skip" data-setup="skip1">Skip</button><button class="btn primary su-next" data-setup="who1">Continue</button></div></div>';
+    }
     if(S.step===2){
       h+='<h1 class="su-title">What would help most?</h1><p class="su-sub">Pick any. Each comes with a sensible time you can change later.</p><div class="su-tiles">';
       SETUP_HABITS.forEach(function(x){
@@ -5020,7 +5032,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     return h+'</div>';
   }
   function suItem(x,ix){
-    var t=today(),tag=x.cat==="c_health"?[cbEnsureTag("Health")]:[];
+    var t=today(),tag=[];
     var it={catId:x.cat,sub:"",title:x.it,akind:"activity",kind:"todo",notes:"",priority:"none",tags:tag,assignees:[],private:false,done:false,dueDate:null,repeatEvery:1,perDay:1,reminder:x.rem||null,duration:null,stance:"routine",markers:[],expect:null,
       normal:{min:1,max:1,maxGapDays:1,maxPerWeek:null},createdAt:new Date().toISOString(),createdDate:t,order:Date.now()+ix,owner:state.me||null};
     if(x.cat===TODO_CAT)it.list="personal";
@@ -5028,13 +5040,16 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   }
   function setupFinish(){
     var S=setupS;setupS=null;
+    var nm0=(S.name||"").trim();
+    if(nm0){Store.cache.people["p_me"]={id:"p_me",name:nm0,emoji:"🧑",color:"#E0A94A",createdAt:new Date().toISOString()};state.me="p_me";try{localStorage.setItem("ritsu_me","p_me")}catch(e){}}
+    try{localStorage.setItem("ritsu_family",S.who==="family"?"1":"0")}catch(e){}
     GROUP_CATS.forEach(function(c){Store.cache.cats[c[0]]=groupCat(c);});
     Store.welcome=false;
     SETUP_HABITS.forEach(function(x,ix){
       if(!S.h[x.k])return;
       if(x.med){
         var nm=(S.medName||"").trim();if(!nm)return;
-        Store.add("items",{catId:"c_medicine",sub:"",title:nm,kind:"med",notes:"",priority:"med",tags:[cbEnsureTag("Health")],assignees:[],private:false,reminder:S.medTime,duration:null,stance:"routine",markers:[],expect:{at:S.medTime,slack:90,dir:"either"},
+        Store.add("items",{catId:"c_medicine",sub:"",title:nm,kind:"med",notes:"",priority:"med",tags:[],assignees:[],private:false,reminder:S.medTime,duration:null,stance:"routine",markers:[],expect:{at:S.medTime,slack:90,dir:"either"},
           repeatEvery:1,perDay:1,dosesPerDay:1,stock:30,reorderTablets:0,reorderAt:7,courseDays:0,courseStart:today(),log:[],logTimes:{},done:false,dueDate:null,normal:{min:1,max:1,maxGapDays:1,maxPerWeek:null},
           createdAt:new Date().toISOString(),createdDate:today(),order:Date.now()+ix,owner:state.me||null});
       }else Store.add("items",suItem(x,ix));
@@ -5062,6 +5077,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       var v=el.getAttribute("data-setup").split("|"),a=v[0];
       if(a==="start"){setupStart();render();return true;}
       if(!setupS)return true;
+      if(a==="who"||a==="who1"||a==="skip1"){var nEl=$("#su-name");if(nEl)setupS.name=nEl.value;if(a==="who")setupS.who=v[1];else{if(a==="skip1"){setupS.name="";}setupS.step=2;window.scrollTo(0,0);}render();return true;}
       if(a==="tile"){setupS.h[v[1]]=!setupS.h[v[1]];render();return true;}
       if(a==="medtime"){setupS.medTime=v[1];render();return true;}
       if(a==="next"||a==="skip2"){if(a==="skip2")setupS.h={};setupS.step=3;render();window.scrollTo(0,0);return true;}
@@ -5754,15 +5770,50 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     var use={date:!!P.parts.date.length&&qa.rep===0,time:!!P.parts.time.length&&(!qa.timeTouched||qa.time!=null),dur:!!P.parts.dur.length&&!!time&&(!qa.durTouched||qa.dur!=null)};
     var ev=(qa.card==="todo"&&qa.rep===0)?cbEveryIn(txt):null,ttl=tyTitle(txt,P.parts,use);
     if(ev)ttl=ttl.replace(ev.cut,"").replace(/\s{2,}/g," ").replace(/[\s,]+$/,"").trim();
-    return {P:P,text:txt,date:date,time:time,dur:dur,use:use,title:ttl,every:ev?ev.months:0};
+    var who=null;if(familyOn()){var mm=/(^|\s)@([A-Za-z][\w'-]*)/.exec(txt);if(mm){who=mm[2];ttl=ttl.replace(/(^|\s)@[A-Za-z][\w'-]*/,"").replace(/\s{2,}/g," ").trim();}}
+    return {P:P,text:txt,date:date,time:time,dur:dur,use:use,title:ttl,every:ev?ev.months:0,who:who};
   }
 
+  /* typing files an item into its card and group: a small word list, plain code, no network.
+     tyGroup reads only the text (and whether the Family list is on). First rule that matches wins. */
+  var TY_GROUPS=[
+    ["family","todo","family","Family",/\b(school|parents? teacher|pta|kids?|child|children|homework|tuition)\b/],
+    ["","body","c_checkups","Checkups",/\b(dentist|dental|doctor|dr|check-?ups?|physio|optician|eye test|blood tests?|blood work|scan|vaccin\w*|flu shot|screening)\b/,1],
+    ["","body","c_medicine","Medicine",/\b(meds?|medicine|medication|tablets?|pills?|vitamins?|supplements?|inhaler|insulin|refill)\b/],
+    ["","body","c_hygiene","Hygiene and care",/\b(brush\w*|floss\w*|shower|bath|skincare|shave|haircut|hair cut|nails?|moisturi[sz]e|toothbrush)\b/],
+    ["","body","c_fitness","Fitness",/\b(gym|workout|run|running|jog|jogging|walk|walking|yoga|swim\w*|cycling|cycle|stretch\w*|pilates|exercise|hike|hiking)\b/],
+    ["","body","c_sleepfood","Sleep and food",/\b(sleep|bedtime|nap|fast|fasting|diet|sugar|calories|protein)\b/],
+    ["","body","c_health","Health",/\b(water|hydrate|bowel|cough|cold|fever|headache|migraine|stomach|nausea|pain|blood pressure|weigh|weight|temperature|symptoms?)\b/],
+    ["","mind","c_learning","Learning",/\b(learn\w*|course|lessons?|study|studying|tutorial|lecture|flashcards?|duolingo)\b/],
+    ["","mind","c_creative","Creative",/\b(guitar|piano|violin|draw\w*|paint\w*|sketch\w*|write|writing|poem|song|photograph\w*|knit\w*)\b/],
+    ["","mind","c_calm","Calm",/\b(meditat\w*|journal\w*|mindful\w*|breath\w*|gratitude|mood|phone-free|prayer|pray)\b/],
+    ["","mind","c_reading","Reading",/\b(read|reading|chapter|pages|novel|kindle)\b/],
+    ["","todo","work","Work",/\b(report|meeting|emails?|client|invoice|timesheet|standup|stand-up|sync|boss|presentation|deadline|proposal|slides|sprint|office)\b/],
+    ["","todo","home","Home",/\b(rent|bills?|electricity|internet|wifi|vacuum\w*|clean\w*|groceries|grocery|repair\w*|plumber|electrician|laundry|trash|garbage|filter|insurance|car|service|mow|dishes|tidy|landlord)\b/],
+    ["","todo","personal","Personal",/\b(passport|tax|taxes|bank|gift|birthday|subscriptions?|visa|licen[cs]e|wedding|anniversary)\b/]
+  ];
+  function tyGroup(text,family){
+    var t=" "+String(text||"").toLowerCase()+" ";
+    for(var k=0;k<TY_GROUPS.length;k++){var r=TY_GROUPS[k];if(r[0]==="family"&&!family)continue;if(r[4].test(t)){var card=r[1],nm={body:"Body",mind:"Mind",todo:"To-do"}[card];return {card:card,cat:card==="todo"?null:r[2],list:card==="todo"?r[2]:null,label:nm+", "+r[3],once:!!r[5]};}}
+    return null;
+  }
+  /* run on every keystroke in the add sheet; a tapped card, group or list always wins. Returns true when the sheet changed. */
+  function qaSuggest(){
+    if(qa.whereTouched)return false;
+    var t=$("#q-title"),txt=t?t.value:"",g=tyGroup(txt,familyOn()),was=qa.rep;
+    if(!g){if(!qa.autoLabel)return false;var i=qa.init;qa.card=i.card;qa.cat=i.cat;qa.list=i.list;if(!qa.repTouched)qa.rep=i.rep;qa.autoLabel="";qaFixCat();return true;}
+    var once=g.once||/\b(buy|get|order|book|renew|pay|call|fix|pick up|collect)\b/i.test(txt)||parseTyped(txt,new Date()).parts.date.length>0;
+    var same=qa.autoLabel===g.label;
+    qa.card=g.card;if(g.card==="todo")qa.list=g.list;else qa.cat=g.cat;
+    if(!qa.repTouched)qa.rep=(g.card==="todo"||once)?0:1;
+    qaFixCat();qa.autoLabel=g.label;return !same||was!==qa.rep;
+  }
   function openAdd(date,cat){
     var card="todo",area=null;
     if(cat&&cat!==TODO_CAT){card=areaDomain(cat)==="mind"?"mind":"body";area=cat}
     else if(!cat&&state.view==="day"&&(state.dayDomain==="body"||state.dayDomain==="mind"))card=state.dayDomain;
     qa={card:card,cat:area,list:todoList,date:date||today(),time:null,dur:null,prio:"none",rep:card==="todo"?0:1,tags:[],notes:"",open:"",touched:false,timeTouched:false,durTouched:false};
-    qaFixCat();ms={type:"quick"};renderAdd();
+    qaFixCat();qa.init={card:qa.card,cat:qa.cat,list:qa.list,rep:qa.rep};ms={type:"quick"};renderAdd();
   }
   function renderAdd(){
     var h='<div class="qa-top"><input type="text" class="qa-title" id="q-title" autocomplete="off" enterkeyhint="done" aria-label="What are you adding?"><button type="button" class="qa-x" data-close aria-label="Close">'+qi("x")+'</button></div>'+
@@ -5784,7 +5835,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function paintAdd(){
     $("#qa-seg").innerHTML=[["todo","To-do"],["body","Body"],["mind","Mind"]].map(function(o){var on=qa.card===o[0];return '<button type="button" data-qa="card" data-v="'+o[0]+'" aria-pressed="'+on+'" class="'+(on?"on":"")+'">'+o[1]+'</button>'}).join("");
     var w="";
-    if(qa.card==="todo")w=[["work","Work"],["home","Home"],["personal","Personal"]].map(function(o){return '<button type="button" class="qa-chip'+(qa.list===o[0]?" on":"")+'" data-qa="list" data-v="'+o[0]+'" aria-pressed="'+(qa.list===o[0])+'">'+o[1]+'</button>'}).join("");
+    if(qa.card==="todo")w=todoLists().map(function(o){return '<button type="button" class="qa-chip'+(qa.list===o[0]?" on":"")+'" data-qa="list" data-v="'+o[0]+'" aria-pressed="'+(qa.list===o[0])+'">'+o[1]+'</button>'}).join("");
     else{var ar=qaAreas();w=ar.length?ar.map(function(c){var on=qa.cat===c.id;return '<button type="button" class="qa-chip'+(on?" on":"")+'" data-qa="cat" data-v="'+esc(c.id)+'" aria-pressed="'+on+'"><span class="qa-dot" style="background:'+esc(c.color||"var(--accent)")+'"></span>'+esc(c.name)+'</button>'}).join(""):'<span class="qa-none">No '+(qa.card==="body"?"body":"mind")+' areas yet. Make one from the menu first.</span>'}
     $("#qa-where").innerHTML=w;
     var t=$("#q-title");if(t)t.placeholder=qa.card==="todo"?"What needs doing?":qa.card==="body"?"e.g. Brush teeth":"e.g. Read 20 pages";
@@ -5807,6 +5858,8 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     else if(e.P.time&&!e.P.parts.time.length&&!qa.timeTouched)bits.push(fmtTime(e.P.time));
     if(e.use.dur&&!qa.durTouched)bits.push(durLabel(e.dur));
     if(e.every)bits.unshift("Comes back every "+cbEveryLabel(e.every));
+    if(qa.autoLabel)bits.unshift(qa.autoLabel);
+    if(e.who)bits.push("For "+e.who.charAt(0).toUpperCase()+e.who.slice(1)+", on this phone");
     var h=$("#qa-hint");if(h){if(bits.length){h.textContent="Read as: "+bits.join(", ");h.hidden=false}else h.hidden=true}
   }
   function paintPanel(){
@@ -5816,6 +5869,11 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     else p.innerHTML="";
   }
   function qaRead(){var t=$("#q-title");if(t)qa.title=t.value;var n=$("#q-notes");if(n)qa.notes=n.value}
+  function qaWho(n){
+    if(!n)return [];var low=n.toLowerCase(),p=people().filter(function(x){return (x.name||"").toLowerCase()===low})[0];
+    if(p)return [p.id];
+    var id=uid("p");Store.cache.people[id]={id:id,name:n.charAt(0).toUpperCase()+n.slice(1),emoji:"🙂",color:"#82BE97",createdAt:new Date().toISOString()};Store._save();return [id];
+  }
   function saveAdd(){
     qaRead();var e=qaEff(),title=(e.title||"").trim();
     if(!title){toast("Give it a name");var t=$("#q-title");if(t)t.focus();return}
@@ -5823,7 +5881,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(!cat){toast("Pick an area first");return}
     var date=qa.rep>0?null:e.date;
     if(e.every&&isTodo&&qa.rep===0){var snapC=cbSnap(),nxC=e.use.date?e.date:cbMonths(today(),e.every);cbAddTyped(title,e.every,nxC,qa.tags.slice(),qa.prio);closeModal();toast("Added "+title+". It comes back every "+cbEveryLabel(e.every)+", next "+dayShort(nxC)+(e.every>=12?" "+nxC.slice(0,4):"")+".",cbUndo(snapC));return;}
-    var d={catId:cat,sub:"",title:title,akind:qa.rep>0?"activity":"oneoff",kind:"todo",notes:qa.notes||"",priority:qa.prio,tags:qa.tags.slice(),assignees:[],private:false,done:false,
+    var d={catId:cat,sub:"",title:title,akind:qa.rep>0?"activity":"oneoff",kind:"todo",notes:qa.notes||"",priority:qa.prio,tags:qa.tags.slice(),assignees:qaWho(e.who),private:false,done:false,
       dueDate:date,repeatEvery:qa.rep,perDay:1,reminder:e.time,duration:e.time?e.dur:null,stance:"routine",list:qa.list,markers:[],expect:null,normal:{min:1,max:1,maxGapDays:qa.rep||null,maxPerWeek:null}};
     var when=(qa.rep>0?qaRepLabel(qa.rep):qaDateLabel(date))+(e.time?" "+fmtTime(e.time):"");
     ms={type:"item",mode:(isTodo&&qa.rep===0)?"task":"area",id:null,data:d,dateTouched:true};
@@ -5943,9 +6001,9 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     }
     if((el=e.target.closest("[data-qa]"))&&ms&&ms.type==="quick"&&qa){
       var k=el.getAttribute("data-qa"),val2=el.getAttribute("data-v");qaRead();
-      if(k==="card"){qa.card=val2;if(val2==="todo"){if(qa.rep>0&&!qa.repTouched)qa.rep=0}else if(!qa.repTouched&&qa.rep===0)qa.rep=1;qaFixCat();paintAdd()}
-      else if(k==="list"){qa.list=val2;paintAdd()}
-      else if(k==="cat"){qa.cat=val2;paintAdd()}
+      if(k==="card"){qa.whereTouched=true;qa.autoLabel="";qa.card=val2;if(val2==="todo"){if(qa.rep>0&&!qa.repTouched)qa.rep=0}else if(!qa.repTouched&&qa.rep===0)qa.rep=1;qaFixCat();paintAdd()}
+      else if(k==="list"){qa.whereTouched=true;qa.autoLabel="";qa.list=val2;paintAdd()}
+      else if(k==="cat"){qa.whereTouched=true;qa.autoLabel="";qa.cat=val2;paintAdd()}
       else if(k==="date")qpDate();
       else if(k==="time")qpTime(qaEff().time||"",function(v){qa.time=v||null;qa.timeTouched=true;paintActs()});
       else if(k==="dur")qpList("dur","Length",QA_DUR,qaEff().dur||"none");
@@ -5958,7 +6016,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       else if(k==="go")saveAdd();
     }
   });
-  document.addEventListener("input",function(e){if(e.target&&e.target.id==="q-title"&&qa&&ms&&ms.type==="quick")paintActs();if(e.target&&e.target.id==="q-notes"&&qa){qa.notes=e.target.value}});
+  document.addEventListener("input",function(e){if(e.target&&e.target.id==="q-title"&&qa&&ms&&ms.type==="quick"){if(qaSuggest())paintAdd();else paintActs();}if(e.target&&e.target.id==="q-notes"&&qa){qa.notes=e.target.value}});
   document.addEventListener("keydown",function(e){
     if(e.key==="Escape"){var L=$("#qlayer");if(L&&L.classList.contains("show")){e.stopPropagation();e.preventDefault();qpClose();return}}
     if(e.key==="Enter"&&!e.isComposing&&e.target&&(e.target.id==="q-title"||e.target.id==="q-notes")&&ms&&ms.type==="quick"){e.preventDefault();saveAdd()}
@@ -5992,7 +6050,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     }
     h+='<div class="two"><div class="field"><label for="i-due">Day</label><input type="date" id="i-due" value="'+esc(d.dueDate||"")+'"></div><div class="field"><label id="l-prio">Priority</label><div class="seg" id="i-prio" role="group" aria-labelledby="l-prio">'+prioBtns(d.priority)+'</div></div></div>';
     h+='<div class="field"><label>Time <span class="sub-lbl">(optional)</span></label>'+timeField("i-rem",d.reminder)+'</div>';
-    h+='<div class="field"><label id="l-list">List</label><div class="seg" id="i-list" role="group" aria-labelledby="l-list">'+[["work","Work"],["home","Home"],["personal","Personal"]].map(function(o){return '<button type="button" data-listset="'+o[0]+'" class="'+((d.list||"work")===o[0]?"on":"")+'">'+o[1]+'</button>';}).join("")+'</div></div>';
+    h+='<div class="field"><label id="l-list">List</label><div class="seg" id="i-list" role="group" aria-labelledby="l-list">'+todoLists().map(function(o){return '<button type="button" data-listset="'+o[0]+'" class="'+((d.list||"work")===o[0]?"on":"")+'">'+o[1]+'</button>';}).join("")+'</div></div>';
     if(ppl.length)h+='<div class="field"><label id="l-asg">Assign to <span class="sub-lbl">(optional)</span></label><div class="pick-wrap" id="i-assign" role="group" aria-labelledby="l-asg">'+ppl.map(function(p){return '<button type="button" class="pick '+((d.assignees||[]).indexOf(p.id)>-1?"on":"")+'" data-pid="'+p.id+'">'+avatar(p,"sm")+esc(p.name)+'</button>'}).join("")+'</div></div>';
     h+='<div class="field"><label for="i-notes">Notes</label><input type="text" id="i-notes" value="'+esc(d.notes||"")+'" placeholder="Any details…"></div>';
     var see=d.localOnly?"device":(d.private?"private":"shared");
