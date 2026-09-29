@@ -23,3 +23,11 @@ Noticed: 2026-09-29, on the phone (live site, v5).
 - B) Bolder fix: also read a number at the very end as a time after words like call, meet, ring. "read chapter 5" and "buy 5 apples" stay safe.
 
 If built: add these sentences to `docs/tools/test-parse.js` and check all the old cases still pass.
+
+## 2. The green + button shows on the Welcome and setup screens
+
+Noticed: 2026-09-29, in real screenshots of the first-run flow (`docs/mockups/flow-first-open.png`).
+
+**What happens.** The floating + sits on top of the setup content. On step 2 it covers the "Keep the house tidy" tile, and on step 3 it sits over the "Finish setup" button. It also appears on the Welcome screen, where there is nothing to add yet.
+
+**Fix idea.** Hide `#fab` (and the bottom menu) while the Welcome or setup screens are showing. Small change, worth doing with the new setup step.
