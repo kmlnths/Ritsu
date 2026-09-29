@@ -18,7 +18,7 @@ Read this first in every chat. Rules only; history lives in `docs/history.md`.
 ## Current state
 
 - Working branch `v5`. **GitHub Pages serves `v5`**, so pushing v5 changes the live site (kmlnths.github.io/Ritsu). `main`, `v2`, `v3`, `v4` are old.
-- `sw.js` cache is `ritsu-v28`. Bump it on every push.
+- `sw.js` cache is `ritsu-v29`. Bump it on every push.
 - Next work: the "Planned" list in `PRODUCT.md`, top to bottom.
 
 ## How to talk with the user
