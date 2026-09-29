@@ -2113,6 +2113,15 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
 .su-sub+.su-ask{margin-top:18px}
 
 :root[data-theme="dark"]{color-scheme:dark}:root[data-theme="warm"]{color-scheme:only light}
+
+.fd-p{margin:8px 0 10px;font-size:15px;line-height:1.45}.fd-k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:14px 0 6px}
+.fd-list{background:var(--panel-2);border-radius:14px;overflow:hidden}.fd-row{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;background:none;border:0;text-align:left;color:var(--ink);font-size:15px}.fd-row+.fd-row{border-top:1px solid var(--line-2)}.fd-row>span:not(.fd-ck){flex:1;min-width:0}
+.fd-ck{width:24px;height:24px;border-radius:8px;border:1.5px solid var(--faint);display:inline-flex;align-items:center;justify-content:center;flex:none;background:none;padding:0;color:var(--on-accent)}.fd-ck.on{background:var(--accent);border-color:var(--accent)}.fd-ck svg{width:14px;height:14px}
+.fd-day{margin-left:auto;font-size:12px;border:1px solid var(--accent);color:var(--accent-ink);border-radius:999px;padding:5px 11px;background:none}
+.fd-note{font-size:13px;color:var(--muted);margin:8px 2px}
+.fd-btn{display:flex;justify-content:center;align-items:center;width:100%;height:48px;border-radius:999px;border:0;font-size:15px;font-weight:600;margin-top:10px;background:var(--accent);color:var(--on-accent)}.fd-btn.alt{background:var(--panel-2);color:var(--ink);font-weight:500}.fd-btn[disabled]{opacity:.45}
+.fd-link{display:block;width:100%;text-align:center;background:none;border:0;color:var(--muted);font-size:14px;margin-top:8px;padding:10px}
+.wrap{background:var(--panel);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));border-radius:16px;padding:16px;margin:12px 0}.wrap-t{font-size:17px;font-weight:600}
 </style>
 </head>
 <body>
@@ -3899,7 +3908,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function hmBody(){
     var hh=$("#hmHero");if(!hh||!_hmCons)return;
     var ds=hmDay(),st=hmStats(ds);
-    qcListFill(ds);cbAskFill(ds);wk1Fill(ds);hmSideFill(ds);
+    qcListFill(ds);wrapFill(ds);cbAskFill(ds);wk1Fill(ds);hmSideFill(ds);
     hh.innerHTML=hmHeroHtml(ds,st);
     hh.classList.toggle("complete",!!hh.querySelector(".hm-done-flag"));
     hh.classList.toggle("switching",!!hh.querySelector(".qc-switch"));   /* the day just became complete: play the glow once */
@@ -3944,6 +3953,87 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     });
     return h;
   }
+  /* ===== a full day, and the evening wrap-up =====
+     Full day: after adding the 8th open one-off task on a day, offer to spread a few (once per day per date).
+     Wrap-up: from 8pm Home asks where today's leftovers should go. Never red, never "overdue", always safe to skip. */
+  var _fd=null,_wr=null;
+  function dayOneOffs(date){return Store.all("items").filter(function(i){return canSee(i)&&i.kind==="todo"&&i.stance==="routine"&&!isRepeat(i)&&!i.cb&&!i.archived&&i.dueDate===date})}
+  function fdKeys(){try{return JSON.parse(localStorage.getItem("ritsu_fd")||"{}")}catch(e){return {}}}
+  function fdMark(date){var k=fdKeys(),ks=Object.keys(k);if(ks.length>30)delete k[ks[0]];k[date]=today();try{localStorage.setItem("ritsu_fd",JSON.stringify(k))}catch(e){}}
+  function fdCheck(date){
+    if(!date||fdKeys()[date]===today())return;
+    var open=dayOneOffs(date).filter(function(i){return !i.done});if(open.length<=7)return;
+    var need=open.length-5,cand=open.filter(function(i){return !i.reminder&&(!i.priority||i.priority==="none")}).sort(function(a,b){return (b.createdAt||"")<(a.createdAt||"")?-1:1}).slice(0,8);
+    if(!cand.length)return;
+    var tb=$("#toast");if(tb)tb.classList.remove("show");
+    fdMark(date);_fd={date:date,n:open.length,cand:cand,on:{},pick:false};
+    cand.slice(0,need).forEach(function(i){_fd.on[i.id]=true});fdPaint();
+  }
+  function fdLabel(date){return date===today()?"today":date===addDaysStr(today(),1)?"tomorrow":dayShort(date)}
+  function fdPaint(){
+    var d=_fd,k=d.cand.filter(function(i){return d.on[i.id]}).length,nx=addDaysStr(d.date,1),h;
+    if(d.pick){
+      var opts=[[addDaysStr(d.date,2),"In 2 days"],[addDaysStr(d.date,3),"In 3 days"],[addDaysStr(d.date,7),"In a week"]];
+      h='<div class="modal-h"><h3>Pick another day</h3><button class="x" data-close>\u00d7</button></div><div class="modal-b"><p class="fd-p">Where should the '+k+(k===1?" one":" ones")+' go?</p>'+opts.map(function(o){return '<button class="fd-btn alt" data-fd="to|'+o[0]+'">'+o[1]+', '+dayShort(o[0])+'</button>'}).join("")+'<button class="fd-link" data-fd="back">Back</button></div>';
+    }else{
+      h='<div class="modal-h"><h3>Full day '+fdLabel(d.date)+'</h3><button class="x" data-close>\u00d7</button></div><div class="modal-b"><p class="fd-p">'+d.n+' things are on the list. Spread a few over '+(d.date===today()?"tomorrow":"the next day")+', or take them one at a time. Both work.</p><div class="fd-k">Ritsu picked these to move</div><div class="fd-list">'+
+        d.cand.map(function(i){var on=!!d.on[i.id];return '<button class="fd-row" data-fd="t|'+i.id+'" aria-pressed="'+on+'"><span class="fd-ck'+(on?" on":"")+'">'+(on?CHECK_SVG:"")+'</span>'+esc(i.title)+'</button>'}).join("")+'</div><p class="fd-note">The ones with no time and no priority. Untick any you want to keep '+fdLabel(d.date)+'.</p>'+
+        '<button class="fd-btn" data-fd="move"'+(k?"":" disabled")+'>Move '+k+' to '+fdLabel(nx)+'</button><button class="fd-btn alt" data-fd="other"'+(k?"":" disabled")+'>Pick another day</button><button class="fd-link" data-fd="keep">Keep all '+d.n+', I\u2019ve got this</button></div>';
+    }
+    openModal(h);
+  }
+  function moveTasks(ids,to,msg){
+    var snap=JSON.stringify({cache:Store.cache,priv:Store._priv,me:state.me});
+    ids.forEach(function(id){Store.update("items",id,{dueDate:to})});
+    toast(msg,function(){var p=JSON.parse(snap);Store.cache=p.cache;Store._priv=p.priv||{};Store._save();Store._savePriv();Store._emit();});
+  }
+  function fdAct(v){
+    var d=_fd;if(!d)return;
+    if(v[0]==="t"){d.on[v[1]]=!d.on[v[1]];fdPaint();return}
+    if(v[0]==="other"){d.pick=true;fdPaint();return}
+    if(v[0]==="back"){d.pick=false;fdPaint();return}
+    var ids=d.cand.filter(function(i){return d.on[i.id]}).map(function(i){return i.id});
+    if(v[0]==="keep"){closeModal();_fd=null;return}
+    var to=v[0]==="to"?v[1]:addDaysStr(d.date,1);
+    closeModal();_fd=null;
+    if(ids.length)moveTasks(ids,to,"Moved "+ids.length+" to "+fdLabel(to)+".");
+  }
+  /* wrap-up */
+  function wrapSeen(){try{return localStorage.getItem("ritsu_wrap")===today()}catch(e){return false}}
+  function wrapDays(){var t=today(),m=addDaysStr(t,(8-new Date(t+"T00:00:00").getDay())%7||7);return [addDaysStr(t,1),addDaysStr(t,2),m]}
+  function wrapHtml(){
+    if(new Date().getHours()<20||wrapSeen())return "";
+    var all=dayOneOffs(today()),open=all.filter(function(i){return !i.done}),done=all.length-open.length;
+    if(!open.length)return "";
+    if(!_wr||_wr.day!==today())_wr={day:today(),tick:{},to:{}};
+    var ds=wrapDays();
+    var h='<div class="wrap"><h3 class="wrap-t">'+(done?done+" of "+all.length+" done. That counts.":"Some days go like that.")+'</h3><p class="fd-p">'+(done?open.length+" "+(open.length===1?"is":"are")+" still open. Where should "+(open.length===1?"it":"they")+" go?":"Nothing got ticked today, and that\u2019s okay. Want to try "+(open.length===1?"this":"these")+" again tomorrow?")+'</p><div class="fd-list">';
+    open.forEach(function(i){var on=!!_wr.tick[i.id],to=_wr.to[i.id]||ds[0];
+      h+='<div class="fd-row"><button class="fd-ck'+(on?" on":"")+'" data-wr="t|'+i.id+'" aria-pressed="'+on+'" aria-label="Done: '+esc(i.title)+'">'+(on?CHECK_SVG:"")+'</button><span>'+esc(i.title)+'</span>'+(on?'':'<button class="fd-day" data-wr="d|'+i.id+'">'+(to===ds[0]?"Tomorrow":dayShort(to))+'</button>')+'</div>'});
+    return h+'</div><p class="fd-note">Tap the tick if you did it. Tap the day to change it.</p><button class="fd-btn" data-wr="save">'+(done||open.some(function(i){return _wr.tick[i.id]})?"Save these":"Try again tomorrow")+'</button><button class="fd-link" data-wr="skip">Not now</button></div>';
+  }
+  function wrapFill(ds){var el=$("#hmWrap");if(!el)return;var h=ds===today()?wrapHtml():"";if(el._h===h)return;el._h=h;el.innerHTML=h;}
+  function wrapAct(v){
+    var ds=wrapDays();
+    if(v[0]==="t"){_wr.tick[v[1]]=!_wr.tick[v[1]];}
+    else if(v[0]==="d"){var cur=_wr.to[v[1]]||ds[0],ix=ds.indexOf(cur);_wr.to[v[1]]=ds[(ix+1)%ds.length];}
+    else if(v[0]==="skip"){try{localStorage.setItem("ritsu_wrap",today())}catch(e){}}
+    else if(v[0]==="save"){
+      var open=dayOneOffs(today()).filter(function(i){return !i.done}),snap=JSON.stringify({cache:Store.cache,priv:Store._priv,me:state.me}),nDone=0,nMove=0;
+      open.forEach(function(i){
+        if(_wr.tick[i.id]){nDone++;Store.update("items",i.id,{done:true,completedAt:fmt(new Date())+"T"+nowHM()+":00"});}
+        else{nMove++;Store.update("items",i.id,{dueDate:_wr.to[i.id]||ds[0]});}
+      });
+      try{localStorage.setItem("ritsu_wrap",today())}catch(e){}
+      toast(nMove?"Saved. "+nMove+(nMove===1?" thing":" things")+" waiting for you.":"Saved. A clear day.",function(){var p=JSON.parse(snap);Store.cache=p.cache;Store._priv=p.priv||{};Store._save();Store._savePriv();try{localStorage.removeItem("ritsu_wrap")}catch(e){}Store._emit();});
+      _wr=null;return;
+    }
+    var el=$("#hmWrap");if(el)el._h=null;wrapFill(today());
+  }
+  document.addEventListener("click",function(e){
+    var a=e.target.closest&&e.target.closest("[data-fd]");if(a){e.preventDefault();fdAct(a.getAttribute("data-fd").split("|"));return}
+    var b=e.target.closest&&e.target.closest("[data-wr]");if(b){e.preventDefault();wrapAct(b.getAttribute("data-wr").split("|"))}
+  });
   function hmSideFill(ds){
     var el=$("#hmSide");if(el&&window.innerWidth>=940)qcListFill(ds,el);
   }
@@ -4127,7 +4217,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       '<div class="hm-strip"><button class="hm-arrow" data-hmweek="-1" aria-label="Previous day">'+phicon("caretl")+'</button>'+
       '<div class="hm-scroll" id="hmScroll" aria-label="Pick a day">'+strip+'</div>'+
       '<button class="hm-arrow" data-hmweek="1" aria-label="Next day">'+phicon("caretr")+'</button></div>'+
-      '<div class="hm-hero qc" id="hmHero"></div>'+'<div id="cbAsk"></div>'+'<div id="wk1"></div>'+'<div id="hmList" class="qc-list"></div>'+backupNudge();
+      '<div class="hm-hero qc" id="hmHero"></div>'+'<div id="hmWrap"></div><div id="cbAsk"></div>'+'<div id="wk1"></div>'+'<div id="hmList" class="qc-list"></div>'+backupNudge();
 
     return '<div class="home-grid solo"><div class="home-main">'+main+'</div><aside class="home-side" id="hmSide" aria-label="The list for this day"></aside></div>';
   }
@@ -5896,6 +5986,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     ms={type:"item",mode:(isTodo&&qa.rep===0)?"task":"area",id:null,data:d,dateTouched:true};
     var snapA=JSON.stringify({cache:Store.cache,priv:Store._priv,me:state.me});
     saveItem();
+    if(date)setTimeout(function(){fdCheck(date)},450);
     toast("Added "+title+" ("+when+")",function(){var p=JSON.parse(snapA);Store.cache=p.cache;Store._priv=p.priv||{};Store._save();Store._savePriv();Store._emit();});
   }
   /* the full forms stay one tap away, filled in with what was already typed */

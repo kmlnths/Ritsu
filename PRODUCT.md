@@ -94,13 +94,13 @@ Each has a "done when" line. It is not finished until that is true.
 
 **Phase A: finish the personal app (no accounts needed)**
 
-1. **Full day helper and evening wrap-up.**
+1. **Full day helper and evening wrap-up.** BUILT 2026-09-30 (`fdCheck`, `wrapHtml`).
    Done when: adding the 8th open one-off task on a day shows the Full day pop-up once per day per date (Move to tomorrow, Pick another day, Keep all), and from 8pm Home shows leftover tasks each set to Tomorrow. Never red, never "overdue".
 2. **Clash warning** for items with a length.
    Done when: adding "meeting at 12 for an hour" over an existing 12 to 1 item shows the day strip with the clash and three buttons (Pick another time, See the day, Add anyway). Items with only a time never clash.
 3. **Templates library** (one list of ready-made items, no tags).
    Done when: one list of entries (dentist check-up 6 months, eye test 12, car service 6, ...) drives the usual gap ("every 6 months?") and the Templates page, each entry sits in a card and group, and each carries a fixed shared or private flag (see Phase C). Health gaps say "ask your doctor for yours".
-4. **Tidy what the new structure left behind.**
+4. **Tidy what the new structure left behind.** BUILT 2026-09-30 except "Call at venky 5", which the user parked (no option chosen).
    Done when: the laptop sidebar lists the groups under their card instead of one long "Areas" list (the old sample "Home" area is gone), a Settings switch turns Family on or off, Creative has a proper icon, "Call at venky 5" is read as a time (`docs/future-improvements.md`), and light and dark themes are checked on phone and laptop.
 5. **Plan the week and calendar import** (ideas borrowed from the other Ritsu, `docs/competitors.md`).
    Done when: on Sundays Home shows a calm Plan the week card (spread tasks that have no day; skipping is safe), and a small link in setup step 3 reads a .ics or .csv file into cards and groups with each item tickable.
