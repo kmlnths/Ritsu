@@ -19,7 +19,8 @@ Read this first in every chat. Rules only; history lives in `docs/history.md`.
 
 - Working branch `v5`. **GitHub Pages serves `v5`**, so pushing v5 changes the live site (kmlnths.github.io/Ritsu). `main`, `v2`, `v3`, `v4` are old.
 - `sw.js` cache is `ritsu-v37`. Bump it on every push.
-- Next work: the "Planned" list in `PRODUCT.md`, top to bottom.
+- Everything up to 2026-09-30 is pushed (cache `ritsu-v37`). Built: groups and no tags, setup with "Who is this for?", typing files into groups, @name on this phone, Full day pop-up, evening wrap-up, amounts that count with a kind line, floating side panel with a rail, laptop nav pill after scrolling, white-card night-mode fix.
+- Where we stopped, in order: (1) clash warning, (2) Templates library, (3) Plan the week and calendar import, (4) remove dead code, (5) choose the app name. Loose ends: ask the friend to re-check the finished Home card on iPhone Brave; check the new side panel in light theme; "Call at venky 5" is parked (options A or B in `docs/future-improvements.md`); the user said "medication" for amounts and I took it as meditation; sidebar search box skipped. Then Phase B onwards in `PRODUCT.md` (accounts, friend gangs).
 
 ## How to talk with the user
 

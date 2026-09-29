@@ -88,6 +88,10 @@ What exists, what is planned, what was dropped. Update this list whenever someth
 
 Cards and groups, no tags (Body: Health, Medicine, Checkups, Fitness, Hygiene and care, Sleep and food; Mind: Reading, Learning, Calm, Creative; To-do lists Work, Home, Personal, and Family when chosen). The Home list is split by card then group, all visible, nothing to open (the user found group pages too many clicks). Setup starts with "Who is this for?" and files its choices into the groups. Typing files an item into its group (word list, `docs/tools/test-group.js`). "@name" assigns on this phone only. Full map: the "Ritsu app structure" doc.
 
+### Done 2026-09-30
+
+Full day pop-up and evening wrap-up; sidebar grouped under Body, Mind, To-do; Family on or off in Settings; amounts under the goal count as done with one of ten kind lines; floating side panel that collapses to a rail; laptop quick-nav pill that appears only after scrolling; fix for the finished Home card turning white in phone browsers with night mode.
+
 ### Planned, in this order
 
 Each has a "done when" line. It is not finished until that is true.
