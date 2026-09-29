@@ -2104,10 +2104,9 @@
   .gc-nav::after{content:"";position:absolute;inset:-4px}
   .cb-b{min-height:42px}
 body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomnav{display:none!important}
-.dg-top{display:flex;align-items:center;gap:14px;margin-top:6px}.dg-top .qb{width:26px}
-.dg-list{display:flex;flex-direction:column;gap:8px}
-.dg-row{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;text-align:left;background:var(--panel);border:0;border-radius:16px;padding:14px 16px;color:var(--ink)}
-.dg-row b{display:block;font-size:15px;font-weight:500}.dg-row small{display:block;font-size:13px;color:var(--muted);margin-top:2px}.dg-row i{font-style:normal;font-size:17px;color:var(--faint)}
+
+.qc-ch{display:flex;align-items:center;gap:8px;margin:20px 0 2px;font-size:15px}.qc-ch:first-of-type{margin-top:8px}.qc-ch i{width:16px;height:6px;border-radius:3px;background:var(--c-body)}.qc-ch.qb-mind i{background:var(--c-mind)}.qc-ch.qb-todo i{background:var(--c-todo)}.qc-ch b{font-weight:600}.qc-ch span{margin-left:auto;font-size:13px;color:var(--muted)}
+.qc-gl{font-size:13px;color:var(--muted);margin:10px 4px 6px}
 </style>
 </head>
 <body>
@@ -3323,7 +3322,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function tagPills(ids){return "";var h="";(ids||[]).forEach(function(id){var t=tagById(id);if(t)h+='<span class="tag"><span class="dot" style="background:'+snapTag(t.color)+'"></span>'+esc(t.name)+'</span>';});return h}
   var LOCK='<span class="lk"><svg class="icon" viewBox="0 0 24 24" style="width:13px;height:13px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>';
 
-  function go(v,id){var tb=$("#toast");if(tb&&tb.classList.contains("show")){tb.classList.remove("show");_toastUndo=null;}state.view=v;state.dayDomain=null;state.homeOpen=null;if(v==="home")state.homeDay=null;if(v==="area")state.areaId=id;else if(v==="domain")state.domId=id;else if(v==="todolist")state.listId=id;else if(v==="item")state.itemId=id;if(v!=="item"&&v!=="area")state.filterTag=null;render();window.scrollTo(0,0)}
+  function go(v,id){var tb=$("#toast");if(tb&&tb.classList.contains("show")){tb.classList.remove("show");_toastUndo=null;}state.view=v;state.dayDomain=null;state.homeOpen=null;if(v==="home")state.homeDay=null;if(v==="area")state.areaId=id;else if(v==="item")state.itemId=id;if(v!=="item"&&v!=="area")state.filterTag=null;render();window.scrollTo(0,0)}
 
   var NAVICON={
     home:'<path d="M3.6 11 12 4l8.4 7"/><path d="M5.6 9.5V20h12.8V9.5"/><path d="M9.8 20v-4.6a2.2 2.2 0 0 1 4.4 0V20"/>',
@@ -3360,7 +3359,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function render(){if(!Store.ready)return;document.body.classList.toggle("welcome",!!Store.welcome);Buddy.apply();if(Store.welcome){$("#view").innerHTML=viewWelcome();var wbEl=$("#welcomeBlob");if(wbEl)Buddy.temp(wbEl,"wave",true);return;}renderNav();document.body.setAttribute("data-view",state.view);var v=$("#view");
     if(state.view==="day")v.innerHTML=viewDay();else if(state.view==="fasting")v.innerHTML=viewFasting();else if(state.view==="medreport")v.innerHTML=viewMedReport(state.medId);else if(state.view==="reports")v.innerHTML=viewReports();else if(state.view==="people")v.innerHTML=viewPeople();else if(state.view==="settings")v.innerHTML=viewSettings();
     else if(state.view==="item"){var i=Store.get("items",state.itemId);if(!i){state.view="home";return render();}v.innerHTML=viewItem(i);}
-    else if(state.view==="domain")v.innerHTML=viewDomain(state.domId);else if(state.view==="todolist")v.innerHTML=viewTodoList(state.listId);
+    
     else if(state.view==="area"){var c=Store.get("cats",state.areaId);if(!c){state.view="home";return render();}v.innerHTML=viewArea(c);}
     else v.innerHTML=viewHome();
     if(state.view==="home"){homeMount();Buddy.mount($("#buddySlot"));Pull.mount();}
@@ -3723,7 +3722,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     HM_DOMS.forEach(function(d){tot+=st[d[0]].tot;done+=st[d[0]].done;});
     var d=new Date(ds+"T00:00:00"),nx=qcNext(ds,st),at=nx?qcAt(nx,ds):"",all=tot>0&&done===tot;
     var bars='<div class="qc-bars">'+HM_DOMS.map(function(dm){var s=st[dm[0]],on=state.qcDom===dm[0];
-      return '<button class="qc-br'+(on?" on":"")+(state.qcDom&&!on?" dim":"")+'" data-qclight="'+dm[0]+'" aria-pressed="'+on+'" aria-label="Open '+dm[1]+'">'+qcBar(dm[0],s,off)+'<b>'+dm[1]+'</b><small>'+(s.tot?s.done+"/"+s.tot:"0")+'</small></button>'}).join("")+'</div>';
+      return '<button class="qc-br'+(on?" on":"")+(state.qcDom&&!on?" dim":"")+'" data-qclight="'+dm[0]+'" aria-pressed="'+on+'" aria-label="Show only '+dm[1]+'">'+qcBar(dm[0],s,off)+'<b>'+dm[1]+'</b><small>'+(s.tot?s.done+"/"+s.tot:"0")+'</small></button>'}).join("")+'</div>';
     var front='<p class="qc-kick">'+DOW_LONG[d.getDay()]+" \u00b7 "+d.getDate()+" "+HM_MONTHS[d.getMonth()]+'</p><div class="qc-split"><div><div class="qc-num"><b>'+done+'</b><span>'+(all?"all<br>done":"of "+tot+"<br>done")+'</span></div></div>'+bars+'</div><p class="qc-say sm">'+qcSay(off,tot,done,nx,at)+'</p>';
     var fl=!!state.qcFlip,sw=off===0&&all&&_qcDayWas===false;
     if(off===0)_qcDayWas=all;
@@ -3751,7 +3750,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     [].forEach.call(document.querySelectorAll(".qc-dots i"),function(x,k){x.classList.toggle("on",(k===1)===state.qcFlip)});
   }
   document.addEventListener("click",function(e){if(!e.target.closest)return;
-    var el=e.target.closest("[data-qclight]");if(el){e.stopPropagation();e.preventDefault();var dom=el.getAttribute("data-qclight");state.qcDom=null;go("domain",dom);return;}
+    var el=e.target.closest("[data-qclight]");if(el){e.stopPropagation();e.preventDefault();var dom=el.getAttribute("data-qclight");state.qcDom=state.qcDom===dom?null:dom;hmBody();return;}
     if(e.target.closest("[data-qcall]")){e.stopPropagation();state.qcDom=null;hmBody();return;}
     if(e.target.closest("[data-qcflip]")){e.stopPropagation();qcTurn();}},true);
   document.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&e.target.closest&&e.target.closest("[data-qcflip]")&&!e.target.closest("[data-qclight]")){e.preventDefault();qcTurn();}});
@@ -3910,11 +3909,30 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     its.sort(hmListSort);
     var extra=visibleItems().filter(function(i){return its.indexOf(i)<0&&dueOnDate(i,ds,off)&&!isFast(i)&&!isTracker(i)&&(!state.qcDom||areaDomain(i.catId)===state.qcDom)}).sort(hmListSort);
     var left=its.filter(function(i){return !hmDone(i,ds)}).length;
-    var dn=state.qcDom?HM_DOMS.filter(function(d){return d[0]===state.qcDom})[0][1]:"";var h='<div class="qc-lh"><h3 aria-level="2">'+(off===0?"Today":hmLabel(ds))+(dn?' <em class="qc-only qb-'+state.qcDom+'">'+dn+' only</em><button class="qc-all" data-domgo="'+state.qcDom+'">Groups</button><button class="qc-all" data-qcall>Show all</button>':'')+'</h3><span>'+(its.length?(left?left+" left":"All done"):"")+'</span></div>';
+    var dn=state.qcDom?HM_DOMS.filter(function(d){return d[0]===state.qcDom})[0][1]:"";var h='<div class="qc-lh"><h3 aria-level="2">'+(off===0?"Today":hmLabel(ds))+(dn?' <em class="qc-only qb-'+state.qcDom+'">'+dn+' only</em><button class="qc-all" data-qcall>Show all</button>':'')+'</h3><span>'+(its.length?(left?left+" left":"All done"):"")+'</span></div>';
     if(!its.length&&!extra.length)h+='<div class="cat-empty">'+(off===0?"Nothing planned yet. Tap + to add your first thing.":off>0?"Nothing planned for this day yet.":"Nothing was on the list this day.")+'</div>';
-    if(its.length){h+='<div class="card">';its.forEach(function(i){h+=itemRow(i,{ds:ds})});h+='</div>';}
+    if(its.length)h+=qcGrouped(its,ds);
     if(extra.length){h+='<div class="qc-lh qc-xh"><h3 aria-level="2">'+(extra.every(function(i){return i.kind==="med"})?"Medicine":"Also today")+'</h3><span>not counted in your day</span></div><div class="card">';extra.forEach(function(i){h+=itemRow(i,{ds:ds})});h+='</div>';}
     el.innerHTML=h;
+  }
+  /* card, then group: Body (Medicine, Fitness ...), Mind, To-do (Work, Home, Personal). Empty groups are not drawn. */
+  function qcGroupOf(i){
+    var d=areaDomain(i.catId);
+    if(d==="todo"){var l=i.catId==="c_home"?"home":(i.list||"work");return [{work:0,home:1,personal:2}[l]||0,{work:"Work",home:"Home",personal:"Personal"}[l]||"Work"];}
+    var c=Store.get("cats",i.catId);return [(c&&c.order)||0,(c&&c.name)||"Other"];
+  }
+  function qcGrouped(its,ds){
+    var h="";
+    HM_DOMS.forEach(function(d){
+      var mine=its.filter(function(i){return areaDomain(i.catId)===d[0]});if(!mine.length)return;
+      var done=mine.filter(function(i){return hmDone(i,ds)}).length,g={};
+      mine.forEach(function(i){var k=qcGroupOf(i),id=k[1];(g[id]=g[id]||{o:k[0],n:id,a:[]}).a.push(i)});
+      h+='<div class="qc-ch qb-'+d[0]+'"><i></i><b>'+d[1]+'</b><span>'+done+'/'+mine.length+'</span></div>';
+      Object.keys(g).map(function(k){return g[k]}).sort(function(a,b){return a.o-b.o}).forEach(function(x){
+        h+='<div class="qc-gl">'+esc(x.n)+'</div><div class="card">';x.a.sort(hmListSort).forEach(function(i){h+=itemRow(i,{ds:ds})});h+='</div>';
+      });
+    });
+    return h;
   }
   function hmSideFill(ds){
     var el=$("#hmSide");if(el&&window.innerWidth>=940)qcListFill(ds,el);
@@ -4206,39 +4224,9 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   }
   function itemSort(a,b){var ac=doneForNow(a)?1:0,bc=doneForNow(b)?1:0;if(ac!==bc)return ac-bc;var an=dCount(nextDue(a)),bn=dCount(nextDue(b));if(an==null&&bn!=null)return 1;if(bn==null&&an!=null)return -1;if(an!=null&&bn!=null&&an!==bn)return an-bn;var pr={high:0,med:1,low:2,none:3};return (pr[a.priority||"med"])-(pr[b.priority||"med"])||(a.order||0)-(b.order||0)}
 
-  /* a card opens into its groups: Card, then Group, then Item */
-  function viewDomain(dom){
-    var d=HM_DOMS.filter(function(x){return x[0]===dom})[0]||HM_DOMS[0],dm=d[0],st=hmStats(today())[dm];
-    var rows=[];
-    if(dm==="todo")[["work","Work"],["home","Home"],["personal","Personal"]].forEach(function(l){var n=todoListItems(l[0]).filter(function(i){return !isRepeat(i)&&!i.done}).length;rows.push('<button class="dg-row" data-listgo="'+l[0]+'"><span><b>'+l[1]+'</b><small>'+(n?n+" open":"Nothing open")+'</small></span><i>›</i></button>')});
-    if(dm!=="todo")cats().filter(function(c){return c.id!==TODO_CAT&&areaDomain(c.id)===dm}).forEach(function(c){
-      var s=catToday(c.id),ds=today(),cn=hmItems(dm,ds).filter(function(i){return i.catId===c.id}),cd=cn.filter(function(i){return hmDone(i,ds)}).length,line=!s.n?"Nothing yet":cn.length?cd+" of "+cn.length+" today":s.n+(s.n===1?" item, not counted":" items, not counted");
-      rows.push('<button class="dg-row" data-area="'+c.id+'"><span><b>'+esc(c.name)+'</b><small>'+line+'</small></span><i>›</i></button>');
-    });
-    return '<button class="back" data-nav="home">← Home</button><div class="dg-top"><h1 class="title" style="font-size:30px">'+d[1]+'</h1><span class="qb qb-'+dm+(st.tot&&st.done===st.tot?" full":"")+'" style="--p:'+(st.tot?(st.done/st.tot).toFixed(3):0)+'" aria-hidden="true"><i></i></span></div><p class="kicker" style="color:var(--muted);margin:2px 0 14px">'+(st.tot?st.done+" of "+st.tot+" done today":"Nothing counted today")+'</p><div class="dg-list">'+rows.join("")+'</div>'+domToday(dm);
-  }
-  function domToday(dm){
-    var ds=today(),its=hmItems(dm,ds).sort(hmListSort),h="";
-    var extra=visibleItems().filter(function(i){return its.indexOf(i)<0&&dueOnDate(i,ds,0)&&!isFast(i)&&!isTracker(i)&&areaDomain(i.catId)===dm}).sort(hmListSort);
-    var left=its.filter(function(i){return !hmDone(i,ds)}).length;
-    if(its.length){h+='<div class="sec-h" style="margin-top:22px"><h2>Today</h2><span class="meta">'+(left?left+" left":"All done")+'</span><span class="line"></span></div><div class="card">';its.forEach(function(i){h+=itemRow(i,{ds:ds})});h+='</div>';}
-    if(extra.length){h+='<div class="sec-h" style="margin-top:22px"><h2>'+(extra.every(function(i){return i.kind==="med"})?"Medicine":"Also today")+'</h2><span class="meta">not counted in your day</span><span class="line"></span></div><div class="card">';extra.forEach(function(i){h+=itemRow(i,{ds:ds})});h+='</div>';}
-    return h;
-  }
-  function todoListItems(list){return Store.all("items").filter(function(i){return canSee(i)&&((i.catId===TODO_CAT&&(i.list||"work")===list)||(list==="home"&&i.catId==="c_home"))})}
-  function viewTodoList(list){
-    todoList=list;
-    var nm={work:"Work",home:"Home",personal:"Personal"}[list]||"To-do",ds=today(),its=todoListItems(list);
-    var open=its.filter(function(i){return !isRepeat(i)&&!i.done}).sort(itemSort),rep=its.filter(isRepeat).sort(itemSort),dn=its.filter(function(i){return !isRepeat(i)&&i.done}).sort(function(a,b){return (b.completedAt||"")<(a.completedAt||"")?-1:1}).slice(0,5);
-    var h='<button class="back" data-domgo="todo">← To-do</button><div class="dg-top"><h1 class="title" style="font-size:30px">'+nm+'</h1></div><p class="kicker" style="color:var(--muted);margin:2px 0 14px">'+(open.length?open.length+" open":"Nothing open")+'</p>';
-    var sec=function(t,a){if(a.length){h+='<div class="sec-h"><h2>'+t+'</h2><span class="meta">'+a.length+'</span><span class="line"></span></div><div class="card">';a.forEach(function(i){h+=itemRow(i,{ds:ds})});h+='</div>'}};
-    sec("Open",open);sec("Repeats",rep);sec("Done lately",dn);
-    if(!its.length)h+='<div class="cat-empty" style="padding:40px">Nothing here yet, tap + to add.</div>';
-    return h;
-  }
   function viewArea(c){
     var its=itemsOf(c.id);var s=catToday(c.id);
-    var h='<button class="back" data-domgo="'+areaDomain(c.id)+'">← '+HM_DOMS.filter(function(x){return x[0]===areaDomain(c.id)})[0][1]+'</button><div class="area-top" style="--tc:'+esc(c.color)+'"><span class="sw">'+phicon(catIcon(c))+'</span><div style="flex:1;min-width:0"><p class="kicker">Area</p><h1 class="title" style="font-size:30px">'+esc(c.name)+'</h1></div><button class="btn ghost sm" data-action="edit-cat" data-id="'+c.id+'">Edit</button><button class="btn sm" data-action="library" data-cat="'+c.id+'">Library</button><button class="btn primary sm" data-action="add-item" data-cat="'+c.id+'">＋ Add</button></div>';
+    var h='<button class="back" data-nav="home">← Home</button><div class="area-top" style="--tc:'+esc(c.color)+'"><span class="sw">'+phicon(catIcon(c))+'</span><div style="flex:1;min-width:0"><p class="kicker">Area</p><h1 class="title" style="font-size:30px">'+esc(c.name)+'</h1></div><button class="btn ghost sm" data-action="edit-cat" data-id="'+c.id+'">Edit</button><button class="btn sm" data-action="library" data-cat="'+c.id+'">Library</button><button class="btn primary sm" data-action="add-item" data-cat="'+c.id+'">＋ Add</button></div>';
     h+='<div class="barwrap" style="--tc:'+esc(c.color)+';margin-bottom:8px"><i style="width:'+s.pct+'%"></i></div><p class="kicker" style="color:var(--muted)">'+its.length+' items · '+s.todayDone+' of '+s.todayTotal+' routine done today'+(s.extra?' · '+s.extra+' not scored':'')+'</p>';
     var used={};its.forEach(function(i){(i.tags||[]).forEach(function(t){used[t]=1})});var ut=Object.keys(used);
     if(false&&ut.length){h+='<div class="filters" style="margin-top:14px"><button class="chip '+(state.filterTag?"":"on")+'" data-tagf="">All</button>';ut.forEach(function(tid){var t=tagById(tid);if(t)h+='<button class="chip '+(state.filterTag===tid?"on":"")+'" data-tagf="'+tid+'"><span class="dot" style="background:'+snapTag(t.color)+'"></span>'+esc(t.name)+'</button>';});h+='</div>';}
@@ -6485,8 +6473,6 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if((el=e.target.closest("[data-report]"))){state.report=el.getAttribute("data-report");render();return;}
     if((el=e.target.closest("[data-tagf]"))){state.filterTag=el.getAttribute("data-tagf")||null;render();return;}
     if((el=e.target.closest("[data-back-area]"))){var ba=el.getAttribute("data-back-area");if(ba===TODO_CAT)go("day");else go("area",ba);return;}
-    if((el=e.target.closest("[data-domgo]"))){go("domain",el.getAttribute("data-domgo"));return;}
-    if((el=e.target.closest("[data-listgo]"))){go("todolist",el.getAttribute("data-listgo"));return;}
     if((el=e.target.closest("[data-area]"))&&!e.target.closest("[data-action]")){go("area",el.getAttribute("data-area"));return;}
     if((el=e.target.closest("[data-toggle]"))){e.stopPropagation();toggleItem(el.getAttribute("data-toggle"));return;}
     if((el=e.target.closest("[data-measure]"))){e.stopPropagation();openMeasure(el.getAttribute("data-measure"));return;}
