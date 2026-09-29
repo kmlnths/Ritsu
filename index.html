@@ -2122,6 +2122,33 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
 .fd-btn{display:flex;justify-content:center;align-items:center;width:100%;height:48px;border-radius:999px;border:0;font-size:15px;font-weight:600;margin-top:10px;background:var(--accent);color:var(--on-accent)}.fd-btn.alt{background:var(--panel-2);color:var(--ink);font-weight:500}.fd-btn[disabled]{opacity:.45}
 .fd-link{display:block;width:100%;text-align:center;background:none;border:0;color:var(--muted);font-size:14px;margin-top:8px;padding:10px}
 .wrap{background:var(--panel);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));border-radius:16px;padding:16px;margin:12px 0}.wrap-t{font-size:17px;font-weight:600}
+
+@media(min-width:821px){
+    .bottomnav.fnav{position:fixed;left:calc(230px + (100vw - 230px)/2);transform:translateX(-50%);bottom:20px;z-index:40;display:flex;align-items:center;gap:4px;height:64px;padding:0 8px;border-radius:999px;
+      background:color-mix(in srgb,var(--panel) 80%,transparent);-webkit-backdrop-filter:blur(22px) saturate(1.7);backdrop-filter:blur(22px) saturate(1.7);
+      border:1px solid color-mix(in srgb,var(--ink) 9%,transparent);box-shadow:0 12px 32px -12px rgba(0,0,0,.5)}
+    :root[data-theme="warm"] .bottomnav.fnav{box-shadow:0 12px 30px -14px rgba(60,40,10,.28),inset 0 1px 0 rgba(255,255,255,.75)}
+    .fn-t{flex:none;min-width:48px;height:50px;padding:0 12px;display:flex;align-items:center;justify-content:center;gap:0;border:0;border-radius:999px;background:none;color:var(--muted);font:inherit;cursor:pointer;
+      transition:background-color .3s,color .3s,padding .4s cubic-bezier(.32,.72,.24,1),gap .4s cubic-bezier(.32,.72,.24,1);-webkit-tap-highlight-color:transparent}
+    .fn-t svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .fn-t span{max-width:0;overflow:hidden;white-space:nowrap;opacity:0;font-size:14px;font-weight:600;line-height:1;transition:max-width .4s cubic-bezier(.32,.72,.24,1),opacity .25s}
+    .fn-t.on{color:var(--ink);background:color-mix(in srgb,var(--ink) 10%,transparent);padding:0 17px 0 15px;gap:8px}
+    .fn-t.on span{max-width:92px;opacity:1}
+    @media(max-width:360px){.fn-t{min-width:44px;padding:0 10px}.fn-t.on{padding:0 13px 0 12px}}
+    .fn-t.on svg{stroke-width:2.2}
+    .bottomnav.fnav button:active{transform:scale(.94)}
+    #view{padding-bottom:110px}.toast{bottom:100px!important}
+  }
+
+.ng-h{display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;margin-top:6px;background:none;border:0;border-radius:10px;color:var(--muted);font-size:13px;font-weight:600;letter-spacing:.02em;text-align:left;cursor:pointer;transition:background-color .2s,color .2s}
+.ng-h:hover{background:color-mix(in srgb,var(--ink) 6%,transparent);color:var(--ink)}.ng-h span{flex:1}
+.ng-n{font-style:normal;font-size:12px;font-weight:500;color:var(--faint);transition:opacity .2s}.ng.open .ng-n{opacity:0}
+.ng-c{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s cubic-bezier(.32,.72,.24,1)}.ng.open .ng-c{transform:rotate(180deg)}
+.ng-b{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s cubic-bezier(.32,.72,.24,1)}.ng.open .ng-b{grid-template-rows:1fr}
+.ng-in{overflow:hidden;min-height:0;display:flex;flex-direction:column;gap:2px}
+.ng .nav-btn{opacity:0;transform:translateY(-10px);transition:opacity .18s ease,transform .26s cubic-bezier(.32,.72,.24,1),background-color .2s,color .2s}
+.ng.open .nav-btn{opacity:1;transform:none;transition-delay:calc(var(--i)*40ms),calc(var(--i)*40ms),0s,0s}
+@media(prefers-reduced-motion:reduce){.ng-b,.ng-c,.ng .nav-btn{transition:none}}
 </style>
 </head>
 <body>
@@ -3355,11 +3382,15 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function catIcon(c){return (c&&c.icon)||(c&&CAT_ICON_DEFAULT[c.id])||"checklist";}
   function navBtn(v,label){return '<button class="nav-btn '+(state.view===v?"active":"")+'" data-nav="'+v+'"><svg class="icon" viewBox="0 0 24 24">'+NAVICON[v]+'</svg>'+label+'</button>'}
   function renderNav(){
-    var h=navBtn("home","Home")+navBtn("day","Day");HM_DOMS.forEach(function(d){
-      var cs=cats().filter(function(c){return c.id!==TODO_CAT&&areaDomain(c.id)===d[0]});if(!cs.length)return;h+='<div class="nav-label">'+d[1]+'</div>';
-      cs.forEach(function(c){var s=catToday(c.id);h+='<button class="nav-btn '+(state.view==="area"&&state.areaId===c.id?"active":"")+'" data-area="'+c.id+'"><span class="g" style="color:'+esc(c.color)+'">'+phicon(catIcon(c))+'</span>'+esc(c.name)+(s.att?'<span class="count warn">'+s.att+'</span>':(s.todayTotal?'<span class="count">'+(s.todayTotal-s.todayDone)+'</span>':''))+'</button>';});
+    var h=navBtn("home","Home")+navBtn("day","Day");var NO=navOpenState();
+    var ng=function(key,title,btns,n,here){var open=NO[key]!=null?!!NO[key]:!!here;
+      return '<div class="ng'+(open?" open":"")+'"><button class="ng-h" data-ngt="'+key+'" aria-expanded="'+open+'"><span>'+title+'</span>'+(n?'<em class="ng-n">'+n+'</em>':'')+'<svg class="ng-c" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><div class="ng-b"><div class="ng-in">'+btns.map(function(b,i){return b.replace('<button class="nav-btn','<button style="--i:'+i+'" class="nav-btn')}).join("")+'</div></div></div>';};
+    HM_DOMS.forEach(function(d){
+      var cs=cats().filter(function(c){return c.id!==TODO_CAT&&areaDomain(c.id)===d[0]});if(!cs.length)return;var left=0,here=false;
+      var btns=cs.map(function(c){var s=catToday(c.id);left+=Math.max(0,s.todayTotal-s.todayDone);if(state.view==="area"&&state.areaId===c.id)here=true;return '<button class="nav-btn '+(state.view==="area"&&state.areaId===c.id?"active":"")+'" data-area="'+c.id+'"><span class="g" style="color:'+esc(c.color)+'">'+phicon(catIcon(c))+'</span>'+esc(c.name)+(s.att?'<span class="count warn">'+s.att+'</span>':(s.todayTotal?'<span class="count">'+(s.todayTotal-s.todayDone)+'</span>':''))+'</button>';});
+      h+=ng(d[0],d[1],btns,left,here);
     });
-    h+='<button class="add-cat" data-action="add-cat">＋ New area</button><div class="nav-label">More</div>'+navBtn("fasting","Fasting")+navBtn("reports","Patterns")+navBtn("people","People")+navBtn("settings","Settings");
+    h+='<button class="add-cat" data-action="add-cat">＋ New area</button>'+ng("more","More",[navBtn("fasting","Fasting"),navBtn("reports","Patterns"),navBtn("people","People"),navBtn("settings","Settings")],0,["fasting","reports","people","settings"].indexOf(state.view)>-1);
     $("#nav").innerHTML=h;
     var me=state.me?personById(state.me):null;
     $("#meCard").innerHTML=me?'<button class="me-btn" data-action="pick-me">'+avatar(me,"lg")+'<span class="who"><small>You are</small><b>'+esc(me.name)+'</b></span><span class="chev">⇅</span></button>':'<button class="me-btn" data-action="pick-me"><span class="av lg" style="background:var(--panel-2);color:var(--muted)">?</span><span class="who"><small>Tap to set</small><b>Who are you?</b></span><span class="chev">⇅</span></button>';
@@ -3372,6 +3403,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   }
   var calDates=false; try{calDates=localStorage.getItem("ritsu_caldates")==="1";}catch(e){}
   var todoList="personal";
+  var navOpen=null;function navOpenState(){if(!navOpen){try{navOpen=JSON.parse(localStorage.getItem("ritsu_navopen")||"{}")}catch(e){navOpen={}}}return navOpen}
   function familyOn(){try{return localStorage.getItem("ritsu_family")==="1"}catch(e){return false}}
   function todoLists(){var a=[["work","Work"],["home","Home"],["personal","Personal"]];if(familyOn())a.push(["family","Family"]);return a}
 
@@ -5713,12 +5745,16 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   /* put a fast back to running after ending it by mistake */
   function undoEndFast(id){var i=Store.get("items",id);if(!i)return;var fs=(i.fasts||[]).map(function(f){return Object.assign({},f)});if(fs.some(function(f){return !f.e}))return;var last=null;fs.forEach(function(f){if(f.e&&(!last||f.e>last.e))last=f;});if(last){delete last.e;Store.update("items",id,{fasts:fs});toast("Fast is running again");}}
 
-  function openMeasure(id){var i=Store.get("items",id);if(!i)return;var cur=(i.values||{})[today()];ms={type:"measure",id:id};openModal('<div class="modal-h"><h3>'+esc(i.title)+'</h3><button class="x" data-close>×</button></div><div class="modal-b"><p class="kicker" style="color:var(--muted);margin:0 0 6px">Today · goal '+(i.target||0)+' '+esc(i.unit||"")+'</p><div class="bignum"><input type="number" id="mv" step="any" min="0" value="'+(cur!=null?cur:"")+'" placeholder="0"><span class="u">'+esc(i.unit||"")+'</span></div><div id="mv-ok" class="mv-ok" hidden></div></div><div class="modal-f">'+(cur!=null?'<button class="btn danger sm" data-clear-measure="'+id+'">Clear</button>':'')+'<span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-measure="'+id+'">Save reading</button></div>');setTimeout(function(){var e=$("#mv");if(e){e.focus();e.select();mvOk(i);e.addEventListener("input",function(){mvOk(i)});}},60);}
-  function mvOk(i){var e=$("#mv"),o=$("#mv-ok");if(!e||!o)return;var v=parseFloat(e.value),t=i.target||0,on=(i.okDays||[]).indexOf(today())>-1;
-    var near=!isNaN(v)&&t>0&&v<t&&v>=t*0.8;
-    if(!near&&!on){o.hidden=true;o.innerHTML="";return;}
-    o.hidden=false;o.innerHTML='<label class="mv-ck"><input type="checkbox" id="mv-okc"'+(on?' checked':'')+'><span>Close enough. Count it as done today.</span></label>';}
-  function saveMeasure(id){var i=Store.get("items",id);if(!i)return;var val=parseFloat(($("#mv")||{}).value);var vals=Object.assign({},i.values||{});var times=Object.assign({},i.logTimes||{});if(isNaN(val)){delete vals[today()];delete times[today()];}else{vals[today()]=val;times[today()]=nowHM();}var ok=(i.okDays||[]).filter(function(d){return d!==today()}),oc=$("#mv-okc");if(oc&&oc.checked&&!isNaN(val))ok.push(today());Store.update("items",id,{values:vals,lastDone:today(),logTimes:times,okDays:ok});closeModal();}
+  function openMeasure(id){var i=Store.get("items",id);if(!i)return;var cur=(i.values||{})[today()];ms={type:"measure",id:id,ok:null};openModal('<div class="modal-h"><h3>'+esc(i.title)+'</h3><button class="x" data-close>×</button></div><div class="modal-b"><p class="kicker" style="color:var(--muted);margin:0 0 6px">Today · goal '+(i.target||0)+' '+esc(i.unit||"")+'</p><div class="bignum"><input type="number" id="mv" step="any" min="0" value="'+(cur!=null?cur:"")+'" placeholder="0"><span class="u">'+esc(i.unit||"")+'</span></div><div id="mv-ok" class="mv-ok" hidden></div></div><div class="modal-f">'+(cur!=null?'<button class="btn danger sm" data-clear-measure="'+id+'">Clear</button>':'')+'<span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-measure="'+id+'">Save reading</button></div>');setTimeout(function(){var e=$("#mv");if(e){e.focus();e.select();mvOk(i);e.addEventListener("input",function(){mvOk(i)});}},60);}
+  /* a number under the goal still counts as done for the day (untick to keep it open), and gets a kind line */
+  var LOW_LINES=["Every bit counts. Tomorrow is a fresh page.","Some is so much better than none.","A quiet day is part of the rhythm.","You showed up. That is the hard part.","Small steps still move you forward.","Rest is part of the plan too. Well done.","Not your biggest day, and that is fine.","Progress is not a straight line. Keep going.","You did something today. That counts.","Be kind to yourself. You are still on your way."];
+  function lowLine(){var k="ritsu_lowline",n=0;try{n=parseInt(localStorage.getItem(k)||"-1",10)}catch(e){n=-1}var r;do{r=Math.floor(Math.random()*LOW_LINES.length)}while(r===n&&LOW_LINES.length>1);try{localStorage.setItem(k,String(r))}catch(e){}return LOW_LINES[r]}
+  function mvOk(i){var e=$("#mv"),o=$("#mv-ok");if(!e||!o)return;var v=parseFloat(e.value),t=i.target||0;
+    if(!(!isNaN(v)&&v>0&&t>0&&v<t)){o.hidden=true;o.innerHTML="";return;}
+    var on=ms.ok!=null?ms.ok:true;
+    o.hidden=false;o.innerHTML='<label class="mv-ck"><input type="checkbox" id="mv-okc"'+(on?' checked':'')+'><span>Count it as done today. Every bit counts.</span></label>';
+    var c=$("#mv-okc");if(c)c.addEventListener("change",function(){ms.ok=c.checked});}
+  function saveMeasure(id){var i=Store.get("items",id);if(!i)return;var val=parseFloat(($("#mv")||{}).value);var vals=Object.assign({},i.values||{});var times=Object.assign({},i.logTimes||{});if(isNaN(val)){delete vals[today()];delete times[today()];}else{vals[today()]=val;times[today()]=nowHM();}var ok=(i.okDays||[]).filter(function(d){return d!==today()}),oc=$("#mv-okc");if(oc&&oc.checked&&!isNaN(val))ok.push(today());var was={values:i.values||{},lastDone:i.lastDone||null,logTimes:i.logTimes||{},okDays:i.okDays||[]},low=!isNaN(val)&&val>0&&(i.target||0)>0&&val<i.target&&oc&&oc.checked;Store.update("items",id,{values:vals,lastDone:today(),logTimes:times,okDays:ok});closeModal();if(low)toast("Saved "+val+" "+(i.unit||""),function(){Store.update("items",id,was)},"happy",lowLine());}
   function clearMeasure(id){var i=Store.get("items",id);if(!i)return;var vals=Object.assign({},i.values||{});delete vals[today()];Store.update("items",id,{values:vals,okDays:(i.okDays||[]).filter(function(d){return d!==today()})});closeModal();}
   function openRestock(id){var i=Store.get("items",id);if(!i)return;ms={type:"restock",id:id};openModal('<div class="modal-h"><h3>Restock '+esc(i.title)+'</h3><button class="x" data-close>×</button></div><div class="modal-b"><p class="kicker" style="color:var(--muted);margin:0 0 6px">You have '+(i.stock||0)+' pills. How many did you add?</p><div class="bignum"><input type="number" id="rs" min="0" step="1" placeholder="30"><span class="u">pills</span></div><label class="toggle-line" style="margin-top:10px"><input type="checkbox" id="rs-set"> Set the total instead of adding</label></div><div class="modal-f"><span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-restock="'+id+'">Save restock</button></div>');setTimeout(function(){var e=$("#rs");if(e)e.focus();},60);}
   function saveRestock(id){var i=Store.get("items",id);if(!i)return;var n=parseInt(($("#rs")||{}).value,10);if(isNaN(n)){closeModal();return;}var set=$("#rs-set")&&$("#rs-set").checked;Store.update("items",id,{stock:Math.max(0,set?n:(i.stock||0)+n)});closeModal();toast("Restocked");}
@@ -6616,6 +6652,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if((el=e.target.closest("[data-restore-undo]"))){undoRestore();return;}
     if((el=e.target.closest("[data-persist-ask]"))){if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().then(function(ok){toast(ok?"Ritsu's data is now protected":"The browser said not yet");render();});return;}
     if((el=e.target.closest("[data-welcome]"))){var wv=el.getAttribute("data-welcome"),wb=el.querySelector("b");if(wb)wb.textContent=wv==="back"?"Bringing it back…":"Setting up…";el.setAttribute("aria-busy","true");setTimeout(function(){if(wv==="clean")startClean();else if(wv==="back")bringBack();else startExamples();},60);return;}
+    if((el=e.target.closest("[data-ngt]"))){var ngo=el.parentNode.classList.toggle("open");el.setAttribute("aria-expanded",ngo);navOpenState()[el.getAttribute("data-ngt")]=ngo?1:0;try{localStorage.setItem("ritsu_navopen",JSON.stringify(navOpen))}catch(x){}return;}
     if((el=e.target.closest("[data-family]"))){try{localStorage.setItem("ritsu_family",el.getAttribute("data-family"))}catch(x){}render();return;}
     if((el=e.target.closest("[data-buddy]"))){var bk=el.getAttribute("data-buddy").split("-");if(bk[0]==="mode")Buddy.set("mode",bk[1]);else Buddy.set(bk[0],bk[1]==="1");render();return;}
     if((el=e.target.closest("[data-wipe-go]"))){wipeGo();return;}

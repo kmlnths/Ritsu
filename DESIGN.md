@@ -88,3 +88,8 @@ Three colours plus a neutral canvas, in a 60 / 30 / 10 split: neutral canvas (60
 - Bottom menu redesign (the user finds it a bit cheap).
 - Glass green + and a day-progress ring on the + (`docs/mockups/plus-glass.png`, `plus-ring.html`).
 - Final light colour sets (the user will revisit).
+
+## Laptop navigation and amounts (added 2026-09-30)
+
+- **Laptop**: the same floating pill as the phone (Home, Patterns, Day, Fasting, Settings) sits at the bottom centre of the content area, so Home is one click away on every page. The left sidebar keeps Home and Day, then Body, Mind, To-do and More as drop-downs. They start closed (the group you are in opens itself), show how many are left while closed, remember what you opened, and open with a staggered slide (items ease in one after another; reduced motion turns it off).
+- **Amounts** (reading pages, sleep hours, meditation minutes, water): any number above zero is accepted and, by default, counts as done for the day (the tick box can be turned off). When it is under the goal, the Undo bar shows a kind line from ten (`LOW_LINES`, never the same one twice in a row). The real number is always kept.
