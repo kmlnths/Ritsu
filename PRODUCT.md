@@ -104,6 +104,7 @@ Each has a "done when" line. It is not finished until that is true.
    Done when: adding "meeting at 12 for an hour" over an existing 12 to 1 item shows the day strip with the clash and three buttons (Pick another time, See the day, Add anyway). Items with only a time never clash.
 3. **Templates library** (one list of ready-made items, no tags).
    Done when: one list of entries drives the usual gap and the Templates page, each entry sits in a card and group, and each carries a fixed shared or private flag (see Phase C). Health gaps say "ask your doctor for yours".
+   Step 1 BUILT 2026-09-30: one list (`LIBRARY` with `G`, `in`, `hide`, `cb`; `libFlat`, `tplShared`, `userCountry`), `CB_LIB` is built from it, India/UK/US packs, setup and Library follow the country. Next: step 2 typed gap suggestion, step 3 Templates page (picture first), country choice in Settings.
    Country plan (decided 2026-09-30, English-speaking countries, West and Asia):
    - One shared list that works everywhere (water, sleep, bills, call family, car insurance), plus small country packs only for what differs. Packs first for India, US, UK; then Canada, Australia, New Zealand, Ireland, Singapore, Philippines, Malaysia. A country with no pack just gets the shared list.
    - Pack examples. India: PUC certificate, gas cylinder booking, water filter change, AC service before summer, Diwali cleaning. UK: MOT, Self Assessment tax return. US: taxes, state car inspection.

@@ -2284,28 +2284,28 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
    {g:"Body, the everyday ones", d:"Logged after they happen. No streaks, no score, just a usual range and a flag when it drifts.", items:[
      {t:"Bowel movement",s:"body",min:1,max:2,gap:2,scale:1,p:1,local:1,f:["blood","mucus","pain","loose","hard","incomplete","urgency","colour"],n:"Usual is 1-2 a day."},
      {t:"Urination",s:"body",min:4,max:9,gap:1,p:1,local:1,f:["ublood","burning","cloudy","smell","urgency"]},
-     {t:"Meals",s:"body",min:2,max:4,gap:1,f:["noappetite","nausea"]},
+     {t:"Meals",G:"c_sleepfood",s:"body",min:2,max:4,gap:1,f:["noappetite","nausea"]},
      {t:"Period",s:"body",min:1,max:1,gap:28,p:1,local:1,f:["pain","blood","headache"],n:"Log each day of bleeding."},
-     {t:"Bedtime",s:"body",min:1,max:1,gap:1,ex:["23:00",60,"late"],f:["sleepless","stress","social","lowmood"],n:"Log it when you actually go down. Ritsu asks why only if it drifts for several nights."},
-     {t:"Wake time",s:"body",min:1,max:1,gap:1,ex:["07:00",60,"either"],f:["unrested","woke"]},
-     {t:"Last meal",s:"body",min:1,max:1,gap:1,ex:["20:00",90,"late"],f:["social","stress"]},
-     {t:"Naps",s:"body",min:0,max:1,f:["fatigue","unrested"]}
+     {t:"Bedtime",G:"c_sleepfood",s:"body",min:1,max:1,gap:1,ex:["23:00",60,"late"],f:["sleepless","stress","social","lowmood"],n:"Log it when you actually go down. Ritsu asks why only if it drifts for several nights."},
+     {t:"Wake time",G:"c_sleepfood",s:"body",min:1,max:1,gap:1,ex:["07:00",60,"either"],f:["unrested","woke"]},
+     {t:"Last meal",G:"c_sleepfood",s:"body",min:1,max:1,gap:1,ex:["20:00",90,"late"],f:["social","stress"]},
+     {t:"Naps",G:"c_sleepfood",s:"body",min:0,max:1,f:["fatigue","unrested"]}
    ]},
    {g:"Numbers to track", d:"A number toward a goal. Half the goal counts as half a tick, never zero.", items:[
-     {t:"Sleep hours",s:"routine",k:"measure",target:7,unit:"hrs",f:["woke","unrested"]},
+     {t:"Sleep hours",G:"c_sleepfood",s:"routine",k:"measure",target:7,unit:"hrs",f:["woke","unrested"]},
      {t:"Water",s:"routine",k:"measure",target:8,unit:"glasses"},
      {t:"Weight",s:"routine",k:"measure",target:0,unit:"kg",n:"Set the goal to 0 to just record the number."},
-     {t:"Mood out of 5",s:"routine",k:"measure",target:3,unit:"/5",p:1,ex:["21:00",120,"either"],f:["lowmood","stress","fatigue","social"],n:"One number at the end of the day, plus a flag if something drove it."},
-     {t:"Energy out of 5",s:"routine",k:"measure",target:3,unit:"/5",f:["fatigue","unrested"]},
+     {t:"Mood out of 5",G:"c_calm",s:"routine",k:"measure",target:3,unit:"/5",p:1,ex:["21:00",120,"either"],f:["lowmood","stress","fatigue","social"],n:"One number at the end of the day, plus a flag if something drove it."},
+     {t:"Energy out of 5",G:"c_calm",s:"routine",k:"measure",target:3,unit:"/5",f:["fatigue","unrested"]},
      {t:"Blood pressure",s:"routine",k:"measure",target:0,unit:"systolic",p:1,n:"Record the top number; put the full reading in the note.",f:["dizzy","headache"]},
      {t:"Blood sugar",s:"routine",k:"measure",target:0,unit:"mg/dL",p:1,f:["dizzy","fatigue"]},
      {t:"Resting heart rate",s:"routine",k:"measure",target:0,unit:"bpm",p:1},
      {t:"Temperature",s:"routine",k:"measure",target:0,unit:"°C",p:1,f:["fever","chills"]},
-     {t:"Protein",s:"routine",k:"measure",target:100,unit:"g"},
-     {t:"Calories",s:"routine",k:"measure",target:2000,unit:"kcal",p:1},
-     {t:"Fruit and veg",s:"routine",k:"measure",target:5,unit:"portions"},
-     {t:"Screen time",s:"routine",k:"measure",target:3,unit:"hrs"},
-     {t:"Money spent today",s:"routine",k:"measure",target:0,unit:"spent",p:1}
+     {t:"Protein",G:"c_sleepfood",s:"routine",k:"measure",target:100,unit:"g"},
+     {t:"Calories",G:"c_sleepfood",s:"routine",k:"measure",target:2000,unit:"kcal",p:1},
+     {t:"Fruit and veg",G:"c_sleepfood",s:"routine",k:"measure",target:5,unit:"portions"},
+     {t:"Screen time",G:"c_calm",s:"routine",k:"measure",target:3,unit:"hrs"},
+     {t:"Money spent today",G:"todo:personal",s:"routine",k:"measure",target:0,unit:"spent",p:1}
    ]},
    {g:"Episodes, things that run for days", d:"Start it when it begins, end it when it goes. Ritsu keeps the length, so it can tell you when one runs longer than your usual.", items:[
      {t:"Cold",s:"episode",f:["runny","blocked","sneeze","throat","cough","fever","ache","fatigue","worse","better"]},
@@ -2327,8 +2327,8 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
      {t:"Eye irritation",s:"episode",f:["worse","better"]},
      {t:"Ear trouble",s:"episode",f:["pain","worse","better"]},
      {t:"Urine trouble",s:"episode",p:1,local:1,f:["burning","ublood","cloudy","urgency","fever","worse","better"]},
-     {t:"Bad sleep run",s:"episode",p:1,f:["sleepless","woke","unrested","stress","worse","better"]},
-     {t:"Low patch",s:"episode",p:1,local:1,f:["lowmood","fatigue","noappetite","sleepless","worse","better"],n:"If a low patch runs long, that is worth telling someone you trust."},
+     {t:"Bad sleep run",G:"c_sleepfood",s:"episode",p:1,f:["sleepless","woke","unrested","stress","worse","better"]},
+     {t:"Low patch",G:"c_calm",s:"episode",p:1,local:1,f:["lowmood","fatigue","noappetite","sleepless","worse","better"],n:"If a low patch runs long, that is worth telling someone you trust."},
      {t:"Injury",s:"episode",ask:"Which injury?",f:["pain","sore","worse","better"]},
      {t:"Recovery after treatment",s:"episode",ask:"Recovery from what?",f:["pain","fatigue","nausea","worse","better"]}
    ]},
@@ -2353,27 +2353,27 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
      {t:"Cook at home",s:"routine",rep:1},
      {t:"Pack lunch",s:"routine",rep:1},
      {t:"Meal prep",s:"routine",rep:7},
-     {t:"Vitamins",s:"routine",k:"med",ex:["08:00",90,"late"],f:["late","skipped"]},
+     {t:"Vitamins",G:"c_medicine",s:"routine",k:"med",ex:["08:00",90,"late"],f:["late","skipped"]},
      {t:"No sugar today",s:"routine",rep:1},
      {t:"Eat before 8pm",s:"routine",rep:1,ex:["20:00",30,"late"]},
      {t:"Intermittent fasting",s:"fast",n:"A live timer for your eating window. Start it when you finish eating."}
    ]},
    {g:"Mind & learning", items:[
-     {t:"Reading",s:"routine",k:"measure",target:50,unit:"pages",n:"Change the goal to whatever you actually aim for."},
-     {t:"Reading time",s:"routine",k:"measure",target:30,unit:"mins"},
-     {t:"Meditation",s:"routine",k:"measure",target:10,unit:"mins",ex:["07:30",120,"either"]},
-     {t:"Journaling",s:"routine",rep:1,ex:["22:00",120,"either"]},
-     {t:"Gratitude note",s:"routine",rep:1},
+     {t:"Reading",G:"c_reading",s:"routine",k:"measure",target:50,unit:"pages",n:"Change the goal to whatever you actually aim for."},
+     {t:"Reading time",G:"c_reading",s:"routine",k:"measure",target:30,unit:"mins"},
+     {t:"Meditation",G:"c_calm",s:"routine",k:"measure",target:10,unit:"mins",ex:["07:30",120,"either"]},
+     {t:"Journaling",G:"c_calm",s:"routine",rep:1,ex:["22:00",120,"either"]},
+     {t:"Gratitude note",G:"c_calm",s:"routine",rep:1},
      {t:"Study",s:"routine",k:"measure",target:60,unit:"mins",ask:"Studying what?"},
      {t:"Language practice",s:"routine",k:"measure",target:15,unit:"mins",ask:"Which language?"},
-     {t:"Instrument practice",s:"routine",k:"measure",target:30,unit:"mins",ask:"Which instrument?"},
+     {t:"Instrument practice",G:"c_creative",s:"routine",k:"measure",target:30,unit:"mins",ask:"Which instrument?"},
      {t:"Course or lecture",s:"routine",k:"measure",target:45,unit:"mins",ask:"Which course?"},
-     {t:"Screen-free hour",s:"routine",rep:1},
-     {t:"Therapy session",s:"routine",k:"upkeep",mode:"replace",int:7,p:1},
-     {t:"Write",s:"routine",k:"measure",target:500,unit:"words"},
-     {t:"Draw or sketch",s:"routine",k:"measure",target:20,unit:"mins"},
-     {t:"Side project",s:"routine",k:"measure",target:60,unit:"mins",ask:"Which project?"},
-     {t:"Take a photo",s:"routine",rep:1}
+     {t:"Screen-free hour",G:"c_calm",s:"routine",rep:1},
+     {t:"Therapy session",G:"c_calm",s:"routine",k:"upkeep",mode:"replace",int:7,p:1},
+     {t:"Write",G:"c_creative",s:"routine",k:"measure",target:500,unit:"words"},
+     {t:"Draw or sketch",G:"c_creative",s:"routine",k:"measure",target:20,unit:"mins"},
+     {t:"Side project",G:"c_creative",s:"routine",k:"measure",target:60,unit:"mins",ask:"Which project?"},
+     {t:"Take a photo",G:"c_creative",s:"routine",rep:1}
    ]},
    {g:"Faith & practice", items:[
      {t:"Prayer",s:"routine",rep:1,per:5,ex:["06:00",60,"either"]},
@@ -2421,18 +2421,18 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
      {t:"Insulin",s:"routine",k:"med",p:1,ex:["08:00",30,"late"],f:["dizzy","late","skipped"]}
    ]},
    {g:"Checkups, the once-a-year ones", d:"Long intervals, easy to forget, expensive to miss.", items:[
-     {t:"Dentist",s:"routine",k:"upkeep",mode:"replace",int:180},
-     {t:"Eye test",s:"routine",k:"upkeep",mode:"replace",int:365},
-     {t:"Doctor checkup",s:"routine",k:"upkeep",mode:"replace",int:365},
+     {t:"Dentist",s:"routine",k:"upkeep",mode:"replace",int:180,hide:["IN"],cb:{o:0,key:"dentist",name:"Dentist check-up",noun:"the dentist",book:"Book the dentist",kind:"visit",every:6,rule:"since",lead:14,icon:"tooth",ask:"Last visit?"}},
+     {t:"Eye test",s:"routine",k:"upkeep",mode:"replace",int:365,cb:{o:1,key:"eye",name:"Eye test",noun:"the eye test",book:"Book an eye test",kind:"visit",every:12,rule:"since",lead:14,icon:"eye",ask:"Last one?"}},
+     {t:"Doctor checkup",s:"routine",k:"upkeep",mode:"replace",int:365,cb:{o:5,key:"checkup",name:"Yearly check-up",noun:"your check-up",book:"Book your yearly check-up",kind:"visit",every:12,rule:"since",lead:14,icon:"heartbeat",ask:"Last one?"}},
      {t:"Blood test",s:"routine",k:"upkeep",mode:"replace",int:180,p:1},
      {t:"Skin check",s:"routine",k:"upkeep",mode:"replace",int:365},
      {t:"Vaccination due",s:"routine",k:"upkeep",mode:"replace",int:365},
      {t:"Repeat prescription",s:"routine",k:"upkeep",mode:"rebuy",int:28}
    ]},
    {g:"Upkeep, replace or rebuy", items:[
-     {t:"Toothbrush",s:"routine",k:"upkeep",mode:"replace",int:90},
-     {t:"Razor blades",s:"routine",k:"upkeep",mode:"rebuy",int:21},
-     {t:"Contact lenses",s:"routine",k:"upkeep",mode:"replace",int:30},
+     {t:"Toothbrush",G:"c_hygiene",s:"routine",k:"upkeep",mode:"replace",int:90},
+     {t:"Razor blades",G:"c_hygiene",s:"routine",k:"upkeep",mode:"rebuy",int:21},
+     {t:"Contact lenses",G:"c_hygiene",s:"routine",k:"upkeep",mode:"replace",int:30},
      {t:"Water filter",s:"routine",k:"upkeep",mode:"replace",int:60},
      {t:"Air filter",s:"routine",k:"upkeep",mode:"replace",int:90},
      {t:"Smoke alarm battery",s:"routine",k:"upkeep",mode:"replace",int:365},
@@ -2456,7 +2456,11 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
      {t:"Clean the fridge",s:"routine",rep:30},
      {t:"Water the plants",s:"routine",rep:3},
      {t:"Groceries",s:"routine",rep:7},
-     {t:"Iron clothes",s:"routine",rep:7}
+     {t:"Iron clothes",s:"routine",rep:7},
+     {t:"Book the gas cylinder",s:"routine",k:"upkeep",mode:"rebuy",int:45,in:["IN"]},
+     {t:"Water purifier service",s:"routine",k:"upkeep",mode:"replace",int:180,in:["IN"]},
+     {t:"AC service before summer",s:"routine",k:"upkeep",mode:"replace",int:365,in:["IN"]},
+     {t:"Diwali cleaning",s:"routine",k:"upkeep",mode:"replace",int:365,in:["IN"]}
    ]},
    {g:"Pets", items:[
      {t:"Feed the pet",s:"routine",rep:1,per:2,ask:"Which pet?"},
@@ -2472,44 +2476,77 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
      {t:"Tyre pressure",s:"routine",k:"upkeep",mode:"replace",int:30},
      {t:"Car wash",s:"routine",k:"upkeep",mode:"replace",int:21},
      {t:"Car service",s:"routine",k:"upkeep",mode:"replace",int:365},
-     {t:"Insurance renewal",s:"routine",k:"upkeep",mode:"replace",int:365},
-     {t:"Commute on time",s:"routine",rep:1,ex:["08:30",30,"late"]}
+     {t:"Insurance renewal",s:"routine",k:"upkeep",mode:"replace",int:365,cb:{o:2,key:"insurance",name:"Car insurance",act:"Renew car insurance",kind:"simple",every:12,rule:"fixed",lead:21,icon:"car",ask:"When does it expire?"}},
+     {t:"PUC certificate",s:"routine",k:"upkeep",mode:"replace",int:180,in:["IN"],n:"The pollution check for your vehicle. Set it to when yours runs out."},
+     {t:"FASTag recharge",s:"routine",k:"upkeep",mode:"rebuy",int:30,in:["IN"]},
+     {t:"MOT",s:"routine",k:"upkeep",mode:"replace",int:365,in:["GB"],n:"The yearly car test. Set it to when yours is due."},
+     {t:"Car tax",s:"routine",k:"upkeep",mode:"replace",int:365,in:["GB"]},
+     {t:"Car inspection",s:"routine",k:"upkeep",mode:"replace",int:365,in:["US"],n:"Not every state asks for one. Check yours."},
+     {t:"Car registration renewal",s:"routine",k:"upkeep",mode:"replace",int:365,in:["US"]},
+     {t:"Commute on time",G:"todo:work",s:"routine",rep:1,ex:["08:30",30,"late"]}
    ]},
    {g:"Admin & digital", items:[
-     {t:"Pay the bills",s:"routine",k:"upkeep",mode:"replace",int:30},
+     {t:"Pay the bills",G:"todo:home",s:"routine",k:"upkeep",mode:"replace",int:30},
      {t:"Card payment",s:"routine",k:"upkeep",mode:"replace",int:30,ask:"Which card?"},
-     {t:"Rent or mortgage",s:"routine",k:"upkeep",mode:"replace",int:30},
+     {t:"Rent or mortgage",G:"todo:home",s:"routine",k:"upkeep",mode:"replace",int:30},
      {t:"Check the bank balance",s:"routine",rep:7,p:1},
-     {t:"Cancel unused subscriptions",s:"routine",k:"upkeep",mode:"replace",int:90},
+     {t:"Cancel unused subscriptions",s:"routine",k:"upkeep",mode:"replace",int:90,cb:{o:4,key:"subs",name:"Subscriptions",act:"Review subscriptions",kind:"simple",every:3,rule:"since",lead:0,icon:"arrows"}},
      {t:"Back up photos and files",s:"routine",k:"upkeep",mode:"replace",int:30},
      {t:"Clear the phone",s:"routine",k:"upkeep",mode:"replace",int:60},
      {t:"Update passwords",s:"routine",k:"upkeep",mode:"replace",int:180,p:1},
      {t:"Passport or visa expiry",s:"routine",k:"upkeep",mode:"replace",int:365},
-     {t:"Taxes",s:"routine",k:"upkeep",mode:"replace",int:365},
-     {t:"No-spend day",s:"routine",rep:1}
+     {t:"Taxes",s:"routine",k:"upkeep",mode:"replace",int:365,cb:{o:3,key:"taxes",name:"Taxes",act:"File taxes",kind:"simple",every:12,rule:"fixed",lead:21,icon:"receipt",ask:"When are they due?"}},
+     {t:"No-spend day",s:"routine",rep:1},
+     {t:"Self Assessment tax return",s:"routine",k:"upkeep",mode:"replace",int:365,in:["GB"]},
+     {t:"TV Licence",s:"routine",k:"upkeep",mode:"replace",int:365,in:["GB"]},
+     {t:"Health insurance enrollment",s:"routine",k:"upkeep",mode:"replace",int:365,in:["US"]}
    ]},
    {g:"Holding off", d:"The good day is the empty day. Logging one costs nothing; an unlogged one quietly ruins the trend.", items:[
      {t:"Smoking",s:"limit",max:0,p:1,local:1,f:["stress","bored","social","afterdrink","sleepless"]},
      {t:"Vaping",s:"limit",max:0,p:1,local:1,f:["stress","bored","social","sleepless"]},
      {t:"Alcohol",s:"limit",max:0,week:4,p:1,f:["stress","bored","social"],n:"Set a weekly cap instead of zero if you are cutting down rather than out."},
      {t:"Fap",s:"limit",max:0,p:1,local:1,f:["stress","bored","sleepless","lowmood"]},
-     {t:"Junk food",s:"limit",max:0,week:2,f:["stress","bored","social"]},
-     {t:"Takeaway",s:"limit",max:0,week:1,f:["bored","social"]},
-     {t:"Sugary drinks",s:"limit",max:0,week:2,f:["bored","social"]},
-     {t:"Energy drinks",s:"limit",max:0,f:["fatigue","stress"]},
-     {t:"Late-night snacking",s:"limit",max:0,f:["bored","sleepless","stress"]},
-     {t:"Caffeine after 6pm",s:"limit",max:0,f:["stress","sleepless"]},
-     {t:"Doomscrolling",s:"limit",max:0,p:1,f:["stress","bored","sleepless"]},
-     {t:"Social media binge",s:"limit",max:0,p:1,f:["bored","lowmood","sleepless"]},
-     {t:"Phone in bed",s:"limit",max:0,f:["bored","sleepless"]},
-     {t:"Online shopping",s:"limit",max:0,week:1,f:["bored","lowmood"]},
-     {t:"Betting",s:"limit",max:0,p:1,local:1,f:["stress","bored","social"]},
+     {t:"Junk food",G:"c_sleepfood",s:"limit",max:0,week:2,f:["stress","bored","social"]},
+     {t:"Takeaway",G:"c_sleepfood",s:"limit",max:0,week:1,f:["bored","social"]},
+     {t:"Sugary drinks",G:"c_sleepfood",s:"limit",max:0,week:2,f:["bored","social"]},
+     {t:"Energy drinks",G:"c_sleepfood",s:"limit",max:0,f:["fatigue","stress"]},
+     {t:"Late-night snacking",G:"c_sleepfood",s:"limit",max:0,f:["bored","sleepless","stress"]},
+     {t:"Caffeine after 6pm",G:"c_sleepfood",s:"limit",max:0,f:["stress","sleepless"]},
+     {t:"Doomscrolling",G:"c_calm",s:"limit",max:0,p:1,f:["stress","bored","sleepless"]},
+     {t:"Social media binge",G:"c_calm",s:"limit",max:0,p:1,f:["bored","lowmood","sleepless"]},
+     {t:"Phone in bed",G:"c_calm",s:"limit",max:0,f:["bored","sleepless"]},
+     {t:"Online shopping",G:"c_calm",s:"limit",max:0,week:1,f:["bored","lowmood"]},
+     {t:"Betting",G:"c_calm",s:"limit",max:0,p:1,local:1,f:["stress","bored","social"]},
      {t:"Nail biting",s:"limit",max:0,f:["stress","bored"]},
      {t:"Skin picking",s:"limit",max:0,p:1,f:["stress","bored"]},
-     {t:"Losing my temper",s:"limit",max:0,p:1,f:["stress","fatigue","sleepless"]},
-     {t:"Skipping breakfast",s:"limit",max:0,week:2,f:["stress","noappetite"]}
+     {t:"Losing my temper",G:"c_calm",s:"limit",max:0,p:1,f:["stress","fatigue","sleepless"]},
+     {t:"Skipping breakfast",G:"c_sleepfood",s:"limit",max:0,week:2,f:["stress","noappetite"]}
    ]}
   ];
+  /* ===== one templates list: topic, country, sharing =====
+     Each entry sits in one group: a Body or Mind group id, or a to-do list ("todo:home"). LIB_GRP is the default
+     for a section, G on an entry overrides it. Country: in:[..] = only there; hide:[..] = not suggested up front
+     there, still found by search. Sharing with friends (Phase C) is fixed by the group, never a switch; p:1 = always private.
+     An entry with cb is also one of the things that come back (CB_LIB is built from these). Check: node docs/tools/test-lib.js */
+  var LIB_GRP={"Body, the everyday ones":"c_health","Numbers to track":"c_health","Episodes, things that run for days":"c_health","Movement":"c_fitness",
+    "Food & kitchen":"c_sleepfood","Mind & learning":"c_learning","Faith & practice":"c_calm","Work":"todo:work","People":"todo:personal","Hygiene":"c_hygiene",
+    "Medication":"c_medicine","Checkups, the once-a-year ones":"c_checkups","Upkeep, replace or rebuy":"todo:home","Home":"todo:home","Pets":"todo:home",
+    "Car & getting about":"todo:home","Admin & digital":"todo:personal","Holding off":"c_health"};
+  var SHARE_GRPS=["c_fitness","c_sleepfood","c_reading","c_learning","c_calm","c_creative"];
+  function tplGroup(t,g){return t.G||LIB_GRP[g.g]}
+  function tplShared(t,g){return !t.p&&SHARE_GRPS.indexOf(tplGroup(t,g))>-1}
+  function tplFits(t,cc,search){return !(t.in&&t.in.indexOf(cc)<0)&&(search||!(t.hide&&t.hide.indexOf(cc)>-1))}
+  function libFlat(cc,search){var out=[];LIBRARY.forEach(function(g){g.items.forEach(function(t){if(tplFits(t,cc,search))out.push({t:t,g:g,grp:tplGroup(t,g),shared:tplShared(t,g)})})});return out}
+  function libCB(){
+    var out=[];LIBRARY.forEach(function(g){g.items.forEach(function(t){if(!t.cb)return;var c={},grp=tplGroup(t,g);for(var k in t.cb)c[k]=t.cb[k];
+      if(grp.indexOf("todo:")===0)c.list=grp.slice(5);else c.cat=grp;c.tpl=t;out.push(c)})});
+    return out.sort(function(a,b){return a.o-b.o});
+  }
+  /* the country comes from the phone (time zone first, it is the surest for India), changeable in Settings later */
+  var TZ_CC={"Asia/Kolkata":"IN","Asia/Calcutta":"IN","Europe/London":"GB","Europe/Dublin":"IE","Asia/Singapore":"SG","Asia/Manila":"PH","Asia/Kuala_Lumpur":"MY","Pacific/Auckland":"NZ",
+    "America/Toronto":"CA","America/Vancouver":"CA","America/Edmonton":"CA","America/Winnipeg":"CA","America/Halifax":"CA","America/St_Johns":"CA","America/Regina":"CA"};
+  function guessCountry(tz,lang){var r=((lang||"").split("-")[1]||"").toUpperCase();if(TZ_CC[tz])return TZ_CC[tz];if(/^Australia\//.test(tz||""))return "AU";if(/^America\//.test(tz||""))return r==="CA"?"CA":"US";return r}
+  function userCountry(){var s="";try{s=localStorage.getItem("ritsu_country")||""}catch(e){}if(s)return s;var tz="";try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}return guessCountry(tz,navigator.language)}
   var LV={noted:1,recurring:2,persistent:3};
   var BRISTOL=["","1 · hard lumps","2 · lumpy","3 · cracked","4 · smooth","5 · soft blobs","6 · mushy","7 · liquid"];
 
@@ -4953,14 +4990,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
        visit   Quiet, Book it (2 weeks before due), Booked (a day and time), Did you go?, Quiet again
        simple  Quiet, Shows up (a few weeks before due), Done, Quiet again
      Rules: "since" counts from when you did it (check-ups); "fixed" counts from a fixed date each year (insurance, taxes). */
-  var CB_LIB=[
-    {key:"dentist",name:"Dentist check-up",noun:"the dentist",book:"Book the dentist",kind:"visit",every:6,rule:"since",lead:14,icon:"tooth",tag:"Health",cat:"c_checkups",ask:"Last visit?"},
-    {key:"eye",name:"Eye test",noun:"the eye test",book:"Book an eye test",kind:"visit",every:12,rule:"since",lead:14,icon:"eye",tag:"Health",cat:"c_checkups",ask:"Last one?"},
-    {key:"insurance",name:"Car insurance",act:"Renew car insurance",kind:"simple",every:12,rule:"fixed",lead:21,icon:"car",tag:"Money",list:"home",ask:"When does it expire?"},
-    {key:"taxes",name:"Taxes",act:"File taxes",kind:"simple",every:12,rule:"fixed",lead:21,icon:"receipt",tag:"Money",ask:"When are they due?"},
-    {key:"subs",name:"Subscriptions",act:"Review subscriptions",kind:"simple",every:3,rule:"since",lead:0,icon:"arrows",tag:"Money"},
-    {key:"checkup",name:"Yearly check-up",noun:"your check-up",book:"Book your yearly check-up",kind:"visit",every:12,rule:"since",lead:14,icon:"heartbeat",tag:"Health",cat:"c_checkups",ask:"Last one?"}
-  ];
+  var CB_LIB=libCB();
   function cbDef(key){return CB_LIB.filter(function(d){return d.key===key})[0]||null}
   function cbMonths(ds,n){var d=new Date(ds+"T00:00:00"),day=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+n);var last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(day,last));return fmt(d)}
   function cbEveryLabel(n){return n%12===0?(n===12?"year":(n/12)+" years"):(n===1?"month":n+" months")}
@@ -5198,7 +5228,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       h+='</div><div class="su-foot"><button class="su-skip" data-setup="skip2">Skip</button><button class="btn primary su-next" data-setup="next">Continue to step 3</button></div>';
     }else{
       h+='<h1 class="su-title">Things that come back</h1><p class="su-sub">Ritsu stays quiet and shows these only when it is time.</p><div class="su-list">';
-      CB_LIB.forEach(function(d){
+      var cc=userCountry();CB_LIB.filter(function(d){return tplFits(d.tpl,cc,false)}).forEach(function(d){
         var c=S.cb[d.key]||{on:false,ans:null},on=!!c.on;
         h+='<div class="su-sw'+(on?" on":"")+'"><span class="su-ic">'+phicon(d.icon)+'</span><span class="tx"><b>'+esc(d.name)+'</b><small>'+(d.rule==="fixed"?"Once a year":"Every "+cbEveryLabel(d.every))+'</small></span><button class="su-tg'+(on?" on":"")+'" role="switch" aria-checked="'+on+'" aria-label="'+esc(d.name)+'" data-setup="cb|'+d.key+'"></button></div>';
         if(on&&d.ask){
@@ -6505,10 +6535,10 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     var q=(ms.q||"").toLowerCase().trim();
     var h='<div class="modal-h"><h3>Add from the library</h3><button class="x" data-close>\u00d7</button></div><div class="modal-b">';
     h+='<div class="field"><input type="text" id="lib-q" value="'+esc(ms.q||"")+'" placeholder="Search, reading, cold, meditation, smoking\u2026"></div>';
-    var any=false;
+    var any=false,cc=userCountry();
     h+='<div class="lib-groups">';
     LIBRARY.forEach(function(g,gi){
-      var items=g.items.filter(function(t){return !q||((t.t+" "+g.g+" "+(t.n||"")+" "+(t.unit||"")).toLowerCase().indexOf(q)>-1)});
+      var items=g.items.filter(function(t){return tplFits(t,cc,!!q)&&(!q||((t.t+" "+g.g+" "+(t.n||"")+" "+(t.unit||"")).toLowerCase().indexOf(q)>-1))});
       if(!items.length)return;any=true;
       var open=q?true:(ms.openG===gi);
       h+='<div class="lib-group'+(open?" open":"")+'">';

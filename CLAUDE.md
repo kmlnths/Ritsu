@@ -20,7 +20,7 @@ Read this first in every chat. Rules only; history lives in `docs/history.md`.
 - Working branch `v5`. **GitHub Pages serves `v5`**, so pushing v5 changes the live site (kmlnths.github.io/Ritsu). `main`, `v2`, `v3`, `v4` are old.
 - `sw.js` cache is `ritsu-v38`. Bump it on every push.
 - Everything up to 2026-09-30 is pushed (cache `ritsu-v38`), including the clash warning. Built: groups and no tags, setup with "Who is this for?", typing files into groups, @name on this phone, Full day pop-up, evening wrap-up, amounts that count with a kind line, floating side panel with a rail, laptop nav pill after scrolling, white-card night-mode fix.
-- Where we stopped, in order: (1) Templates library, (2) Plan the week and calendar import, (3) remove dead code, (4) choose the app name. Loose ends: ask the friend to re-check the finished Home card on iPhone Brave; check the new side panel in light theme; "Call at venky 5" is parked (options A or B in `docs/future-improvements.md`); the user said "medication" for amounts and I took it as meditation; sidebar search box skipped. Then Phase B onwards in `PRODUCT.md` (accounts, friend gangs).
+- Where we stopped, in order: (1) Templates library (step 1 of 3 done, see PRODUCT.md), (2) Plan the week and calendar import, (3) remove dead code, (4) choose the app name. Loose ends: ask the friend to re-check the finished Home card on iPhone Brave; check the new side panel in light theme; "Call at venky 5" is parked (options A or B in `docs/future-improvements.md`); the user said "medication" for amounts and I took it as meditation; sidebar search box skipped. Then Phase B onwards in `PRODUCT.md` (accounts, friend gangs).
 
 ## How to talk with the user
 
@@ -50,7 +50,7 @@ Read this first in every chat. Rules only; history lives in `docs/history.md`.
 
 1. Syntax: `node docs/tools/chk.js` (it writes `main-check.js` in the current folder; delete it after).
 2. Run: `node docs/tools/serve-repo.js`, open `http://127.0.0.1:8766/index.html`. The service worker error there is a test server quirk.
-3. Sentence reader: `node docs/tools/test-parse.js` and group word list: `node docs/tools/test-group.js` (all cases must pass).
+3. Sentence reader: `node docs/tools/test-parse.js` and group word list: `node docs/tools/test-group.js` and templates list: `node docs/tools/test-lib.js` (all cases must pass).
 4. Screenshots: in a scratch folder, `npm install puppeteer-core`, drive `C:/Program Files/Google/Chrome/Application/chrome.exe`, fake the clock to 9:40, phone (~390px) and laptop (~1240px), both themes. Look at the pictures and check for page errors.
 
 ## How to commit
