@@ -103,7 +103,15 @@ Each has a "done when" line. It is not finished until that is true.
 2. **Clash warning** for items with a length. BUILT 2026-09-30 (`clashesOn`, `clPaint`): amber, never red; checked when adding, and when a saved to-do's date, time or length changes in the full form ("Save anyway"); looks across midnight.
    Done when: adding "meeting at 12 for an hour" over an existing 12 to 1 item shows the day strip with the clash and three buttons (Pick another time, See the day, Add anyway). Items with only a time never clash.
 3. **Templates library** (one list of ready-made items, no tags).
-   Done when: one list of entries (dentist check-up 6 months, eye test 12, car service 6, ...) drives the usual gap ("every 6 months?") and the Templates page, each entry sits in a card and group, and each carries a fixed shared or private flag (see Phase C). Health gaps say "ask your doctor for yours".
+   Done when: one list of entries drives the usual gap and the Templates page, each entry sits in a card and group, and each carries a fixed shared or private flag (see Phase C). Health gaps say "ask your doctor for yours".
+   Country plan (decided 2026-09-30, English-speaking countries, West and Asia):
+   - One shared list that works everywhere (water, sleep, bills, call family, car insurance), plus small country packs only for what differs. Packs first for India, US, UK; then Canada, Australia, New Zealand, Ireland, Singapore, Philippines, Malaysia. A country with no pack just gets the shared list.
+   - Pack examples. India: PUC certificate, gas cylinder booking, water filter change, AC service before summer, Diwali cleaning. UK: MOT, Self Assessment tax return. US: taxes, state car inspection.
+   - Ask, don't state: health and money entries ask "When did you last go?" / "When is it due?" and "How often does your dentist want you back?" instead of a fixed gap. No stored deadline dates (they move).
+   - Hide what is not usual locally: in India the dentist is not suggested up front (most visits there are for pain, not check-ups), but it is found by searching.
+   - The country comes from the phone's region setting, changeable in Settings. No extra setup question.
+   - Why: dentist every 6 months is not universal. UK guidance is 3 to 24 months per person (NICE CG19); in India about 8% of dental visits are routine. Japan (yearly work health check by law) and Korea (national check-up every 2 years) wait until the app can be translated.
+   - Test: give the app to 3 or 4 friends in different countries and see what they add in week one.
 4. **Tidy what the new structure left behind.** BUILT 2026-09-30 except "Call at venky 5", which the user parked (no option chosen).
    Done when: the laptop sidebar lists the groups under their card instead of one long "Areas" list (the old sample "Home" area is gone), a Settings switch turns Family on or off, Creative has a proper icon, "Call at venky 5" is read as a time (`docs/future-improvements.md`), and light and dark themes are checked on phone and laptop.
 5. **Plan the week and calendar import** (ideas borrowed from the other Ritsu, `docs/competitors.md`).
