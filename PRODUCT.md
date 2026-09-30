@@ -100,7 +100,7 @@ Each has a "done when" line. It is not finished until that is true.
 
 1. **Full day helper and evening wrap-up.** BUILT 2026-09-30 (`fdCheck`, `wrapHtml`).
    Done when: adding the 8th open one-off task on a day shows the Full day pop-up once per day per date (Move to tomorrow, Pick another day, Keep all), and from 8pm Home shows leftover tasks each set to Tomorrow. Never red, never "overdue".
-2. **Clash warning** for items with a length.
+2. **Clash warning** for items with a length. BUILT 2026-09-30 (`clashesOn`, `clPaint`): amber, never red; checked when adding from the add sheet.
    Done when: adding "meeting at 12 for an hour" over an existing 12 to 1 item shows the day strip with the clash and three buttons (Pick another time, See the day, Add anyway). Items with only a time never clash.
 3. **Templates library** (one list of ready-made items, no tags).
    Done when: one list of entries (dentist check-up 6 months, eye test 12, car service 6, ...) drives the usual gap ("every 6 months?") and the Templates page, each entry sits in a card and group, and each carries a fixed shared or private flag (see Phase C). Health gaps say "ask your doctor for yours".

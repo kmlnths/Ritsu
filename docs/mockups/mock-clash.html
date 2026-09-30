@@ -1,0 +1,43 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clash mock</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0D0E11;--panel:#16181D;--panel-2:#1E2128;--ink:#F4F5F7;--muted:#9CA3AF;--faint:#828A95;--line:#282C34;--accent:#34D399;--gold:#FBBF24}
+body{margin:0;align-items:flex-start;background:var(--bg);color:var(--ink);font:15px "Space Grotesk",system-ui;display:flex;gap:40px;padding:30px;flex-wrap:wrap;justify-content:center}
+.phone{width:390px;min-height:760px;background:#0a0b0d;border-radius:36px;position:relative;overflow:hidden}
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.55)}
+.sheet{position:absolute;left:10px;right:10px;bottom:10px;background:var(--panel);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.6);padding:18px}
+h3{margin:0 0 4px;font-size:20px;font-weight:500}
+p{margin:0 0 16px;color:var(--muted);font-size:15px;line-height:1.4}
+.strip{position:relative;height:230px;margin:6px 0 18px 44px;border-left:1px solid var(--line)}
+.hr{position:absolute;left:-44px;right:0;font-size:12px;color:var(--faint);border-top:1px solid var(--line)}
+.hr span{position:relative;top:-8px;background:var(--panel);padding-right:6px}
+.blk{position:absolute;left:8px;right:8px;border-radius:10px;padding:8px 10px;font-size:14px}
+.old{background:var(--panel-2);color:var(--ink);right:calc(50% + 3px)}
+.new{background:color-mix(in srgb,var(--gold) 22%,transparent);border:1.5px dashed var(--gold);left:calc(50% + 3px)}
+.small{font-size:12px;color:var(--muted);display:block}
+.btn{display:block;width:100%;border:0;border-radius:999px;padding:13px;font:500 15px "Space Grotesk";margin-top:8px}
+.pri{background:var(--accent);color:#06281c}.alt{background:var(--panel-2);color:var(--ink)}.lnk{background:none;color:var(--muted)}
+.cap{color:var(--muted);text-align:center;margin-top:10px;font-size:13px}
+</style></head><body>
+<div>
+<div class="phone"><div class="dim"></div>
+<div class="sheet">
+  <h3>That overlaps Team sync</h3>
+  <p>Team sync is 12 to 1pm. "Meeting" would sit on top of it.</p>
+  <div class="strip">
+    <div class="hr" style="top:0"><span>11am</span></div>
+    <div class="hr" style="top:70px"><span>12pm</span></div>
+    <div class="hr" style="top:140px"><span>1pm</span></div>
+    <div class="hr" style="top:210px"><span>2pm</span></div>
+    <div class="blk old" style="top:72px;height:52px">Team sync<span class="small">12 to 1pm</span></div>
+    <div class="blk new" style="top:72px;height:52px">Meeting<span class="small">12 to 1pm</span></div>
+  </div>
+  <button class="btn pri">Pick another time</button>
+  <button class="btn alt">See the day</button>
+  <button class="btn lnk">Add anyway</button>
+</div></div>
+<div class="cap">Typed: "meeting at 12 for an hour"</div>
+</div>
+</body></html>

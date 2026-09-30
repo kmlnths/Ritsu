@@ -2121,6 +2121,11 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
 .fd-note{font-size:13px;color:var(--muted);margin:8px 2px}
 .fd-btn{display:flex;justify-content:center;align-items:center;width:100%;height:48px;border-radius:999px;border:0;font-size:15px;font-weight:600;margin-top:10px;background:var(--accent);color:var(--on-accent)}.fd-btn.alt{background:var(--panel-2);color:var(--ink);font-weight:500}.fd-btn[disabled]{opacity:.45}
 .fd-link{display:block;width:100%;text-align:center;background:none;border:0;color:var(--muted);font-size:14px;margin-top:8px;padding:10px}
+.cl{padding:0 24px 6px}.cl .fd-p{color:var(--muted);margin-top:0}
+.cl-strip{position:relative;margin:14px 0 14px 46px;border-left:1px solid var(--line)}
+.cl-hr{position:absolute;left:-46px;right:0;border-top:1px solid var(--line);font-size:12px;color:var(--faint)}.cl-hr span{position:relative;top:-9px;background:var(--panel);padding-right:6px}
+.cl-b{position:absolute;left:8px;right:calc(50% + 3px);border-radius:10px;padding:3px 8px;font-size:14px;line-height:1.25;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:color-mix(in srgb,var(--ink) 9%,var(--panel));color:var(--ink)}.cl-b small{display:block;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.cl-b.new{left:calc(50% + 3px);right:0;background:color-mix(in srgb,var(--gold) 22%,var(--panel));border:1.5px dashed var(--gold)}
 .wrap{background:var(--panel);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));border-radius:16px;padding:16px;margin:12px 0}.wrap-t{font-size:17px;font-weight:600}
 
 @media(min-width:821px){
@@ -6056,7 +6061,40 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(p)return [p.id];
     var id=uid("p");Store.cache.people[id]={id:id,name:n.charAt(0).toUpperCase()+n.slice(1),emoji:"🙂",color:"#82BE97",createdAt:new Date().toISOString()};Store._save();return [id];
   }
-  function saveAdd(){
+  /* ===== clash warning =====
+     Only things with a time AND a length can clash. A warning, never a block: Add anyway always works.
+     ponytail: a span that runs past midnight is not wrapped onto the next day. */
+  var _cl=null;
+  function clashesOn(date,at,dur){
+    var off=dCount(date);if(off===null||off<0)return [];
+    var a=minsOf(at),b=a+dur;
+    return visibleItems().filter(function(i){return i.reminder&&i.duration&&!i.archived&&!(i.kind==="todo"&&!isRepeat(i)&&(i.done||i.dueDate!==date))&&dueOnDate(i,date,off)&&minsOf(i.reminder)<b&&a<minsOf(i.reminder)+i.duration});
+  }
+  function clPaint(){
+    var c=_cl,a=minsOf(c.at),mine={title:c.title,reminder:c.at,duration:c.dur},show=c.day?visibleItems().filter(function(i){return i.reminder&&!i.archived&&!(i.kind==="todo"&&!isRepeat(i)&&(i.done||i.dueDate!==c.date))&&dueOnDate(i,c.date,dCount(c.date))}):c.hits;
+    var lo=a,hi=a+c.dur;show.forEach(function(i){var s=minsOf(i.reminder);lo=Math.min(lo,s);hi=Math.max(hi,s+(i.duration||30))});
+    var h0=Math.max(0,Math.floor(lo/60)-1),h1=Math.min(24,Math.ceil(hi/60)+1),px=Math.max(36,Math.min(70,300/(h1-h0))),strip="";
+    for(var h=h0;h<=h1;h++)strip+='<div class="cl-hr" style="top:'+((h-h0)*px)+'px"><span>'+(h%12||12)+(h%24<12?"am":"pm")+'</span></div>';
+    /* things at the same time sit side by side in the left half */
+    show=show.slice().sort(function(x,y){return minsOf(x.reminder)-minsOf(y.reminder)});
+    var ends=[],gEnd=-1,lane=show.map(function(i){var st=minsOf(i.reminder),k=0;if(st>=gEnd)ends=[];while(k<ends.length&&ends[k]>st)k++;ends[k]=st+(i.duration||30);gEnd=Math.max(gEnd,ends[k]);return [k,ends]});
+    function blk(i,cls,L){var t=(minsOf(i.reminder)-h0*60)*px/60,ht=Math.max(24,(i.duration||30)*px/60),k=L&&L[0],n=L?L[1].length:1,
+      pos=cls?"":";left:calc(8px + (50% - 11px) * "+k+" / "+n+");right:auto;width:calc((50% - 11px) / "+n+" - "+(n>1?4:0)+"px)";
+      return '<div class="cl-b'+cls+'" style="top:'+(t+2)+'px;height:'+(ht-4)+'px'+pos+'">'+esc(i.title)+(ht>=44?'<small>'+fmtSpan(i)+'</small>':"")+'</div>'}
+    show.forEach(function(i,x){strip+=blk(i,"",lane[x])});strip+=blk(mine," new");
+    var f=c.hits[0],head=c.hits.length>1?"That overlaps "+c.hits.length+" things":"That overlaps "+esc(f.title),
+      line=c.hits.length>1?"\u201c"+esc(c.title)+"\u201d would sit on top of them.":esc(f.title)+" is "+fmtSpan(f)+". \u201c"+esc(c.title)+"\u201d would sit on top of it.";
+    line=line.charAt(0).toUpperCase()+line.slice(1);qp={kind:"clash"};
+    qpOpen('<h4 aria-level="2">'+head+'</h4><div class="cl"><p class="fd-p">'+line+'</p><div class="cl-strip" style="height:'+((h1-h0)*px)+'px" role="img" aria-label="'+(c.day?"The day":"The overlap")+'">'+strip+'</div>'+
+      '<button type="button" class="fd-btn" data-qp="clash" data-v="time">Pick another time</button><button type="button" class="fd-btn alt" data-qp="clash" data-v="day">'+(c.day?"Just the overlap":"See the day")+'</button><button type="button" class="fd-link" data-qp="clash" data-v="anyway">Add anyway</button></div>');
+  }
+  function clAct(v){
+    if(v==="day"){_cl.day=!_cl.day;clPaint();return}
+    var at=_cl.at;_cl=null;qpClose();
+    if(v==="time")qpTime(at,function(t){if(t){qa.time=t;qa.timeTouched=true;paintActs()}});
+    else if(v==="anyway")saveAdd(true);
+  }
+  function saveAdd(anyway){
     qaRead();var e=qaEff(),title=(e.title||"").trim();
     if(!title){toast("Give it a name");var t=$("#q-title");if(t)t.focus();return}
     var isTodo=qa.card==="todo",cat=isTodo?TODO_CAT:qa.cat;
@@ -6065,6 +6103,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(e.every&&isTodo&&qa.rep===0){var snapC=cbSnap(),nxC=e.use.date?e.date:cbMonths(today(),e.every);cbAddTyped(title,e.every,nxC,qa.tags.slice(),qa.prio);closeModal();toast("Added "+title+". It comes back every "+cbEveryLabel(e.every)+", next "+dayShort(nxC)+(e.every>=12?" "+nxC.slice(0,4):"")+".",cbUndo(snapC));return;}
     var d={catId:cat,sub:"",title:title,akind:qa.rep>0?"activity":"oneoff",kind:"todo",notes:qa.notes||"",priority:qa.prio,tags:qa.tags.slice(),assignees:qaWho(e.who),private:false,done:false,
       dueDate:date,repeatEvery:qa.rep,perDay:1,reminder:e.time,duration:e.time?e.dur:null,stance:"routine",list:qa.list,markers:[],expect:null,normal:{min:1,max:1,maxGapDays:qa.rep||null,maxPerWeek:null}};
+    if(anyway!==true&&date&&e.time&&e.dur){var hits=clashesOn(date,e.time,e.dur);if(hits.length){_cl={date:date,at:e.time,dur:e.dur,title:title,hits:hits,day:false};clPaint();return}}
     var when=(qa.rep>0?qaRepLabel(qa.rep):qaDateLabel(date))+(e.time?" "+fmtTime(e.time):"");
     ms={type:"item",mode:(isTodo&&qa.rep===0)?"task":"area",id:null,data:d,dateTouched:true};
     var snapA=JSON.stringify({cache:Store.cache,priv:Store._priv,me:state.me});
@@ -6165,6 +6204,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if((el=e.target.closest("[data-qp]"))){
       var a=el.getAttribute("data-qp"),v=el.getAttribute("data-v");
       if(a==="close"){qpClose();return}
+      if(a==="clash"&&_cl){clAct(v);return}
       if(a==="pick"&&qp&&qa){
         if(qp.kind==="date"){
           if(v==="pick"){qpCal();return}
