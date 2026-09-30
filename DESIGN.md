@@ -87,6 +87,7 @@ Three colours plus a neutral canvas, in a 60 / 30 / 10 split: neutral canvas (60
 Ritsu is a refined, warm friend: quietly confident, polite, gently enthusiastic, caring, and a little concerned when you have been away. Never loud, never slangy, never cold, never fearful.
 
 - **Speaks as "I"**: "I'll remind you in March." Never "Ritsu will".
+- **Capitals, as Apple does**: buttons and pop-up titles in Title Case ("Keep Both", "Not Now", "Pick Another Time", "A Full Day Today"); sentences, choices and text links in sentence case. What people type starts with a capital (`cap1`), leaving words like "iPhone" alone.
 - **Short**: messages about 12 words or fewer, one sentence where possible. Buttons one to three words. People do not read long text.
 - **Polished words**: "Splendid", "Lovely", "Do rest well", "Shall I", "Quite alright". Banned: whatever, stuff, gonna, kinda, super, actually, discipline, must, danger, overdue, comes back, oopsie.
 - **Polite, not pushy**: "please" only when asking the person to act; "thank you" when they share something. At most one exclamation mark.
