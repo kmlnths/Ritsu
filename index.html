@@ -5106,7 +5106,8 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function cbUndo(snap){return function(){var p=JSON.parse(snap);Store.cache=p.cache;Store._priv=p.priv||{};Store._save();Store._savePriv();Store._emit();}}
   function cbSave(i,cb,extra){Store.update("items",i.id,Object.assign({cb:cb},cbFields(cb),extra||{}))}
   function cbClone(i){return JSON.parse(JSON.stringify(i.cb))}
-  function cbBackMonth(cb){return HM_MONTHS[new Date(cbShow(cb)+"T00:00:00").getMonth()]}
+  /* "March", or "June 2028" when it is more than about 11 months away */
+  function cbBackMonth(cb){var sh=cbShow(cb),d=new Date(sh+"T00:00:00");return HM_MONTHS[d.getMonth()]+(dCount(sh)>330?" "+d.getFullYear():"")}
   /* the answers */
   function cbBooked(id,date,time){
     var i=Store.get("items",id);if(!i||!i.cb)return;var snap=cbSnap(),cb=cbClone(i);
@@ -5119,7 +5120,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(cb.rule==="fixed"){cb.next=cbMonths(cb.next,cb.every);while(cb.next<=today())cb.next=cbMonths(cb.next,cb.every);}
     else cb.next=cbMonths(when,cb.every);
     cb.stage="quiet";cb.booked=null;cb.at=null;cb.snooze=null;cbSave(i,cb);
-    toast((cb.kind==="visit"?"See you in ":"Done. Back in ")+cbBackMonth(cb)+". It comes back by itself.",cbUndo(snap),"joy");
+    toast("Done. Ritsu will remind you in "+cbBackMonth(cb)+".",cbUndo(snap),"joy");
   }
   function cbWent(id){var i=Store.get("items",id);if(i&&i.cb)cbFinish(id,i.cb.booked&&i.cb.booked<=today()?i.cb.booked:today())}
   function cbLater(id,days){
@@ -5250,7 +5251,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       toast(n?"Set up. Ritsu stays quiet until it is time.":"Nothing added. You can always type it later.",null,"happy");
     }else if(v[0]==="a"){
       var i=cbFind(h.key),d=cbDef(h.key);lqPut(st);
-      if(i&&d){var cb=cbBuild(d,v[1],0);cbSave(i,cb);toast("Got it. It comes back in "+cbBackMonth(cb)+".",null,"happy");}
+      if(i&&d){var cb=cbBuild(d,v[1],0);cbSave(i,cb);toast("Noted. Ritsu will remind you in "+cbBackMonth(cb)+".",null,"happy");}
     }
     cbAskFill(hmDay());
   }
@@ -5306,7 +5307,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   }
   /* Settings: switch them on and off later */
   function cbPanel(){
-    var h='<div class="sec-h"><h2>Things that come back</h2><span class="line"></span></div><div class="panel">',cc=userCountry();
+    var h='<div class="sec-h"><h2>Reminders</h2><span class="line"></span></div><div class="panel">',cc=userCountry();
     CB_LIB.filter(function(d){return tplFits(d.tpl,cc,false)}).forEach(function(d){
       var on=cbFind(d.key);
       h+='<div class="su-sw'+(on?" on":"")+'"><span class="su-ic">'+phicon(d.icon)+'</span><span class="tx"><b>'+esc(d.name)+'</b><small>'+(on?"Next: "+esc(dayShort(on.cb.next)):"Every "+cbEveryLabel(d.every))+'</small></span>'+
@@ -6196,15 +6197,15 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(e.P.parts.time.length&&!qa.timeTouched&&e.time)bits.push(fmtTime(e.time));
     else if(e.P.time&&!e.P.parts.time.length&&!qa.timeTouched)bits.push(fmtTime(e.P.time));
     if(e.use.dur&&!qa.durTouched)bits.push(durLabel(e.dur));
-    if(e.every)bits.unshift("Comes back every "+cbEveryLabel(e.every));
+    if(e.every)bits.unshift("Reminder every "+cbEveryLabel(e.every));
     if(qa.autoLabel)bits.unshift(qa.autoLabel);
     if(e.who)bits.push("For "+e.who.charAt(0).toUpperCase()+e.who.slice(1)+", on this phone");
     var sgEl=$("#qa-sg");
-    if(sg&&qa.sgOn===sg.key)bits.unshift("Comes back every "+cbEveryLabel(sg.every));
+    if(sg&&qa.sgOn===sg.key)bits.unshift("Reminder every "+cbEveryLabel(sg.every));
     if(sgEl){
       if(!sg)sgEl.hidden=true;
       else{sgEl.hidden=false;sgEl.innerHTML=qa.sgOn===sg.key?'<span>Ritsu will ask the date on Home.</span><button type="button" data-qa="sgoff">Undo</button>':
-        '<span>Usually every '+cbEveryLabel(sg.every)+'.'+esc(qaSgNote(sg))+'</span><button type="button" class="pri" data-qa="sgyes">Make it come back</button><button type="button" data-qa="sgno" aria-label="No, just once">No</button>';}
+        '<span>Usually every '+cbEveryLabel(sg.every)+'.'+esc(qaSgNote(sg))+'</span><button type="button" class="pri" data-qa="sgyes">Remind me every '+cbEveryLabel(sg.every)+'</button><button type="button" data-qa="sgno" aria-label="No, just once">No</button>';}
     }
     var h=$("#qa-hint");if(h){if(bits.length){h.textContent="Read as: "+bits.join(", ");h.hidden=false}else h.hidden=true}
   }
@@ -6273,13 +6274,13 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(sgd&&sgd.key===qa.sgOn){
       var snapS=cbSnap();
       if(sgd.q){var lst=lqGet();lst.q.unshift({t:"d",key:sgd.key});lst.last=addDaysStr(today(),-1);lqPut(lst);}   /* queued first, so the redraw after saving shows its date question on Home now */
-      cbCreate(sgd.key,"unsure",0);
-      closeModal();toast("Added "+sgd.name+". It comes back every "+cbEveryLabel(sgd.every)+".",cbUndo(snapS),"happy");return;
+      cbCreate(sgd.key,"unsure",0);var madeS=cbFind(sgd.key);
+      closeModal();toast("Added "+sgd.name+". "+(madeS?"Next reminder in "+cbBackMonth(madeS.cb)+".":"Reminder every "+cbEveryLabel(sgd.every)+"."),cbUndo(snapS),"happy");return;
     }
     var isTodo=qa.card==="todo",cat=isTodo?TODO_CAT:qa.cat;
     if(!cat){toast("Pick an area first");return}
     var date=qa.rep>0?null:e.date;
-    if(e.every&&isTodo&&qa.rep===0){var snapC=cbSnap(),nxC=e.use.date?e.date:cbMonths(today(),e.every);cbAddTyped(title,e.every,nxC,qa.tags.slice(),qa.prio);closeModal();toast("Added "+title+". It comes back every "+cbEveryLabel(e.every)+", next "+dayShort(nxC)+(e.every>=12?" "+nxC.slice(0,4):"")+".",cbUndo(snapC));return;}
+    if(e.every&&isTodo&&qa.rep===0){var snapC=cbSnap(),nxC=e.use.date?e.date:cbMonths(today(),e.every);cbAddTyped(title,e.every,nxC,qa.tags.slice(),qa.prio);closeModal();toast("Added "+title+". Reminder every "+cbEveryLabel(e.every)+", next one "+dayShort(nxC)+(e.every>=12?" "+nxC.slice(0,4):"")+".",cbUndo(snapC));return;}
     var d={catId:cat,sub:"",title:title,akind:qa.rep>0?"activity":"oneoff",kind:"todo",notes:qa.notes||"",priority:qa.prio,tags:qa.tags.slice(),assignees:qaWho(e.who),private:false,done:false,
       dueDate:date,repeatEvery:qa.rep,perDay:1,reminder:e.time,duration:e.time?e.dur:null,stance:"routine",list:qa.list,markers:[],expect:null,normal:{min:1,max:1,maxGapDays:qa.rep||null,maxPerWeek:null}};
     if(anyway!==true&&date&&e.time&&e.dur){var hits=clashesOn(date,e.time,e.dur);if(hits.length){_cl={date:date,at:e.time,dur:e.dur,title:title,hits:hits,day:false,

@@ -82,6 +82,7 @@ Three colours plus a neutral canvas, in a 60 / 30 / 10 split: neutral canvas (60
 - **No em dashes or en dashes anywhere** in the interface. Check before shipping.
 - Never: "overdue", "too much", "keep the streak alive", nagging, guilt, red pile-ups.
 - Good examples: "5 of 8 done. That counts." / "Some days go like that. Want to try these again tomorrow?"
+- Proper, grown-up vocabulary, never cute (the user, 2026-09-30: "comes back" sounded cheap). Things on a cycle are **reminders**: "Remind me every 6 months", "Reminder every 6 months", "Next reminder in March", "Noted. Ritsu will remind you in March.", "Done. Ritsu will remind you in March." The Settings section is "Reminders". In code they are still `cb` ("things that come back"), which the user never sees.
 
 ## Open design questions
 
