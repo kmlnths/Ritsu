@@ -4898,16 +4898,16 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function viewSettings(){
     var h='<div class="day-h"><div class="d"><p class="kicker">Preferences</p><h1 class="title" style="font-size:32px">Settings</h1></div></div>';
     var me=state.me?personById(state.me):null;
-    h+='<div class="panel"><div class="setrow"><div class="info"><b>Appearance</b><small>Saved on this device. Auto follows your phone.</small></div><div class="themetoggle"><button class="'+(theme==="warm"?"on":"")+'" data-theme-set="warm">Light</button><button class="'+(theme==="dark"?"on":"")+'" data-theme-set="dark">Dark</button><button class="'+(theme==="auto"?"on":"")+'" data-theme-set="auto">Auto</button></div></div>'+lightsRow()+'<div class="setrow"><div class="info"><b>This week\'s one thing</b><small>One small reset on Home, new each Sunday. Never counted in your day.</small></div><div class="themetoggle"><button class="'+(wk1Get().off?"":"on")+'" data-wk1="show">Show</button><button class="'+(wk1Get().off?"on":"")+'" data-wk1="hide">Hide</button></div></div><div class="setrow"><div class="info"><b>You are</b><small>Used for “assigned to you”, and for who can see a task.</small></div><button class="btn sm" data-action="pick-me">'+(me?esc(me.name):"Set")+'</button></div><div class="setrow"><div class="info"><b>Summary for your doctor</b><small>A plain list of what you logged, to show at an appointment. For a full backup, use Back up to a file below.</small></div><button class="btn sm" data-action="export">Make Summary</button></div><div class="setrow"><div class="info"><b>Start over</b><small>Clears this phone and takes you back to the Welcome screen. A copy is kept for one step, so you can bring it back.</small></div><button class="btn danger sm" data-action="reseed">Start Fresh</button></div></div>';
+    h+='<div class="panel"><div class="setrow"><div class="info"><b>Appearance</b><small>Saved on this device. Auto follows your phone.</small></div><div class="themetoggle"><button class="'+(theme==="warm"?"on":"")+'" data-theme-set="warm">Light</button><button class="'+(theme==="dark"?"on":"")+'" data-theme-set="dark">Dark</button><button class="'+(theme==="auto"?"on":"")+'" data-theme-set="auto">Auto</button></div></div>'+lightsRow()+'<div class="setrow"><div class="info"><b>This week\'s one thing</b><small>A small reset on Home, fresh each Sunday. Never counted.</small></div><div class="themetoggle"><button class="'+(wk1Get().off?"":"on")+'" data-wk1="show">Show</button><button class="'+(wk1Get().off?"on":"")+'" data-wk1="hide">Hide</button></div></div><div class="setrow"><div class="info"><b>You are</b><small>Used for “assigned to you”, and for who can see a task.</small></div><button class="btn sm" data-action="pick-me">'+(me?esc(me.name):"Set")+'</button></div><div class="setrow"><div class="info"><b>Summary for your doctor</b><small>A tidy summary to share at an appointment. For a full backup, see below.</small></div><button class="btn sm" data-action="export">Make Summary</button></div><div class="setrow"><div class="info"><b>Start over</b><small>Clears this phone and returns to Welcome. You can undo it once.</small></div><button class="btn danger sm" data-action="reseed">Start Fresh</button></div></div>';
     h+=areasPanel();
     h+=cbPanel();
-    h+='<div class="sec-h"><h2>More places</h2><span class="line"></span></div><div class="panel"><button class="setrow linkrow" data-nav="people"><div class="info"><b>People</b><small>Who is in your group</small></div><span class="chev">&rsaquo;</span></button><button class="setrow linkrow" data-nav="fasting"><div class="info"><b>Fasting</b><small>Start or end a fast, and see the last ones</small></div><span class="chev">&rsaquo;</span></button></div>';
+    h+='<div class="sec-h"><h2>More places</h2><span class="line"></span></div><div class="panel"><button class="setrow linkrow" data-nav="people"><div class="info"><b>People</b><small>Who is in your group</small></div><span class="chev">&rsaquo;</span></button><button class="setrow linkrow" data-nav="fasting"><div class="info"><b>Fasting</b><small>Start or end a fast, and see recent ones</small></div><span class="chev">&rsaquo;</span></button></div>';
     h+=familyPanel();
     h+=buddyPanel();
     h+=dataPanel();
     h+='<div class="sec-h"><h2>Flags</h2><span class="line"></span></div><div class="panel">';
     var cust=Store.cache.markers?Store.all("markers"):[];
-    h+='<p style="color:var(--muted);font-size:13px;margin:0 0 4px;line-height:1.5">Ritsu ships with a set of common ones. These are the flags you wrote yourself, add them from inside any item.</p>';
+    h+='<p style="color:var(--muted);font-size:13px;margin:0 0 4px;line-height:1.5">Your own flags. Add them from inside any item.</p>';
     if(!cust.length)h+='<p style="color:var(--faint);font-size:13px;margin:10px 0 0">None yet.</p>';
     cust.forEach(function(m){var n2=Store.all("items").filter(function(i){return (i.markers||[]).indexOf(m.id)>-1}).length;
       h+='<div class="flagline"><span class="flagpill '+SEVCLS[m.severity||"note"]+'">'+esc(m.severity||"note")+'</span><b>'+esc(m.name)+'</b><span class="tagline-n" style="color:var(--faint);font-size:12px">'+n2+' item'+(n2===1?'':'s')+'</span><button class="x" data-del-marker="'+m.id+'" aria-label="Delete flag '+esc(m.name)+'">'+CROSS_SVG+'</button></div>';});
@@ -4946,16 +4946,16 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="ritsu-backup-"+today()+".json";
     document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1500);
     try{localStorage.setItem("ritsu_last_backup",today())}catch(e){}
-    var bl=document.getElementById("bk-last");if(bl)bl.textContent="Last backup: "+today()+". Everything lives on this device, so a file is your safety net.";toast("Backup saved to your downloads",null,"love");Buddy.react("love");
+    var bl=document.getElementById("bk-last");if(bl)bl.textContent="Last backup: "+today()+". A backup file keeps everything safe.";toast("Backup saved to your downloads",null,"love");Buddy.react("love");
   }
   function restoreBackup(text,skipConfirm){
-    var bad=function(){var ws=document.getElementById("wStatus");if(ws)ws.textContent="That file could not be read as a Ritsu backup. Nothing was changed.";toast("Sorry, that file isn\'t a Ritsu backup")};
+    var bad=function(){var ws=document.getElementById("wStatus");if(ws)ws.textContent="Sorry, that file couldn\'t be read. Nothing has changed.";toast("Sorry, that file isn\'t a Ritsu backup")};
     var b;try{b=JSON.parse(text)}catch(e){bad();return}
     var c=b&&b.cache;
     if(!b||b.app!=="ritsu"||!c||!c.items||!c.cats){bad();return}
-    if(!Store.local){toast("Restore works with this device's storage only");return}
+    if(!Store.local){toast("Restore works with this device only");return}
     var when=(b.exportedAt||"").slice(0,10)||"an earlier day";
-    if(!skipConfirm&&!confirm("Replace everything on this device with the backup from "+when+"? What you have now is kept for one step back."))return;
+    if(!skipConfirm&&!confirm("Replace everything with the backup from "+when+"? You can undo it once."))return;
     if(!skipConfirm){try{localStorage.setItem("ritsu_prev_backup",JSON.stringify({cache:Store.cache,priv:Store._priv}))}catch(e){}}
     Store.cache={cats:c.cats||{},items:c.items||{},people:c.people||{},tags:c.tags||{},markers:c.markers||{}};
     Object.keys(Store.cache.items).forEach(function(k){normalizeItem(Store.cache.items[k])});
@@ -4984,9 +4984,9 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       if(b)b.hidden=!!p;
     });
     var h='<div class="sec-h"><h2>Your data</h2><span class="line"></span></div><div class="panel">';
-    h+='<div class="setrow"><div class="info"><b>Back up to a file</b><small id="bk-last">'+(last?"Last backup: "+esc(last)+". ":"No backup yet. ")+'Everything lives on this device, so a file is your safety net.</small></div><button class="btn primary sm" data-backup-now>Download</button></div>';
-    h+='<div class="setrow"><div class="info"><b>Restore from a backup</b><small>Replaces what is on this device. What you have now is kept for one step back.</small></div><label class="btn sm" for="restore-file">Choose file</label><input type="file" id="restore-file" accept=".json,application/json" hidden></div>';
-    if(prev)h+='<div class="setrow"><div class="info"><b>Undo the last restore</b><small>Go back to what was here before.</small></div><button class="btn sm" data-restore-undo>Undo</button></div>';
+    h+='<div class="setrow"><div class="info"><b>Back up to a file</b><small id="bk-last">'+(last?"Last backup: "+esc(last)+". ":"No backup yet. ")+'A backup file keeps everything safe.</small></div><button class="btn primary sm" data-backup-now>Download</button></div>';
+    h+='<div class="setrow"><div class="info"><b>Restore from a backup</b><small>Replaces what\'s on this device. You can undo it once.</small></div><label class="btn sm" for="restore-file">Choose file</label><input type="file" id="restore-file" accept=".json,application/json" hidden></div>';
+    if(prev)h+='<div class="setrow"><div class="info"><b>Undo the last restore</b><small>Bring back what was here before.</small></div><button class="btn sm" data-restore-undo>Undo</button></div>';
     h+='<div class="setrow"><div class="info"><b>Protected from browser cleanup</b><small id="persist-note">Checking...</small></div><button class="btn sm" id="persist-ask" data-persist-ask hidden>Ask</button></div></div>';
     return h;
   }
@@ -4999,7 +4999,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(dCount(last||seen)>-30)return "";
     if(snooze&&dCount(snooze)>0)return "";
     if(Store.all("items").length<3)return "";
-    return '<div class="nudge"><div><b>Time for a backup</b><small>'+(last?"Your last one was "+(-dCount(last))+" days ago. ":"None made yet. ")+'It takes a second and protects your history.</small></div><div class="nudge-b"><button class="btn primary sm" data-backup-now>Back Up</button><button class="btn ghost sm" data-backup-later>Later</button></div></div>';
+    return '<div class="nudge"><div><b>Time for a backup</b><small>'+(last?"Your last one was "+(-dCount(last))+" days ago. ":"None made yet. ")+'It only takes a moment.</small></div><div class="nudge-b"><button class="btn primary sm" data-backup-now>Back Up</button><button class="btn ghost sm" data-backup-later>Later</button></div></div>';
   }
 
   /* first launch on a device with no data */
@@ -6503,9 +6503,9 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     h+='<div class="field"><label for="i-notes">Notes</label><input type="text" id="i-notes" value="'+esc(d.notes||"")+'" placeholder="Any details…"></div>';
     var see=d.localOnly?"device":(d.private?"private":"shared");
     h+='<div class="field"><label id="l-see">Who can see this?</label><div class="seewrap" id="i-see" role="group" aria-labelledby="l-see">'+
-      [["shared","Everyone on the board","The normal setting, friends can see it, and help with it."],
-       ["private","Just me","Hidden from the shared view. Not a lock: it is still stored with the shared data until logins exist."],
-       ["device","Only this device","Never leaves this device. It will not sync, and clearing the browser deletes it."]]
+      [["shared","Everyone on the board","The usual. Friends can see it and help."],
+       ["private","Just me","Hidden from friends\' view. True privacy arrives with accounts."],
+       ["device","Only this device","Stays on this phone only. Clearing the browser removes it."]]
       .map(function(o){return '<button type="button" class="seeopt '+(see===o[0]?"on":"")+'" data-see="'+o[0]+'"><span class="rad"></span><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></button>'}).join("")+
       '</div></div>';
     if(!ms.id)h+='</div>';
@@ -6528,7 +6528,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     h+='<div class="field"><label>What is it?</label><input type="text" id="i-title" value="'+esc(d.title)+'" placeholder="e.g. Brush teeth">'+(ms.ask?'<div class="hint" style="color:var(--accent-ink)">'+esc(ms.ask)+' Rename it to yours.</div>':'')+'</div>';
     if(!ms.id)h+='<button type="button" class="todo-add" style="padding:0 0 14px" data-action="library" data-cat="'+esc(d.catId||"")+'"><span class="pl">\u2261</span>Or pick one from the library</button>';
     /* stance comes first, it decides how the thing is scored, which decides what else to ask */
-    h+='<div class="field"><label>How should this be counted?</label><div class="kindsel" id="i-stance" style="grid-template-columns:repeat(3,1fr)">'+STANCES.map(function(s){return '<button type="button" data-v="'+s[0]+'" class="'+(d.stance===s[0]?"on":"")+'"><b>'+s[1]+'</b><small>'+s[2]+'</small></button>'}).join("")+'</div><div class="hint">'+(d.stance==="routine"?"Counts toward your day. Streaks apply.":d.stance==="body"?"No streak, no score, just a usual range, and a flag when it drifts.":"The good day is the empty day. Streak counts days without.")+'</div></div>';
+    h+='<div class="field"><label>How should this be counted?</label><div class="kindsel" id="i-stance" style="grid-template-columns:repeat(3,1fr)">'+STANCES.map(function(s){return '<button type="button" data-v="'+s[0]+'" class="'+(d.stance===s[0]?"on":"")+'"><b>'+s[1]+'</b><small>'+s[2]+'</small></button>'}).join("")+'</div><div class="hint">'+(d.stance==="routine"?"Counts toward your day, with streaks.":d.stance==="body"?"No streaks or scores, just your usual range.":"Every clear day counts toward your streak.")+'</div></div>';
     if(d.stance==="routine")h+='<div class="field"><label>Type</label><div class="kindsel" id="i-akind">'+AKINDS.map(function(k){return '<button type="button" data-v="'+k[0]+'" class="'+(d.akind===k[0]?"on":"")+'"><b>'+k[1]+'</b><small>'+k[2]+'</small></button>'}).join("")+'</div></div>';
     h+='<div class="field"><label>Section <span class="sub-lbl">(optional)</span></label><input type="text" id="i-sub" list="sublist" value="'+esc(d.sub||"")+'" placeholder="e.g. Meds, Sleep"><datalist id="sublist">'+Object.keys(subs).map(function(s){return '<option value="'+esc(s)+'">'}).join("")+'</datalist></div>';
     if(d.stance==="body"){
@@ -6559,20 +6559,20 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     } else if(d.akind==="measure"){h+='<div class="two"><div class="field"><label>Daily goal</label><input type="number" id="i-target" min="0" step="any" value="'+(d.target||1)+'"></div><div class="field"><label>Unit</label><input type="text" id="i-unit" value="'+esc(d.unit||"")+'" placeholder="hrs, glasses…"></div></div><div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div>';
     } else if(d.akind==="upkeep"){h+='<div class="field"><label>What happens</label><div class="seg" id="i-mode"><button type="button" data-v="replace" class="'+(d.mode!=="rebuy"?"on":"")+'">Replace It</button><button type="button" data-v="rebuy" class="'+(d.mode==="rebuy"?"on":"")+'">Rebuy It</button></div></div><div class="two"><div class="field"><label>Every (days)</label><input type="number" id="i-int" min="1" value="'+(d.intervalDays||30)+'"><div class="hint">e.g. 90 for a 3-month toothbrush.</div></div><div class="field"><label>Last done</label><input type="date" id="i-last" value="'+esc(d.lastDone||today())+'"></div></div>';}
     if(d.stance==="routine"){var _cnt=(d.akind==="med")?(d.count===true):(d.count!==false);
-      h+='<label class="toggle-line"><input type="checkbox" id="i-count" '+(_cnt?"checked":"")+'> Count toward my consistency score'+(d.akind==="med"?' <span class="sub-lbl">(meds off by default, still tracked and reported)</span>':'')+'</label>';}
+      h+='<label class="toggle-line"><input type="checkbox" id="i-count" '+(_cnt?"checked":"")+'> Count toward my consistency score'+(d.akind==="med"?' <span class="sub-lbl">(medicine is off by default, still tracked)</span>':'')+'</label>';}
     /* flags are opt-in per item. Nothing appears unless you put it there. */
     var chosen=(d.markers||[]);
     h+='<div class="field"><label>'+(d.stance==="limit"?"Triggers you can tag":"Things you can flag")+' <span class="sub-lbl">(optional)</span></label><div class="pick-wrap" id="i-markers">';
     chosen.forEach(function(f){var m=mkInfo(f);h+='<button type="button" class="mchip '+SEVCLS[m.s]+' on" data-mtoggle="'+f+'"><span class="d"></span>'+esc(m.n)+' ✕</button>';});
     h+='<button type="button" class="tagpick" data-action="pick-flag">+ add a flag</button></div>';
-    h+='<div class="hint">'+(chosen.length?(d.stance==="limit"?"Tagged when you log one, so the report can tell you what sets it off.":"Offered as a strip right after you log, tap one, or ignore it."):"None yet. Add the things worth noticing for <em>this</em> item, “Blood in stool” on a bowel log, “Gums bled” on brushing.")+'</div></div>';
+    h+='<div class="hint">'+(chosen.length?(d.stance==="limit"?"Tag it when you log one, and I\'ll spot what sets it off.":"Offered after you log. Tap one, or simply ignore it."):"None yet. Add the things worth noticing for <em>this</em> item, “Blood in stool” on a bowel log, “Gums bled” on brushing.")+'</div></div>';
     if(ppl.length)h+='<div class="field"><label id="l-asg">Assign to <span class="sub-lbl">(optional)</span></label><div class="pick-wrap" id="i-assign" role="group" aria-labelledby="l-asg">'+ppl.map(function(p){return '<button type="button" class="pick '+((d.assignees||[]).indexOf(p.id)>-1?"on":"")+'" data-pid="'+p.id+'">'+avatar(p,"sm")+esc(p.name)+'</button>'}).join("")+'</div></div>';
     h+='<div class="field"><label for="i-notes">Notes</label><input type="text" id="i-notes" value="'+esc(d.notes||"")+'" placeholder="Any details…"></div>';
     var see=d.localOnly?"device":(d.private?"private":"shared");
     h+='<div class="field"><label id="l-see">Who can see this?</label><div class="seewrap" id="i-see" role="group" aria-labelledby="l-see">'+
-      [["shared","Everyone on the board","The normal setting, friends can see it, and help with it."],
-       ["private","Just me","Hidden from the shared view. Not a lock: it is still stored with the shared data until logins exist."],
-       ["device","Only this device","Never leaves this device. It will not sync, and clearing the browser deletes it."]]
+      [["shared","Everyone on the board","The usual. Friends can see it and help."],
+       ["private","Just me","Hidden from friends\' view. True privacy arrives with accounts."],
+       ["device","Only this device","Stays on this phone only. Clearing the browser removes it."]]
       .map(function(o){return '<button type="button" class="seeopt '+(see===o[0]?"on":"")+'" data-see="'+o[0]+'"><span class="rad"></span><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></button>'}).join("")+
       '</div></div>';
     h+='</div><div class="modal-f">'+(ms.id?'<button class="btn danger sm" data-del-item="'+ms.id+'">Delete</button>':'')+'<span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-item>'+(ms.id?"Save changes":"Add")+'</button></div>';
@@ -6655,10 +6655,10 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
 
   function openCatEditor(id){var d=id?JSON.parse(JSON.stringify(Store.get("cats",id))):{name:"",emoji:CAT_EMOJIS[0],color:CAT_COLORS[0]};ms={type:"cat",id:id||null,data:d};renderCatModal();}
   function renderCatModal(){var d=ms.data;openModal('<div class="modal-h"><h3>'+(ms.id?"Edit area":"New area")+'</h3><button class="x" data-close>×</button></div><div class="modal-b"><div class="field"><label>Name</label><input type="text" id="c-name" value="'+esc(d.name)+'" placeholder="e.g. Health"></div><div class="field"><label>Colour</label><div class="swatches" id="c-color">'+CAT_COLORS.map(function(c){return '<button type="button" data-v="'+c+'" class="'+(d.color===c?"on":"")+'" style="background:'+c+';color:'+c+'"></button>'}).join("")+'</div></div><div class="field"><label>Icon</label><div class="icon-row" id="c-icon">'+CAT_ICONS.map(function(n){return '<button type="button" data-v="'+n+'" class="'+((d.icon||catIcon({id:ms.id}))===n?"on":"")+'">'+phicon(n)+'</button>'}).join("")+'</div></div><div class="field"><label>Ring <span class="sub-lbl">(which domain it feeds)</span></label><div class="seg" id="c-domain">'+[["body","Body"],["mind","Mind"],["todo","To-do"]].map(function(o){return '<button type="button" data-v="'+o[0]+'" class="'+(((d.domain||(ms.id?areaDomain(ms.id):"body"))===o[0])?"on":"")+'">'+o[1]+'</button>'}).join("")+'</div></div></div><div class="modal-f">'+(ms.id?'<button class="btn danger sm" data-del-cat="'+ms.id+'">Delete</button>':'')+'<span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-cat>'+(ms.id?"Save area":"Create area")+'</button></div>');}
-  function saveCat(){var d=ms.data;var n=$("#c-name");if(n)d.name=n.value;if(!(d.name||"").trim()){toast("Name it first");return;}var _dom=d.domain||(ms.id?areaDomain(ms.id):"body");if(ms.id)Store.update("cats",ms.id,{name:d.name.trim(),emoji:d.emoji,icon:d.icon||"checklist",domain:_dom,color:d.color});else Store.add("cats",{name:d.name.trim(),emoji:d.emoji,icon:d.icon||"checklist",domain:_dom,color:d.color,order:cats().length});closeModal();}
+  function saveCat(){var d=ms.data;var n=$("#c-name");if(n)d.name=n.value;if(!(d.name||"").trim()){toast("It needs a name, please.");return;}var _dom=d.domain||(ms.id?areaDomain(ms.id):"body");if(ms.id)Store.update("cats",ms.id,{name:d.name.trim(),emoji:d.emoji,icon:d.icon||"checklist",domain:_dom,color:d.color});else Store.add("cats",{name:d.name.trim(),emoji:d.emoji,icon:d.icon||"checklist",domain:_dom,color:d.color,order:cats().length});closeModal();}
   function openTagEditor(){var back=(ms&&ms.type==="item")?JSON.parse(JSON.stringify(ms)):null;ms={type:"tag",back:back,data:{name:"",color:TAG_COLORS[Math.floor(Math.random()*TAG_COLORS.length)]}};renderTagModal();}
   function renderTagModal(){var d=ms.data;openModal('<div class="modal-h"><h3>New tag</h3><button class="x" data-close>×</button></div><div class="modal-b"><div class="field"><label>Name</label><input type="text" id="tg-name" value="'+esc(d.name)+'" placeholder="e.g. urgent"></div><div class="field"><label>Colour</label><div class="swatches" id="tg-color">'+TAG_COLORS.map(function(c){return '<button type="button" data-v="'+c+'" class="'+(d.color===c?"on":"")+'" style="background:'+c+';color:'+c+'"></button>'}).join("")+'</div></div></div><div class="modal-f"><span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-tag>Add</button></div>');}
-  function saveTag(){var d=ms.data;var n=$("#tg-name");if(n)d.name=n.value;if(!(d.name||"").trim()){toast("Name it");return;}var back=ms.back;Store.add("tags",{name:d.name.trim().replace(/^#/,""),color:d.color,createdAt:new Date().toISOString()}).then(function(id){if(back){ms=back;if(id)ms.data.tags=(ms.data.tags||[]).concat([id]);if(ms.mode==="task")renderTaskModal();else renderItemModal();}else closeModal();});if(!back)closeModal();}
+  function saveTag(){var d=ms.data;var n=$("#tg-name");if(n)d.name=n.value;if(!(d.name||"").trim()){toast("It needs a name, please.");return;}var back=ms.back;Store.add("tags",{name:d.name.trim().replace(/^#/,""),color:d.color,createdAt:new Date().toISOString()}).then(function(id){if(back){ms=back;if(id)ms.data.tags=(ms.data.tags||[]).concat([id]);if(ms.mode==="task")renderTaskModal();else renderItemModal();}else closeModal();});if(!back)closeModal();}
   /* ---- flags: pick from the shared catalogue, or write your own ---- */
   function openFlagPicker(){
     var back=(ms&&ms.type==="item")?JSON.parse(JSON.stringify(ms)):null;
@@ -6689,7 +6689,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   }
   function saveNewFlag(){
     var n=$("#nf-name");var nm=n?n.value.trim():"";
-    if(!nm){toast("Give the flag a name");return;}
+    if(!nm){toast("Please name the flag");return;}
     var back=ms.back,sev=ms.nf.severity;
     Store.add("markers",{name:nm,severity:sev,createdAt:new Date().toISOString()}).then(function(id){
       if(back&&id)back.data.markers=(back.data.markers||[]).concat([id]);
