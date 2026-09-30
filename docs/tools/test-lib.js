@@ -2,7 +2,7 @@
 const fs=require("fs");
 const src=fs.readFileSync(__dirname+"/../../index.html","utf8").replace(/\r\n/g,"\n");
 const a=src.indexOf("  var LIBRARY=["),b=src.indexOf("  var LV={noted:1");
-const L=new Function("var localStorage={getItem:function(){return null}},navigator={language:'en-US'};"+src.slice(a,b)+";return {LIBRARY,libFlat,libCB,guessCountry}")();
+const L=new Function("var localStorage={getItem:function(){return null}},navigator={language:'en-US'};"+src.slice(a,b)+";return {LIBRARY,libFlat,libCB,guessCountry,tplGuess,TPL_WORDS}")();
 const GROUPS=["c_health","c_medicine","c_checkups","c_fitness","c_hygiene","c_sleepfood","c_reading","c_learning","c_calm","c_creative","todo:work","todo:home","todo:personal"];
 let bad=0;const ok=(c,m)=>{if(!c){bad++;console.log("FAIL",m)}};
 const all=L.libFlat("XX",true).concat(L.libFlat("IN",true),L.libFlat("GB",true),L.libFlat("US",true));
@@ -29,4 +29,12 @@ ok(LT.lifeFits("puc@IN","IN")&&!LT.lifeFits("puc@IN","GB")&&LT.lifeFits("homeins
 ok(cb[0].cat==="c_checkups"&&cb[2].list==="home"&&cb[3].list==="personal","come-back groups: "+[cb[0].cat,cb[2].list,cb[3].list]);
 [["Asia/Kolkata","en-US","IN"],["Asia/Calcutta","en-IN","IN"],["Europe/London","en-GB","GB"],["America/New_York","en-US","US"],["America/Toronto","en-US","CA"],["America/Chicago","en-CA","CA"],
  ["Australia/Sydney","en-US","AU"],["Asia/Singapore","en-GB","SG"],["Europe/Paris","en-IE","IE"],["","",""]].forEach(([tz,l,w])=>ok(L.guessCountry(tz,l)===w,"country "+tz+" "+l+" -> "+L.guessCountry(tz,l)+" want "+w));
+/* typing suggestions: [text, country, expected key or null] */
+[["dentist","IN","dentist"],["book dentist","US","dentist"],["kids dentist","GB","kdent"],["son's dentist","IN","kdent"],["eye test","US","eye"],["optician","GB","eye"],
+ ["blood test","IN","blood"],["annual check-up","US","checkup"],["mum's checkup","GB","pcheck"],["renew car insurance","IN","insurance"],["bike insurance","IN","insurance"],
+ ["health insurance","IN","premium"],["home insurance","GB","homeins"],["puc","IN","puc"],["puc","GB",null],["MOT","GB","mot"],["mot","US",null],["book gas","IN","gas"],
+ ["file taxes","US","taxes"],["advance tax","IN","qtax"],["school fees","IN","sfees"],["tuition fees","IN","fees"],["passport","IN","passport"],["take dog to vet","AU","vet"],
+ ["life certificate","IN","lifecert"],["call alex","IN",null],["buy milk","GB",null],["dental floss","US",null]
+].forEach(([tx,cc,want])=>{const d=L.tplGuess(tx,cc,cb),got=d?d.key:null;ok(got===want,"typing "+JSON.stringify(tx)+" in "+cc+" -> "+got+" want "+want)});
+L.TPL_WORDS.forEach(w=>ok(keys.has(w[0]),"word list key "+w[0]+" exists"));
 console.log(bad?bad+" failed":"all templates checks pass ("+L.libFlat("XX",true).length+" in the shared list)");process.exit(bad?1:0);

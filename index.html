@@ -1149,6 +1149,8 @@
   .qa-x::after{content:"";position:absolute;inset:-6px}
   .qa-x .qi{width:17px;height:17px}
   .qa-hint{margin:0;padding:0 22px;font-size:13px;color:var(--accent-ink);font-weight:600}
+  .qa-sg{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:8px 0 0;padding:0 22px;font-size:13px;color:var(--muted)}.qa-sg span{flex:1 1 100%}
+  .qa-sg button{min-height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel-2);color:var(--ink);font:600 13px/1 var(--sans)}.qa-sg button.pri{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
   .qa-hint[hidden]{display:none}
   .qa .qa-b{padding:12px 22px 4px}
   .qa-k{margin:0 0 7px;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
@@ -2556,6 +2558,29 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     var out=[];LIBRARY.forEach(function(g){g.items.forEach(function(t){if(!t.cb)return;var c={},grp=tplGroup(t,g);for(var k in t.cb)c[k]=t.cb[k];
       if(grp.indexOf("todo:")===0)c.list=grp.slice(5);else c.cat=grp;c.tpl=t;out.push(c)})});
     return out.sort(function(a,b){return a.o-b.o});
+  }
+  /* typing "dentist" offers the usual gap. More specific words come first (kids' dentist before dentist).
+     tplGuess only reads the text; defs is CB_LIB. */
+  var TPL_WORDS=[
+    ["kdent",/\b(kids?|child|children|son|daughter)'?s?\s+dent(ist|al)\b/],["kcheck",/\b(kids?|child|children|son|daughter)'?s?\s+(check-?ups?|doctor)\b/],
+    ["pcheck",/\b(parents?|mum|mom|dad|mother|father)'?s?\s+check-?ups?\b/],
+    ["dentist",/\b(dentist|dental(?! floss))\b/],["eye",/\b(eye (test|check|exam)|optician)\b/],["blood",/\bblood (tests?|work)\b/],
+    ["checkup",/\b(check-?ups?|physical|health check|full body)\b/],
+    ["sfees",/\bschool fees?\b/],["fees",/\b(fees|tuition)\b/],
+    ["homeins",/\b(home|house|contents) insurance\b/],["premium",/\b(insurance premium|lic premium|health insurance|life insurance)\b/],
+    ["insurance",/\b(car|bike|vehicle|motor|scooter) insurance\b/],
+    ["puc",/\b(puc|pollution (check|certificate))\b/],["mot",/\bmot\b/],["vtax",/\b(car|vehicle|road) tax\b/],["reg",/\b(car |vehicle )?registration\b|\bdmv\b/],
+    ["service",/\b(car|bike|vehicle|scooter) servic(e|ing)\b|\bservicing\b/],
+    ["qtax",/\b(quarterly|advance|estimated) tax\b/],["taxes",/\b(taxes|tax return|itr|file (my )?tax)\b/],["subs",/\bsubscriptions?\b/],
+    ["gas",/\b(gas cylinder|lpg|book (the )?gas)\b/],["ro",/\b(water purifier|ro service|purifier)\b/],["tvl",/\btv licen[cs]e\b/],["rentagr",/\b(rent agreement|lease renewal)\b/],
+    ["review",/\b(appraisal|(yearly|annual|performance) review)\b/],["licence",/\b(licen[cs]e renewal|renew (my )?licen[cs]e|cpd)\b/],
+    ["lifecert",/\b(life certificate|jeevan pramaan)\b/],["medicare",/\bmedicare\b/],
+    ["vet",/\bvet\b/],["flea",/\b(flea|worming|deworm\w*)\b/],["passport",/\bpassport\b/]
+  ];
+  function tplGuess(text,cc,defs){
+    var t=" "+String(text||"").toLowerCase()+" ";
+    for(var k=0;k<TPL_WORDS.length;k++){if(!TPL_WORDS[k][1].test(t))continue;var d=defs.filter(function(x){return x.key===TPL_WORDS[k][0]})[0];if(d&&tplFits(d.tpl,cc,true))return d;}
+    return null;
   }
   /* the country comes from the phone (time zone first, it is the surest for India), changeable in Settings later */
   var TZ_CC={"Asia/Kolkata":"IN","Asia/Calcutta":"IN","Europe/London":"GB","Europe/Dublin":"IE","Asia/Singapore":"SG","Asia/Manila":"PH","Asia/Kuala_Lumpur":"MY","Pacific/Auckland":"NZ",
@@ -6130,7 +6155,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   }
   function renderAdd(){
     var h='<div class="qa-top"><input type="text" class="qa-title" id="q-title" autocomplete="off" enterkeyhint="done" aria-label="What are you adding?"><button type="button" class="qa-x" data-close aria-label="Close">'+qi("x")+'</button></div>'+
-      '<p class="qa-hint" id="qa-hint" aria-live="polite" hidden></p>'+'<div class="qa-log" id="qa-log">'+qaLogRow()+'</div>'+
+      '<p class="qa-hint" id="qa-hint" aria-live="polite" hidden></p><p class="qa-sg" id="qa-sg" hidden></p>'+'<div class="qa-log" id="qa-log">'+qaLogRow()+'</div>'+
       '<div class="modal-b qa-b"><p class="qa-k">Add to</p><div class="qa-seg" id="qa-seg" role="group" aria-label="Add to"></div><div class="qa-where" id="qa-where"></div><div class="qa-acts" id="qa-acts"></div><div id="qa-panel"></div></div>'+
       '<div class="qa-foot"><button type="button" class="qa-more" data-qa="more">More details</button><span class="spacer"></span><button type="button" class="qa-go" id="qa-go" data-qa="go"></button></div>';
     openModal(h);$("#modal").classList.add("qa");paintAdd();paintPanel();
@@ -6156,7 +6181,8 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   }
   /* the row of chips and the line under the title: repainted on every keystroke, so they always show what was read */
   function paintActs(){
-    var e=qaEff(),a="";
+    var e=qaEff(),a="",sg=qaSg(e),sgOn=!!(sg&&qa.sgOn===sg.key),qb=$(".qa-b");
+    if(qb)qb.style.display=sgOn?"none":"";   /* a thing that comes back picks its own group and asks its date on Home */
     if(qa.rep===0)a+=qaAct("date","cal",qaDateLabel(e.date),true);
     a+=qaAct("time","clock",e.time?fmtTime(e.time):"Time",!!e.time);
     if(e.time)a+=qaAct("dur","len",e.dur?durLabel(e.dur):"Length",!!e.dur);
@@ -6164,7 +6190,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     a+=qaAct("rep","rep",qa.rep?qaRepLabel(qa.rep):"Repeat",qa.rep>0);
     a+=qaAct("notes","note",qa.notes?"Note added":"Note",!!qa.notes,' aria-expanded="'+(qa.open==="notes")+'"');
     $("#qa-acts").innerHTML=a;
-    $("#qa-go").textContent=qa.rep>0?"Add habit":"Add task";
+    $("#qa-go").textContent=sgOn?"Add":qa.rep>0?"Add habit":"Add task";
     var bits=[];
     if(e.use.date&&!qa.touched)bits.push(qaDateLabel(e.date));
     if(e.P.parts.time.length&&!qa.timeTouched&&e.time)bits.push(fmtTime(e.time));
@@ -6173,8 +6199,22 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(e.every)bits.unshift("Comes back every "+cbEveryLabel(e.every));
     if(qa.autoLabel)bits.unshift(qa.autoLabel);
     if(e.who)bits.push("For "+e.who.charAt(0).toUpperCase()+e.who.slice(1)+", on this phone");
+    var sgEl=$("#qa-sg");
+    if(sg&&qa.sgOn===sg.key)bits.unshift("Comes back every "+cbEveryLabel(sg.every));
+    if(sgEl){
+      if(!sg)sgEl.hidden=true;
+      else{sgEl.hidden=false;sgEl.innerHTML=qa.sgOn===sg.key?'<span>Ritsu will ask the date on Home.</span><button type="button" data-qa="sgoff">Undo</button>':
+        '<span>Usually every '+cbEveryLabel(sg.every)+'.'+esc(qaSgNote(sg))+'</span><button type="button" class="pri" data-qa="sgyes">Make it come back</button><button type="button" data-qa="sgno" aria-label="No, just once">No</button>';}
+    }
     var h=$("#qa-hint");if(h){if(bits.length){h.textContent="Read as: "+bits.join(", ");h.hidden=false}else h.hidden=true}
   }
+  /* offer the usual gap only when nothing else was typed: no date, no time, no "every ...", not for someone else, and not one you already have */
+  function qaSg(e){
+    if(e.use.date||e.time||e.every||e.who)return null;
+    var d=tplGuess(e.text,userCountry(),CB_LIB);
+    return d&&!cbFind(d.key)&&qa.sgNo!==d.key?d:null;
+  }
+  function qaSgNote(d){var who=d.icon==="tooth"?"dentist":d.icon==="paw"?"vet":d.cat==="c_checkups"?"doctor":"";return who?" Ask your "+who+" for yours.":""}
   function paintPanel(){
     var p=$("#qa-panel");if(!p)return;
     if(qa.open==="tags"){var ts=tags();p.innerHTML=ts.length?'<div class="qa-panel pick-wrap" role="group" aria-label="Tags">'+ts.map(function(t){var on=qa.tags.indexOf(t.id)>-1;return '<button type="button" class="tagpick'+(on?" on":"")+'" data-qa="tag" data-v="'+esc(t.id)+'" aria-pressed="'+on+'"><span class="dot" style="background:'+snapTag(t.color)+'"></span>'+esc(t.name)+'</button>'}).join("")+'</div>':'<p class="qa-none">No tags yet. You can make them under People.</p>'}
@@ -6229,6 +6269,13 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function saveAdd(anyway){
     qaRead();var e=qaEff(),title=(e.title||"").trim();
     if(!title){toast("Give it a name");var t=$("#q-title");if(t)t.focus();return}
+    var sgd=qa.sgOn?qaSg(e):null;
+    if(sgd&&sgd.key===qa.sgOn){
+      var snapS=cbSnap();
+      if(sgd.q){var lst=lqGet();lst.q.unshift({t:"d",key:sgd.key});lst.last=addDaysStr(today(),-1);lqPut(lst);}   /* queued first, so the redraw after saving shows its date question on Home now */
+      cbCreate(sgd.key,"unsure",0);
+      closeModal();toast("Added "+sgd.name+". It comes back every "+cbEveryLabel(sgd.every)+".",cbUndo(snapS),"happy");return;
+    }
     var isTodo=qa.card==="todo",cat=isTodo?TODO_CAT:qa.cat;
     if(!cat){toast("Pick an area first");return}
     var date=qa.rep>0?null:e.date;
@@ -6370,6 +6417,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       else if(k==="tag"){var ix=qa.tags.indexOf(val2);if(ix>-1)qa.tags.splice(ix,1);else qa.tags.push(val2);paintActs();paintPanel()}
       else if(k==="more")qaMore();
       else if(k==="go")saveAdd();
+      else if(k==="sgyes"||k==="sgno"||k==="sgoff"){var sgd=qaSg(qaEff());if(k==="sgoff")qa.sgOn=null;else if(sgd){if(k==="sgyes")qa.sgOn=sgd.key;else qa.sgNo=sgd.key;}paintActs();}
     }
   });
   document.addEventListener("input",function(e){if(e.target&&e.target.id==="q-title"&&qa&&ms&&ms.type==="quick"){if(qaSuggest())paintAdd();else paintActs();}if(e.target&&e.target.id==="q-notes"&&qa){qa.notes=e.target.value}});
