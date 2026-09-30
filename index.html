@@ -2332,7 +2332,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
      {t:"Ear trouble",s:"episode",f:["pain","worse","better"]},
      {t:"Urine trouble",s:"episode",p:1,local:1,f:["burning","ublood","cloudy","urgency","fever","worse","better"]},
      {t:"Bad sleep run",G:"c_sleepfood",s:"episode",p:1,f:["sleepless","woke","unrested","stress","worse","better"]},
-     {t:"Low patch",G:"c_calm",s:"episode",p:1,local:1,f:["lowmood","fatigue","noappetite","sleepless","worse","better"],n:"If a low patch runs long, that is worth telling someone you trust."},
+     {t:"Low patch",G:"c_calm",s:"episode",p:1,local:1,f:["lowmood","fatigue","noappetite","sleepless","worse","better"],n:"Heavy days pass. A chat with someone dear can help."},
      {t:"Injury",s:"episode",ask:"Which injury?",f:["pain","sore","worse","better"]},
      {t:"Recovery after treatment",s:"episode",ask:"Recovery from what?",f:["pain","fatigue","nausea","worse","better"]}
    ]},
@@ -2769,7 +2769,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     [12,16,"Fat-burn","Glycogen thins out and more energy comes from fat.","est"],
     [16,24,"Ketosis","Ketones rise and take a bigger share of the fuel.","est"],
     [24,48,"Deep","Ketones high. Water and electrolytes start to matter.","emg"],
-    [48,999,"Prolonged","Past two days. This is medical-supervision territory.","emg"]
+    [48,999,"Prolonged","Two days in. Do rest, sip water, and keep your doctor in the loop.","emg"]
   ];
   function phasesFor(target){
     var lim=Math.max(target||16,12),out=[];
@@ -2900,13 +2900,13 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function epRange(e){var a=new Date(e.start+"T00:00:00");var b=new Date((e.end||today())+"T00:00:00");
     return MON[a.getMonth()]+" "+a.getDate()+(e.end?", "+MON[b.getMonth()]+" "+b.getDate():"")}
   function startEpisode(i){var eps=(i.episodes||[]).slice();if(activeEp(i))return;
-    eps.push({start:today(),end:null,flags:{},note:""});Store.update("items",i.id,{episodes:eps});Buddy.react("sad");}
+    eps.push({start:today(),end:null,flags:{},note:""});Store.update("items",i.id,{episodes:eps});Buddy.react("sad");if((i.markers||[]).indexOf("lowmood")>-1)moodCare();}
   function endEpisode(i){var eps=(i.episodes||[]).map(function(e){return Object.assign({},e)});
     var a=eps.filter(function(e){return !e.end})[0];if(!a)return;a.end=today();Store.update("items",i.id,{episodes:eps});}
   function epFlagsOn(i,ds){var a=activeEp(i)||epsOf(i)[0];if(!a)return[];return (a.flags||{})[ds]||[]}
   function toggleEpFlag(i,f){var eps=(i.episodes||[]).map(function(e){return Object.assign({},e,{flags:Object.assign({},e.flags||{})})});
     var a=eps.filter(function(e){return !e.end})[0];if(!a)return;
-    var cur=(a.flags[today()]||[]).slice();var ix=cur.indexOf(f);if(ix>-1)cur.splice(ix,1);else cur.push(f);
+    var cur=(a.flags[today()]||[]).slice();var ix=cur.indexOf(f);if(ix>-1)cur.splice(ix,1);else{cur.push(f);if(f==="lowmood")moodCare();}
     if(cur.length)a.flags[today()]=cur;else delete a.flags[today()];
     Store.update("items",i.id,{episodes:eps});}
 
@@ -4854,7 +4854,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
         h+='<div class="find"><div class="top"><span class="lvl '+r.level+'">'+r.level+'</span><span class="who">'+esc(r.item.title)+'</span></div>'+
            '<p class="say">'+findingText(r,win)+'</p><p class="tr">'+trendText(r,win)+
            (((r.item.probes||{})[r.k]&&(r.item.probes||{})[r.k].reason)?' \u00b7 you put it down to <b style="color:var(--ink)">'+esc(probeLabel((r.item.probes||{})[r.k].reason))+'</b>':'')+
-           (r.level==="persistent"&&r.sev==="urgent"?' · <span style="color:var(--rust-ink)">worth mentioning to a doctor</span>':'')+'</p></div>';
+           (r.level==="persistent"&&r.sev==="urgent"?' · <span style="color:var(--rust-ink)">worth mentioning to your doctor</span>':'')+'</p></div>';
       });
       if(finds.some(function(r){return r.sev==="urgent"&&r.level==="persistent"}))
         h+='<p class="kicker" style="color:var(--faint);margin-top:14px;line-height:1.6">Ritsu records what you log. It doesn\'t interpret symptoms and isn\'t a medical device.</p>';
@@ -5177,16 +5177,16 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
      The question queue lives on this device (ritsu_lq): {q:[{t:"d",key}|{t:"p",k}], last:"YYYY-MM-DD"}.
      At most one question a day, never red, Later is always fine. Check: node docs/tools/test-lib.js */
   var LIFE_TILES=[
-    {k:"health",n:"Health",d:"Check-ups, medicine",icon:"heartbeat",pick:[["checkup","Doctor"],["dentist","Dentist"],["eye","Eye test"],["blood","Blood test"]],pq:"Which check-ups do you go for?",ps:"Tap any. Ask your doctor how often for you."},
+    {k:"health",n:"Health",d:"Check-ups, medicine",icon:"heartbeat",pick:[["checkup","Doctor"],["dentist","Dentist"],["eye","Eye test"],["blood","Blood test"]],pq:"Which check-ups shall I look after for you?",ps:"Your doctor knows best how often."},
     {k:"home",n:"My home",d:{IN:"Rent, gas, purifier",GB:"Insurance, TV Licence","":"Home insurance"},icon:"house",keys:["homeins@!IN","rentagr@IN","gas@IN","ro@IN","tvl@GB"]},
     {k:"money",n:"Money",d:"Taxes, insurance",icon:"wallet",keys:["taxes","premium","subs"]},
-    {k:"work",n:"Work or studies",d:"Fees, reviews, renewals",icon:"briefcase",pick:[["fees","Fees"],["qtax","Quarterly tax"],["review","Yearly review"],["licence","Licence or course"]],pq:"Which of these fit you?",ps:"Tap any."},
-    {k:"family",n:"Family",d:"Parents, calls",icon:"users",pick:[["pcheck","Parents' check-up"],["h:Call parents:7","Call parents"],["lifecert@IN","Pension life certificate"],["medicare@US","Medicare enrollment"]],pq:"What would help with family?",ps:"Tap any."},
+    {k:"work",n:"Work or studies",d:"Fees, reviews, renewals",icon:"briefcase",pick:[["fees","Fees"],["qtax","Quarterly tax"],["review","Yearly review"],["licence","Licence or course"]],pq:"Which of these apply to you?",ps:"Tap any that apply."},
+    {k:"family",n:"Family",d:"Parents, calls",icon:"users",pick:[["pcheck","Parents' check-up"],["h:Call parents:7","Call parents"],["lifecert@IN","Pension life certificate"],["medicare@US","Medicare enrollment"]],pq:"How shall I help with family?",ps:"Tap any that apply."},
     {k:"car",n:"Car or bike",d:{IN:"Insurance, PUC, service",GB:"MOT, tax, insurance",US:"Registration, insurance","":"Insurance, service"},icon:"car",keys:["insurance","service","puc@IN","mot@GB","vtax@GB","reg@US"]},
     {k:"kids",n:"Kids",d:"Check-ups, fees",icon:"baby",keys:["kcheck","kdent","sfees"]},
     {k:"pets",n:"Pets",d:"Vet, flea treatment",icon:"paw",keys:["vet","flea"]},
     {k:"travel",n:"Travel",d:"Passport",icon:"plane",keys:["passport"]},
-    {k:"faith",n:"Faith",d:"Prayer, fasts, reading",icon:"sunrise",quiet:1,pick:[["h:Daily prayer:1","Daily prayer"],["h:Weekly worship:7","Weekly worship"],["h:Fasting day:7","Fasting day"],["h:Scripture reading:1","Reading"]],pq:"What would you like help remembering?",ps:"Pick any, or none. These never count toward the day."}
+    {k:"faith",n:"Faith",d:"Prayer, fasting, reflection",icon:"sunrise",quiet:1,pick:[["h:Daily prayer:1","Daily prayer"],["h:Weekly worship:7","Weekly worship"],["h:Fasting day:7","Fasting days"],["h:Quiet reflection:1","Reflection"]],pq:"Shall I keep your practice in mind?",ps:"Private to you, never counted."}
   ];
   function lifeKey(spec){return spec.split("@")[0]}
   function lifeFits(spec,cc){var p=spec.split("@")[1];return !p||(p.charAt(0)==="!"?cc!==p.slice(1):cc===p)}
@@ -5231,10 +5231,10 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(h.t==="p"){
       var t=lifeTile(h.k),cc=userCountry();
       body='<b>'+esc(t.pq)+'</b><small>'+esc(t.ps)+'</small><div class="cbbtns">'+t.pick.filter(function(o){return lifeFits(o[0],cc)}).map(function(o){var on=!!_lqSel[o[0]];return '<button class="cb-b'+(on?" on":"")+'" aria-pressed="'+on+'" data-lq="t|'+esc(o[0])+'">'+esc(o[1])+'</button>'}).join("")+
-        '</div><div class="cbbtns"><button class="cb-b pri" data-lq="pick">Done</button><button class="cb-b" data-lq="none">Nothing for now</button></div>';
+        '</div><div class="cbbtns"><button class="cb-b pri" data-lq="pick">Done</button><button class="cb-b" data-lq="none">Not now</button></div>';
     }else{
       var d=cbDef(h.key);
-      body='<b>'+esc(d.q)+'</b><small>'+(d.rule==="fixed"?"So Ritsu can remind you in good time.":"A rough answer is fine.")+'</small><div class="cbbtns">'+lqAns(d).map(function(o){return '<button class="cb-b" data-lq="a|'+o[0]+'">'+o[1]+'</button>'}).join("")+'</div>';
+      body='<b>'+esc(d.q)+'</b><small>'+(d.rule==="fixed"?"So I can remind you in good time.":"A rough guess is quite alright.")+'</small><div class="cbbtns">'+lqAns(d).map(function(o){return '<button class="cb-b" data-lq="a|'+o[0]+'">'+o[1]+'</button>'}).join("")+'</div>';
     }
     return '<div class="cbask lq"><span class="blob-host cbask-blob" aria-hidden="true"></span><div class="cbq">'+body+'<button class="lq-later" data-lq="later">Later</button></div></div>';
   }
@@ -5313,7 +5313,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       h+='<div class="su-sw'+(on?" on":"")+'"><span class="su-ic">'+phicon(d.icon)+'</span><span class="tx"><b>'+esc(d.name)+'</b><small>'+(on?"Next: "+esc(dayShort(on.cb.next)):"Every "+cbEveryLabel(d.every))+'</small></span>'+
          '<button class="su-tg'+(on?" on":"")+'" role="switch" aria-checked="'+(!!on)+'" aria-label="'+esc(d.name)+'" data-cbtoggle="'+d.key+'"></button></div>';
     });
-    return h+'<p class="su-note">These are typical gaps, always editable. Ask your doctor for yours. Ritsu never gives medical advice.</p></div>';
+    return h+'<p class="su-note">Everything here can be changed. For health, your doctor knows best.</p></div>';
   }
 
   /* ===== first run: a one minute setup (Set me up) ===== */
@@ -5352,13 +5352,13 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       });
       h+='</div><div class="su-foot"><button class="su-skip" data-setup="skip2">Skip</button><button class="btn primary su-next" data-setup="next">Continue to step 3</button></div>';
     }else{
-      h+='<h1 class="su-title">What is in your life?</h1><p class="su-sub">Tap what fits. Ritsu sets up the reminders and asks the dates later, one at a time.</p><div class="su-tiles">';
+      h+='<h1 class="su-title">Welcome. Shall we make Ritsu yours?</h1><p class="su-sub">Tap what applies. I\'ll take care of the reminders.</p><div class="su-tiles">';
       var cc=userCountry();
       LIFE_TILES.forEach(function(x){
         var on=!!S.life[x.k];
         h+='<button class="su-tile'+(on?" on":"")+'" data-setup="life|'+x.k+'" aria-pressed="'+on+'"><span class="su-ck">'+(on?CHECK_SVG:"")+'</span><span class="su-tic">'+phicon(x.icon)+'</span><b>'+esc(x.n)+'</b><small>'+esc(lifeSub(x,cc))+'</small></button>';
       });
-      h+='</div><p class="su-note">Typical gaps, always editable. Ask your doctor for yours.</p><div class="su-foot"><button class="su-skip" data-setup="skip3">Skip</button><button class="btn primary su-next" data-setup="finish">Finish setup</button></div>';
+      h+='</div><p class="su-note">Everything can be changed later.</p><div class="su-foot"><button class="su-skip" data-setup="skip3">Skip</button><button class="btn primary su-next" data-setup="finish">Finish setup</button></div>';
     }
     return h+'</div>';
   }
@@ -5387,7 +5387,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     });
     lifeSetup(S.life||{});
     finishWelcome();
-    toast("That is it. Add anything else by typing it.",null,"happy");
+    toast("All set. Lovely to have you here.",null,"happy");
   }
   /* one place for every tap and key that belongs to the pieces above */
   function cbClick(e){
@@ -5972,6 +5972,16 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   /* a number under the goal still counts as done for the day (untick to keep it open), and gets a kind line */
   var LOW_LINES=["Every bit counts. Lovely.","Some is far better than none.","A gentle day still counts.","You showed up. That's what matters.","Small steps, still forward.","Rest is part of it too.","Not your biggest day, and that's fine.","Progress is never a straight line.","Something done is something gained.","Be kind to yourself. You're on your way.","A little today, more another day.","Quietly counted. Well done.","That still counts, beautifully.","Every drop adds up.","Gently does it. Well done."];
   function lowLine(){return deck("under",LOW_LINES)}
+  var MOOD_LINES=["Thank you for telling me. Do be gentle with yourself.","Sending you a warm hug today.","Low days pass. I'm right here.","It's quite alright not to be alright.","Take it slowly today. You're doing well.","A cup of tea and some rest may help.","Be kind to yourself today.","Heavy days come and go. This one will pass.","I'm glad you told me.","Small comforts count today.","Rest if you need to. The list can wait.","You're not alone in this.","One gentle step at a time.","Some fresh air may help, if you feel up to it.","Tomorrow is a softer page."];
+  /* called when a low mood is logged. Three heavy days in the last five, and at most once in five days, it suggests talking to someone dear */
+  function moodCare(){
+    var k="ritsu_lowdays",d=[];try{d=JSON.parse(localStorage.getItem(k)||"[]")}catch(e){}
+    var t=today();if(d.indexOf(t)<0)d.push(t);d=d.filter(function(x){return dCount(x)>-5});
+    var said="";try{said=localStorage.getItem("ritsu_lowsaid")||""}catch(e){}
+    var line=(d.length>=3&&(!said||dCount(said)<=-5))?"A few heavy days in a row. A chat with someone dear may help.":deck("mood",MOOD_LINES);
+    try{localStorage.setItem(k,JSON.stringify(d));if(d.length>=3&&line.indexOf("chat")>-1)localStorage.setItem("ritsu_lowsaid",t)}catch(e){}
+    setTimeout(function(){toast(line)},900);
+  }
   function mvOk(i){var e=$("#mv"),o=$("#mv-ok");if(!e||!o)return;var v=parseFloat(e.value),t=i.target||0;
     if(!(!isNaN(v)&&v>0&&t>0&&v<t)){o.hidden=true;o.innerHTML="";return;}
     var on=ms.ok!=null?ms.ok:true;
@@ -6220,11 +6230,13 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(qa.autoLabel)bits.unshift(qa.autoLabel);
     if(e.who)bits.push("For "+e.who.charAt(0).toUpperCase()+e.who.slice(1)+", on this phone");
     var sgEl=$("#qa-sg");
-    if(sg&&qa.sgOn===sg.key)bits.unshift("Reminder every "+cbEveryLabel(sg.every));
+    if(sg&&qa.sgOn===sg.key)bits.unshift("Reminder "+qaRhythm(qa.sgEvery||sg.every));
     if(sgEl){
       if(!sg)sgEl.hidden=true;
-      else{sgEl.hidden=false;sgEl.innerHTML=qa.sgOn===sg.key?'<span>Ritsu will ask the date on Home.</span><button type="button" data-qa="sgoff">Undo</button>':
-        '<span>Usually every '+cbEveryLabel(sg.every)+'.'+esc(qaSgNote(sg))+'</span><button type="button" class="pri" data-qa="sgyes">Remind me every '+cbEveryLabel(sg.every)+'</button><button type="button" data-qa="sgno" aria-label="No, just once">No</button>';}
+      else{sgEl.hidden=false;var opts=qaSgOpts(sg);sgEl.innerHTML=qa.sgOn===sg.key?'<span>Lovely. I\'ll ask the date on Home.</span><button type="button" data-qa="sgoff">Undo</button>':
+        '<span>Usually '+qaRhythm(sg.every)+'. '+(opts.length>1?"What suits you best?":"Shall I remind you?")+'</span>'+
+        opts.map(function(n,x){return '<button type="button"'+(n===sg.every?' class="pri"':'')+' data-qa="sgyes" data-v="'+n+'">'+(opts.length>1?qaRhythm(n,1):"Yes, please")+'</button>'}).join("")+
+        '<button type="button" data-qa="sgno">Just once</button>';}
     }
     var h=$("#qa-hint");if(h){if(bits.length){h.textContent="Read as: "+bits.join(", ");h.hidden=false}else h.hidden=true}
   }
@@ -6234,7 +6246,10 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     var d=tplGuess(e.text,userCountry(),CB_LIB);
     return d&&!cbFind(d.key)&&qa.sgNo!==d.key?d:null;
   }
-  function qaSgNote(d){var who=d.icon==="tooth"?"dentist":d.icon==="paw"?"vet":d.cat==="c_checkups"?"doctor":"";return who?" Ask your "+who+" for yours.":""}
+  /* "every 6 months", "yearly"; cap=1 gives a button label ("Every 6 months", "Yearly") */
+  function qaRhythm(n,cap){var t=n===12?"yearly":n===24?"every 2 years":"every "+cbEveryLabel(n);return cap?t.charAt(0).toUpperCase()+t.slice(1):t}
+  /* check-ups and the vet offer half, usual and double; everything else just the usual */
+  function qaSgOpts(d){var e=d.every;if(d.kind!=="visit")return [e];var o=[Math.max(1,Math.round(e/2)),e,e*2];return o.filter(function(n,i){return o.indexOf(n)===i})}
   function paintPanel(){
     var p=$("#qa-panel");if(!p)return;
     if(qa.open==="tags"){var ts=tags();p.innerHTML=ts.length?'<div class="qa-panel pick-wrap" role="group" aria-label="Tags">'+ts.map(function(t){var on=qa.tags.indexOf(t.id)>-1;return '<button type="button" class="tagpick'+(on?" on":"")+'" data-qa="tag" data-v="'+esc(t.id)+'" aria-pressed="'+on+'"><span class="dot" style="background:'+snapTag(t.color)+'"></span>'+esc(t.name)+'</button>'}).join("")+'</div>':'<p class="qa-none">No tags yet. You can make them under People.</p>'}
@@ -6275,11 +6290,11 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       pos=cls?"":";left:calc(8px + (50% - 11px) * "+k+" / "+n+");right:auto;width:calc((50% - 11px) / "+n+" - "+(n>1?4:0)+"px)";
       return '<div class="cl-b'+cls+'" style="top:'+(t+2)+'px;height:'+(ht-4)+'px'+pos+'">'+esc(i.title)+(ht>=44?'<small>'+fmtSpan(i)+'</small>':"")+'</div>'}
     show.forEach(function(i,x){strip+=blk(i,"",lane[x])});strip+=blk(mine," new");
-    var f=c.hits[0],head=c.hits.length>1?"That overlaps "+c.hits.length+" things":"That overlaps "+esc(f.title),
-      line=c.hits.length>1?"\u201c"+esc(c.title)+"\u201d would sit on top of them.":esc(f.title)+" is "+fmtSpan(f)+(f.shift<0?" the night before":f.shift>0?" the next day":"")+". \u201c"+esc(c.title)+"\u201d would sit on top of it.";
+    var f=c.hits[0],head="Heads-up",
+      line=c.hits.length>1?c.hits.length+" things are already at that time.":esc(f.title)+" is already at "+fmtSpan(f)+(f.shift<0?" the night before":f.shift>0?" the next day":"")+".";
     line=line.charAt(0).toUpperCase()+line.slice(1);qp={kind:"clash"};
     qpOpen('<h4 aria-level="2">'+head+'</h4><div class="cl"><p class="fd-p">'+line+'</p><div class="cl-strip" style="height:'+((h1-h0)*px)+'px" role="img" aria-label="'+(c.day?"The day":"The overlap")+'">'+strip+'</div>'+
-      '<button type="button" class="fd-btn" data-qp="clash" data-v="time">Pick another time</button><button type="button" class="fd-btn alt" data-qp="clash" data-v="day">'+(c.day?"Just the overlap":"See the day")+'</button><button type="button" class="fd-link" data-qp="clash" data-v="anyway">'+(c.skip?"Save anyway":"Add anyway")+'</button></div>');
+      '<button type="button" class="fd-btn" data-qp="clash" data-v="time">Pick another time</button><button type="button" class="fd-btn alt" data-qp="clash" data-v="day">'+(c.day?"Just the clash":"See my day")+'</button><button type="button" class="fd-link" data-qp="clash" data-v="anyway">Keep both</button></div>');
   }
   function clAct(v){
     if(v==="day"){_cl.day=!_cl.day;clPaint();return}
@@ -6294,6 +6309,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       var snapS=cbSnap();
       if(sgd.q){var lst=lqGet();lst.q.unshift({t:"d",key:sgd.key});lst.last=addDaysStr(today(),-1);lqPut(lst);}   /* queued first, so the redraw after saving shows its date question on Home now */
       cbCreate(sgd.key,"unsure",0);var madeS=cbFind(sgd.key);
+      if(madeS&&qa.sgEvery&&qa.sgEvery!==sgd.every){var cbS=cbClone(madeS);cbS.every=qa.sgEvery;cbSave(madeS,cbS);madeS=cbFind(sgd.key);}
       closeModal();toast(madeS?remindLine(cbBackMonth(madeS.cb)):"Reminder every "+cbEveryLabel(sgd.every)+".",cbUndo(snapS),"happy");return;
     }
     var isTodo=qa.card==="todo",cat=isTodo?TODO_CAT:qa.cat;
@@ -6437,7 +6453,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       else if(k==="tag"){var ix=qa.tags.indexOf(val2);if(ix>-1)qa.tags.splice(ix,1);else qa.tags.push(val2);paintActs();paintPanel()}
       else if(k==="more")qaMore();
       else if(k==="go")saveAdd();
-      else if(k==="sgyes"||k==="sgno"||k==="sgoff"){var sgd=qaSg(qaEff());if(k==="sgoff")qa.sgOn=null;else if(sgd){if(k==="sgyes")qa.sgOn=sgd.key;else qa.sgNo=sgd.key;}paintActs();}
+      else if(k==="sgyes"||k==="sgno"||k==="sgoff"){var sgd=qaSg(qaEff());if(k==="sgoff"){qa.sgOn=null;qa.sgEvery=null}else if(sgd){if(k==="sgyes"){qa.sgOn=sgd.key;qa.sgEvery=+val2||sgd.every}else qa.sgNo=sgd.key;}paintActs();}
     }
   });
   document.addEventListener("input",function(e){if(e.target&&e.target.id==="q-title"&&qa&&ms&&ms.type==="quick"){if(qaSuggest())paintAdd();else paintActs();}if(e.target&&e.target.id==="q-notes"&&qa){qa.notes=e.target.value}});
@@ -6844,7 +6860,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     var i=Store.get("items",id);if(!i)return;ds=ds||today();
     var ev=cloneEvents(i);var arr=ev[ds];if(!arr||!arr.length){ev[ds]=[newEvent(ds)];arr=ev[ds];}
     var e=arr[arr.length-1];var ix=e.flags.indexOf(mk);
-    if(ix>-1)e.flags.splice(ix,1);else e.flags.push(mk);
+    if(ix>-1)e.flags.splice(ix,1);else{e.flags.push(mk);if(mk==="lowmood")moodCare();}
     writeEvents(i,ev);
   }
   function setScale(id,val,ds){

@@ -19,7 +19,8 @@ src.split("\n").forEach((ln,ix)=>{
 const da=src.indexOf("  function deck(name,lines){"),db=src.indexOf("  function winLine(");
 const mem={},D=new Function("localStorage",src.slice(da,db)+";return {deck,DONE_LINES,ALLDONE_LINES,REMIND_LINES,BACK_LINES}")({getItem:k=>mem[k]||null,setItem:(k,v)=>{mem[k]=v}});
 const la=src.indexOf("  var LOW_LINES=["),LOW=new Function(src.slice(la,src.indexOf("\n",la))+";return LOW_LINES")();
-[["done",D.DONE_LINES],["alldone",D.ALLDONE_LINES],["remind",D.REMIND_LINES],["back",D.BACK_LINES],["under",LOW]].forEach(([nm,L])=>{
+const ma=src.indexOf("  var MOOD_LINES=["),MOOD=new Function(src.slice(ma,src.indexOf("\n",ma))+";return MOOD_LINES")();
+[["done",D.DONE_LINES],["alldone",D.ALLDONE_LINES],["remind",D.REMIND_LINES],["back",D.BACK_LINES],["under",LOW],["mood",MOOD]].forEach(([nm,L])=>{
   if(L.length<15){bad++;console.log("DECK    "+nm+" has "+L.length+" lines, needs 15 or more")}
   const seen=[];for(let i=0;i<L.length*6;i++)seen.push(D.deck("t_"+nm,L));
   for(let r=0;r<6;r++){const round=seen.slice(r*L.length,(r+1)*L.length);if(new Set(round).size!==L.length){bad++;console.log("DECK    "+nm+" round "+r+" repeats a line")}}
