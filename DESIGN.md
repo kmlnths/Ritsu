@@ -78,11 +78,24 @@ Three colours plus a neutral canvas, in a 60 / 30 / 10 split: neutral canvas (60
 
 ## 9. Words
 
-- Plain, warm, short. Real numbers only.
+- Warm, polished, short. Real numbers only.
 - **No em dashes or en dashes anywhere** in the interface. Check before shipping.
 - Never: "overdue", "too much", "keep the streak alive", nagging, guilt, red pile-ups.
 - Good examples: "5 of 8 done. That counts." / "Some days go like that. Want to try these again tomorrow?"
-- Proper, grown-up vocabulary, never cute (the user, 2026-09-30: "comes back" sounded cheap). Things on a cycle are **reminders**: "Remind me every 6 months", "Reminder every 6 months", "Next reminder in March", "Noted. Ritsu will remind you in March.", "Done. Ritsu will remind you in March." The Settings section is "Reminders". In code they are still `cb` ("things that come back"), which the user never sees.
+### The voice: a posh friend who checks on you (decided 2026-10-01)
+
+Ritsu is a refined, warm friend: quietly confident, polite, gently enthusiastic, caring, and a little concerned when you have been away. Never loud, never slangy, never cold, never fearful.
+
+- **Speaks as "I"**: "I'll remind you in March." Never "Ritsu will".
+- **Short**: messages about 12 words or fewer, one sentence where possible. Buttons one to three words. People do not read long text.
+- **Polished words**: "Splendid", "Lovely", "Do rest well", "Shall I", "Quite alright". Banned: whatever, stuff, gonna, kinda, super, actually, discipline, must, danger, overdue, comes back, oopsie.
+- **Polite, not pushy**: "please" only when asking the person to act; "thank you" when they share something. At most one exclamation mark.
+- **Calm about health**: no fear words. The doctor is a friend on their side ("keep your doctor in the loop"), never a disclaimer.
+- **Faith**: short, neutral, private, optional. No religion assumed.
+- **Things on a cycle are reminders**: "Remind me every 6 months", "Reminder every 6 months", the Settings section "Reminders". In code they are still `cb`, which the person never sees.
+- **Rotating lines use a deck of 15 or more** (`deck(name, lines)`): shuffled, each line once before any repeats, never the same line twice in a row. Decks: task done (`DONE_LINES`), day complete (`ALLDONE_LINES`), reminder set (`REMIND_LINES`), welcome back (`BACK_LINES`), under the goal (`LOW_LINES`).
+- Examples: "Beautifully done." / "I've got you. Scheduled for March." / "Heads-up: Team sync is already at 12 to 1pm." / "Welcome back. Lovely to see you."
+- The check `node docs/tools/test-copy.js` fails on a banned word or a deck under 15, and lists lines that are too long.
 
 ## Open design questions
 

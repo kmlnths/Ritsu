@@ -2290,7 +2290,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
      {t:"Urination",s:"body",min:4,max:9,gap:1,p:1,local:1,f:["ublood","burning","cloudy","smell","urgency"]},
      {t:"Meals",G:"c_sleepfood",s:"body",min:2,max:4,gap:1,f:["noappetite","nausea"]},
      {t:"Period",s:"body",min:1,max:1,gap:28,p:1,local:1,f:["pain","blood","headache"],n:"Log each day of bleeding."},
-     {t:"Bedtime",G:"c_sleepfood",s:"body",min:1,max:1,gap:1,ex:["23:00",60,"late"],f:["sleepless","stress","social","lowmood"],n:"Log it when you actually go down. Ritsu asks why only if it drifts for several nights."},
+     {t:"Bedtime",G:"c_sleepfood",s:"body",min:1,max:1,gap:1,ex:["23:00",60,"late"],f:["sleepless","stress","social","lowmood"],n:"Log it as you turn in. I'll only ask why if it drifts for a few nights."},
      {t:"Wake time",G:"c_sleepfood",s:"body",min:1,max:1,gap:1,ex:["07:00",60,"either"],f:["unrested","woke"]},
      {t:"Last meal",G:"c_sleepfood",s:"body",min:1,max:1,gap:1,ex:["20:00",90,"late"],f:["social","stress"]},
      {t:"Naps",G:"c_sleepfood",s:"body",min:0,max:1,f:["fatigue","unrested"]}
@@ -2349,7 +2349,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
      {t:"Physio exercises",s:"routine",rep:1,f:["pain","sore"]},
      {t:"Breathing exercise",s:"routine",k:"measure",target:5,unit:"mins"},
      {t:"Press-ups",s:"routine",k:"measure",target:50,unit:"reps"},
-     {t:"Play a sport",s:"routine",rep:1,ask:"Which sport?",n:"Rename it to the sport you actually play."},
+     {t:"Play a sport",s:"routine",rep:1,ask:"Which sport?",n:"Rename it to the sport you play."},
      {t:"Rest day",s:"routine",rep:7,n:"Yes, resting counts. Skipping rest is its own bad habit."}
    ]},
    {g:"Food & kitchen", items:[
@@ -2363,7 +2363,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
      {t:"Intermittent fasting",s:"fast",n:"A live timer for your eating window. Start it when you finish eating."}
    ]},
    {g:"Mind & learning", items:[
-     {t:"Reading",G:"c_reading",s:"routine",k:"measure",target:50,unit:"pages",n:"Change the goal to whatever you actually aim for."},
+     {t:"Reading",G:"c_reading",s:"routine",k:"measure",target:50,unit:"pages",n:"Set the goal that suits you."},
      {t:"Reading time",G:"c_reading",s:"routine",k:"measure",target:30,unit:"mins"},
      {t:"Meditation",G:"c_calm",s:"routine",k:"measure",target:10,unit:"mins",ex:["07:30",120,"either"]},
      {t:"Journaling",G:"c_calm",s:"routine",rep:1,ex:["22:00",120,"either"]},
@@ -3348,7 +3348,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
         normal:{min:1,max:1,maxGapDays:1,maxPerWeek:null},
         expect:{at:"23:00",slack:60,dir:"late"},
         markers:["sleepless","stress","social","lowmood","fatigue"],
-        notes:"Log it when you actually go down, not when you meant to."},evMirror(bed))),
+        notes:"Log it as you turn in. I'll learn your rhythm."},evMirror(bed))),
       it("c_sleepfood","Holding off","Smoking","todo",Object.assign({stance:"limit",repeatEvery:1,perDay:1,private:true,priority:"low",
         normal:{min:null,max:0,maxGapDays:null,maxPerWeek:null},
         markers:["stress","bored","social","afterdrink","sleepless"],
@@ -3466,13 +3466,13 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   }
   function quoteCard(){
     var qs=[
-      ["Discipline is choosing what you want most over what you want now.","on keeping rhythm"],
+      ["Be patient with yourself. Nothing in nature blooms all year.","on gentle days"],
       ["How we spend our days is, of course, how we spend our lives.","Annie Dillard"],
       ["You do not rise to the level of your goals. You fall to the level of your systems.","James Clear"],
-      ["Small disciplines repeated with consistency lead to great achievements.","on steady practice"],
+      ["Small kindnesses to yourself add up to a gentler life.","on steady practice"],
       ["We are what we repeatedly do. Excellence, then, is not an act, but a habit.","Aristotle"],
       ["The best time to plant a tree was twenty years ago. The second best is now.","proverb"],
-      ["Motivation gets you going, but discipline keeps you growing.","on the long game"]
+      ["Go gently. You are doing better than you think.","on the long game"]
     ];
     var d=new Date();var doy=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000);var q=qs[doy%qs.length];
     return '<div class="card quote"><span class="mark">“</span><span class="eyebrow">Today’s note</span>'+
@@ -4296,7 +4296,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
 
   /* A quote for the top of Home. One per day, in order, then round again. No dashes in any of them. */
   var HM_QUOTES=[
-    ["Discipline today. Freedom tomorrow.",""],
+    ["Go gently. You are doing better than you think.",""],
     ["How we spend our days is, of course, how we spend our lives.","Annie Dillard"],
     ["You do not rise to the level of your goals. You fall to the level of your systems.","James Clear"],
     ["Well begun is half done.","Proverb"],
@@ -4326,7 +4326,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     ["Today is a fresh page.",""],
     ["Done is better than perfect.",""],
     ["The secret of getting ahead is getting started.",""],
-    ["Discipline is choosing what you want most over what you want now.",""]
+    ["Every day is a fresh chance to be kind to yourself.",""]
   ];
   function hmQuote(){var d=new Date(),n=Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000);return HM_QUOTES[n%HM_QUOTES.length]}
 
@@ -5112,7 +5112,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function cbBooked(id,date,time){
     var i=Store.get("items",id);if(!i||!i.cb)return;var snap=cbSnap(),cb=cbClone(i);
     cb.stage="booked";cb.booked=date;cb.at=time||null;cb.snooze=null;cbSave(i,cb);
-    toast("Booked: "+cbWhen(cb)+". I will check in after.",cbUndo(snap),"happy");
+    toast("Booked for "+cbWhen(cb)+". I'll check in afterwards.",cbUndo(snap),"happy");
   }
   function cbFinish(id,when){
     var i=Store.get("items",id);if(!i||!i.cb)return;var snap=cbSnap(),cb=cbClone(i);
@@ -5120,13 +5120,13 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(cb.rule==="fixed"){cb.next=cbMonths(cb.next,cb.every);while(cb.next<=today())cb.next=cbMonths(cb.next,cb.every);}
     else cb.next=cbMonths(when,cb.every);
     cb.stage="quiet";cb.booked=null;cb.at=null;cb.snooze=null;cbSave(i,cb);
-    toast("Done. Ritsu will remind you in "+cbBackMonth(cb)+".",cbUndo(snap),"joy");
+    toast("Well done. I'll remind you again in "+cbBackMonth(cb)+".",cbUndo(snap),"joy");
   }
   function cbWent(id){var i=Store.get("items",id);if(i&&i.cb)cbFinish(id,i.cb.booked&&i.cb.booked<=today()?i.cb.booked:today())}
   function cbLater(id,days){
     var i=Store.get("items",id);if(!i||!i.cb)return;var snap=cbSnap(),cb=cbClone(i);
     cb.snooze=addDaysStr(today(),days||3);cbSave(i,cb);
-    toast("No rush. I will ask again in "+(days||3)+" days.",cbUndo(snap));
+    toast("Of course. I'll ask again in "+(days||3)+" days.",cbUndo(snap));
   }
   function cbBookSheet(id){
     var i=Store.get("items",id);if(!i||!i.cb)return;
@@ -5242,16 +5242,16 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     var st=lqGet(),h=lqHead(st);if(!h)return;
     if(v[0]==="t"){_lqSel[v[1]]=!_lqSel[v[1]];cbAskFill(hmDay());return}
     st.q.shift();st.last=today();
-    if(v[0]==="later"){st.q.push(h);lqPut(st);toast("No rush. I will ask another day.");}
-    else if(v[0]==="none"){_lqSel={};lqPut(st);toast("Nothing added. You can always type it later.");}
+    if(v[0]==="later"){st.q.push(h);lqPut(st);toast("Of course. I'll ask another day.");}
+    else if(v[0]==="none"){_lqSel={};lqPut(st);toast("Of course. Add it whenever you like.");}
     else if(v[0]==="pick"){
       var t=lifeTile(h.k),cc=userCountry(),n=0,add=[];
       t.pick.forEach(function(o){if(_lqSel[o[0]]&&lifeFits(o[0],cc)){n++;var q=lifeMake(o[0],n,t);if(q)add.push(q)}});
       _lqSel={};st.q=st.q.concat(add);lqPut(st);
-      toast(n?"Set up. Ritsu stays quiet until it is time.":"Nothing added. You can always type it later.",null,"happy");
+      toast(n?"All arranged. I'll keep quiet until it's time.":"Of course. Add it whenever you like.",null,"happy");
     }else if(v[0]==="a"){
       var i=cbFind(h.key),d=cbDef(h.key);lqPut(st);
-      if(i&&d){var cb=cbBuild(d,v[1],0);cbSave(i,cb);toast("Noted. Ritsu will remind you in "+cbBackMonth(cb)+".",null,"happy");}
+      if(i&&d){var cb=cbBuild(d,v[1],0);cbSave(i,cb);toast(remindLine(cbBackMonth(cb)),null,"happy");}
     }
     cbAskFill(hmDay());
   }
@@ -5259,7 +5259,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
      One small reset a week, new each Sunday, chosen in turn from a short list. Kept on this device (ritsu_week1).
      It never counts toward the day, has no timer, and ignoring it is fine: next Sunday brings a new one. */
   var WK1_LIB=[
-    ["Fridge shelves","Wipe the sticky spots, group like with like, see what you actually have."],
+    ["Fridge shelves","Wipe the shelves and group like with like."],
     ["Medicine box","Put aside anything past its date and note what is running low."],
     ["Phone photos","Delete this month's screenshots and blurry shots."],
     ["Your bag","Empty it out, keep what you use, bin the old receipts."],
@@ -5549,8 +5549,27 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function dayFinished(){var sc=dayScore(today());return !!(sc&&sc.of>0&&sc.r>=1)}
   /* mood is optional: "happy", "joy" or "love" puts the small blob in the bar, where the feedback is */
   /* short kind lines for a finished task: plain, never about what is left */
-  var WIN_LINES=["A small win. It still counts.","One more off the list.","Nice. That counts.","Small steps add up.","Done is done. Well played.","That is one less thing to carry."];
-  function winLine(joy){if(joy)return "That was the last one. A full day.";var n=+(localStorage.getItem("ritsu_winline")||0);try{localStorage.setItem("ritsu_winline",String((n+1)%WIN_LINES.length))}catch(e){}return WIN_LINES[n%WIN_LINES.length]}
+  /* ===== the deck: rotating lines, like dealing cards =====
+     Shuffle every line, deal one at a time, and only reshuffle once all have been used. The last line of one round
+     never opens the next, so nothing shows twice in a row. Each deck keeps its place on this device (ritsu_deck_<name>).
+     Voice: the posh friend in DESIGN.md section 9. Check: node docs/tools/test-copy.js */
+  function deck(name,lines){
+    var k="ritsu_deck_"+name,st=null;try{st=JSON.parse(localStorage.getItem(k)||"null")}catch(e){}
+    if(!st||st.n!==lines.length||!st.o||!st.o.length){
+      var o=lines.map(function(x,i){return i});
+      for(var i=o.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=o[i];o[i]=o[j];o[j]=t}
+      if(st&&o.length>1&&o[o.length-1]===st.last){var t2=o[o.length-1];o[o.length-1]=o[0];o[0]=t2}
+      st={n:lines.length,o:o,last:st?st.last:null};
+    }
+    var ix=st.o.pop();st.last=ix;try{localStorage.setItem(k,JSON.stringify(st))}catch(e){}
+    return lines[ix];
+  }
+  var DONE_LINES=["Beautifully done.","Splendid, one more.","Lovely work.","Well played.","Marvellous.","Nicely handled.","That's the spirit.","Quietly brilliant.","Off the list. Lovely.","Neatly done.","Onwards, beautifully.","Rather good, that.","Another one sorted.","Elegantly done.","Bravo.","Handled with grace.","You make that look easy."];
+  var ALLDONE_LINES=["All done. What a splendid day.","A clean sweep. Well done, you.","Everything's done. Do rest well.","The whole list. Quite brilliant.","Day complete. Enjoy your evening.","Not a thing left. Marvellous.","All sorted. Put your feet up.","Every last one. Bravo.","A beautifully finished day.","Done and dusted. Well played.","The list is clear. Lovely work.","Full marks today. Rest easy.","That's everything. Be kind to yourself tonight.","A day well spent.","Complete. You should be proud."];
+  var REMIND_LINES=["I've got you. Scheduled for {m}.","Consider it handled. I'll remind you in {m}.","Leave it with me. See you in {m}.","All arranged for {m}.","Noted and scheduled for {m}.","Sorted. I'll be in touch in {m}.","In safe hands. Reminder set for {m}.","I'll take it from here until {m}.","I'll remember, so you needn't. {m} it is.","Scheduled for {m}. One less thing to hold.","Lovely. I'll bring it up in {m}.","Rest easy. I'll remind you in {m}.","It's in the diary for {m}.","Taken care of. Expect me in {m}.","Beautifully arranged for {m}."];
+  var BACK_LINES=["Welcome back. Lovely to see you.","There you are. I've missed you.","Hello again. Let's start fresh.","Good to have you back.","Welcome back. No catching up needed.","Lovely to see you again.","Back again. Splendid.","Hello, you. Shall we begin?","A fresh start awaits.","Welcome back. Take it gently.","So nice to see you.","Hello again. One step at a time.","You're back. Wonderful.","Welcome home.","Ready when you are."];
+  function winLine(joy){return joy?deck("alldone",ALLDONE_LINES):deck("done",DONE_LINES)}
+  function remindLine(month){return deck("remind",REMIND_LINES).replace("{m}",month)}
   function toast(m,undo,mood,sub){var t=$("#toast");_toastUndo=undo||null;
     var wantBlob=!!(mood&&Buddy.cfg.show&&(Buddy.cfg.mode!=="quiet"||mood==="joy"));
     t.innerHTML=(wantBlob?'<span class="blob-host toast-blob"></span>':"")+'<span class="tx"></span>'+(undo?'<button data-toastundo>Undo</button>':"");
@@ -5829,11 +5848,11 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function setCfg(k,v){cfg[k]=v;lsSet("ritsu_buddy_"+k,k==="mode"?v:(v?"1":"0"));apply()}
   /* Short, kind, fixed lines. Never about a missed habit or a low score. */
   var LINES={
-    wave:{morning:["Good morning.","Morning. One thing at a time."],afternoon:["Good afternoon.","Hello again."],evening:["Good evening.","Evening. Nearly there."],night:["Good night.","Still up? Go easy."],back:["Welcome back. No catching up."]},
-    done:["Done. Nice one.","Ticked.","Nice."],
-    complete:["Day complete. Well done.","All done today. Rest easy."],
+    wave:{morning:["Good morning.","Good morning. One thing at a time."],afternoon:["Good afternoon.","Hello again."],evening:["Good evening.","Good evening. Nearly there."],night:["Good evening.","Still up? Do rest soon."],back:BACK_LINES},
+    done:["Beautifully done.","Lovely.","Well played."],
+    complete:["Bravo.","A splendid day."],
     love:["Backed up. All safe."],restored:["All restored. Welcome back."],
-    shy:["This stays on your phone."],sleepy:["Late one. Rest well."],sad:["Sorry you feel rough. Rest up."]
+    shy:["This stays on your phone."],sleepy:["A late one. Do rest well."],sad:["Sorry you're unwell. Do rest."]
   };
   /* at most this many bubbles of each kind a day, and four a day in all */
   var CAP={wave:1,done:1,complete:1,love:2,restored:1,shy:1,sleepy:1,sad:3};
@@ -5875,7 +5894,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     setTimeout(function(){
       if(!visible())return;main.blob.flash("wave",2600);
       var s2=dayState();
-      if(cfg.say&&s2.n<4){var h=new Date().getHours(),L=LINES.wave;s2.n++;s2.last=Date.now();s2.k.wave=1;saveState(s2);say(pick(away>=3?L.back:(h<5||h>=21)?L.night:h<12?L.morning:h<17?L.afternoon:L.evening),4200)}
+      if(cfg.say&&s2.n<4){var h=new Date().getHours(),L=LINES.wave;s2.n++;s2.last=Date.now();s2.k.wave=1;saveState(s2);say(away>=3?deck("back",L.back):pick((h<5||h>=21)?L.night:h<12?L.morning:h<17?L.afternoon:L.evening),4200)}
     },700);
   }
   /* its everyday mood follows the day: napping late at night, curious with nothing due, happy when it is all done */
@@ -5951,8 +5970,8 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
 
   function openMeasure(id){var i=Store.get("items",id);if(!i)return;var cur=(i.values||{})[today()];ms={type:"measure",id:id,ok:null};openModal('<div class="modal-h"><h3>'+esc(i.title)+'</h3><button class="x" data-close>×</button></div><div class="modal-b"><p class="kicker" style="color:var(--muted);margin:0 0 6px">Today · goal '+(i.target||0)+' '+esc(i.unit||"")+'</p><div class="bignum"><input type="number" id="mv" step="any" min="0" value="'+(cur!=null?cur:"")+'" placeholder="0"><span class="u">'+esc(i.unit||"")+'</span></div><div id="mv-ok" class="mv-ok" hidden></div></div><div class="modal-f">'+(cur!=null?'<button class="btn danger sm" data-clear-measure="'+id+'">Clear</button>':'')+'<span class="spacer"></span><button class="btn ghost" data-close>Cancel</button><button class="btn primary" data-save-measure="'+id+'">Save reading</button></div>');setTimeout(function(){var e=$("#mv");if(e){e.focus();e.select();mvOk(i);e.addEventListener("input",function(){mvOk(i)});}},60);}
   /* a number under the goal still counts as done for the day (untick to keep it open), and gets a kind line */
-  var LOW_LINES=["Every bit counts. Tomorrow is a fresh page.","Some is so much better than none.","A quiet day is part of the rhythm.","You showed up. That is the hard part.","Small steps still move you forward.","Rest is part of the plan too. Well done.","Not your biggest day, and that is fine.","Progress is not a straight line. Keep going.","You did something today. That counts.","Be kind to yourself. You are still on your way."];
-  function lowLine(){var k="ritsu_lowline",n=0;try{n=parseInt(localStorage.getItem(k)||"-1",10)}catch(e){n=-1}var r;do{r=Math.floor(Math.random()*LOW_LINES.length)}while(r===n&&LOW_LINES.length>1);try{localStorage.setItem(k,String(r))}catch(e){}return LOW_LINES[r]}
+  var LOW_LINES=["Every bit counts. Lovely.","Some is far better than none.","A gentle day still counts.","You showed up. That's what matters.","Small steps, still forward.","Rest is part of it too.","Not your biggest day, and that's fine.","Progress is never a straight line.","Something done is something gained.","Be kind to yourself. You're on your way.","A little today, more another day.","Quietly counted. Well done.","That still counts, beautifully.","Every drop adds up.","Gently does it. Well done."];
+  function lowLine(){return deck("under",LOW_LINES)}
   function mvOk(i){var e=$("#mv"),o=$("#mv-ok");if(!e||!o)return;var v=parseFloat(e.value),t=i.target||0;
     if(!(!isNaN(v)&&v>0&&t>0&&v<t)){o.hidden=true;o.innerHTML="";return;}
     var on=ms.ok!=null?ms.ok:true;
@@ -6275,7 +6294,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       var snapS=cbSnap();
       if(sgd.q){var lst=lqGet();lst.q.unshift({t:"d",key:sgd.key});lst.last=addDaysStr(today(),-1);lqPut(lst);}   /* queued first, so the redraw after saving shows its date question on Home now */
       cbCreate(sgd.key,"unsure",0);var madeS=cbFind(sgd.key);
-      closeModal();toast("Added "+sgd.name+". "+(madeS?"Next reminder in "+cbBackMonth(madeS.cb)+".":"Reminder every "+cbEveryLabel(sgd.every)+"."),cbUndo(snapS),"happy");return;
+      closeModal();toast(madeS?remindLine(cbBackMonth(madeS.cb)):"Reminder every "+cbEveryLabel(sgd.every)+".",cbUndo(snapS),"happy");return;
     }
     var isTodo=qa.card==="todo",cat=isTodo?TODO_CAT:qa.cat;
     if(!cat){toast("Pick an area first");return}
