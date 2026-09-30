@@ -1,0 +1,100 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Life tiles flow mock</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0D0E11;--panel:#16181D;--panel-2:#1E2128;--ink:#F4F5F7;--muted:#9CA3AF;--faint:#828A95;--line:#282C34;--accent:#34D399}
+*{box-sizing:border-box}
+body{margin:0;background:#07080a;color:var(--ink);font:15px "Space Grotesk",system-ui;display:flex;gap:28px;padding:28px;align-items:flex-start}
+.col{width:360px}
+.lab{font-size:13px;color:var(--muted);margin:0 0 10px 4px}.lab b{color:var(--accent);font-weight:600;margin-right:6px}
+.ph{width:360px;height:760px;background:var(--bg);border-radius:32px;padding:26px 18px;position:relative;overflow:hidden;border:1px solid #1b1d22}
+.steps{display:flex;gap:6px;margin-bottom:20px}.steps i{flex:1;height:4px;border-radius:2px;background:var(--line)}.steps i.on{background:var(--accent)}
+h1{font-size:26px;font-weight:500;margin:0 0 6px;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:0 0 18px;line-height:1.4;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.t{background:var(--panel);border-radius:16px;padding:12px;min-height:74px;position:relative}
+.t svg{width:22px;height:22px;stroke:var(--muted);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.t b{display:block;font-weight:500;font-size:14px;margin-top:6px}.t small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.t.on{background:color-mix(in srgb,var(--accent) 16%,var(--panel));box-shadow:inset 0 0 0 1.5px var(--accent)}.t.on svg{stroke:var(--accent)}
+.ck{position:absolute;top:10px;right:10px;width:18px;height:18px;border-radius:50%;background:var(--accent);display:grid;place-items:center}
+.ck:after{content:"";width:8px;height:4px;border-left:2px solid #06281c;border-bottom:2px solid #06281c;transform:rotate(-45deg) translate(1px,-1px)}
+.note{font-size:13px;color:var(--faint);margin:14px 2px;line-height:1.4}
+.foot{position:absolute;left:18px;right:18px;bottom:22px;display:flex;align-items:center;justify-content:space-between}
+.skip{color:var(--muted)}.go{background:var(--accent);color:#06281c;border-radius:999px;padding:13px 22px;font-weight:600}
+.greet{font-size:30px;font-weight:500;margin:6px 0 16px}
+.card{background:var(--panel);border-radius:16px;padding:16px;margin-bottom:10px}
+.kick{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.big{font-size:44px;font-weight:300;margin:6px 0 2px}
+.row{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:14px}.row:first-of-type{border-top:0}
+.tick{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--faint);flex:none}
+.ask{display:flex;gap:12px;background:var(--panel);border-radius:16px;padding:14px;margin-bottom:10px}
+.blob{width:44px;height:40px;flex:none;border-radius:50% 50% 44% 44%;background:radial-gradient(circle at 35% 30%,#7ff0c4,#1fae78 70%);position:relative}
+.blob:before,.blob:after{content:"";position:absolute;top:15px;width:5px;height:6px;border-radius:50%;background:#0b3a28}.blob:before{left:14px}.blob:after{right:14px}
+.ask b{display:block;font-weight:500;margin-bottom:2px}.ask small{display:block;color:var(--muted);font-size:13px;margin-bottom:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.c{border-radius:999px;padding:7px 12px;background:var(--panel-2);font-size:13px}
+.c.on{background:color-mix(in srgb,var(--accent) 22%,var(--panel-2));box-shadow:inset 0 0 0 1.5px var(--accent)}
+.c.pri{background:var(--accent);color:#06281c;font-weight:600}
+.later{font-size:12px;color:var(--faint);margin-top:8px}
+.toast{position:absolute;left:18px;right:18px;bottom:22px;background:#23262d;border-radius:16px;padding:14px 16px;font-size:14px;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.hint{font-size:13px;color:var(--faint);text-align:center;margin-top:14px}
+</style></head><body>
+
+<div class="col"><p class="lab"><b>1</b>Setup, step 3 (about 5 seconds)</p><div class="ph">
+<div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i></div>
+<h1>What is in your life?</h1>
+<p class="sub">Tap what fits. Ritsu sets up the reminders and asks the dates later, one at a time.</p>
+<div class="grid">
+ <div class="t on"><span class="ck"></span><svg viewBox="0 0 24 24"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg><b>Health</b><small>Check-ups, medicine</small></div>
+ <div class="t on"><span class="ck"></span><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-6h4v6"/></svg><b>My home</b><small>Rent, bills, gas</small></div>
+ <div class="t on"><span class="ck"></span><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg><b>Money</b><small>Bills, EMIs, papers</small></div>
+ <div class="t"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5h6v2M3 13h18"/></svg><b>Work or studies</b><small>Fees, exams, renewals</small></div>
+ <div class="t on"><span class="ck"></span><svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="3"/><circle cx="16.5" cy="9" r="2.5"/><path d="M3 20c0-3 2.2-5.5 5-5.5s5 2.5 5 5.5M13 20c0-2.5 1.6-4.5 3.5-4.5S20 17.5 20 20"/></svg><b>Family</b><small>Birthdays, parents</small></div>
+ <div class="t on"><span class="ck"></span><svg viewBox="0 0 24 24"><path d="M3 16v-4l2-5h14l2 5v4H3z"/><circle cx="7" cy="16" r="2"/><circle cx="17" cy="16" r="2"/></svg><b>Car or bike</b><small>Insurance, PUC, service</small></div>
+ <div class="t"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M6 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/></svg><b>Kids</b><small>Vaccines, school fees</small></div>
+ <div class="t"><svg viewBox="0 0 24 24"><circle cx="6" cy="10" r="2"/><circle cx="10" cy="6" r="2"/><circle cx="14" cy="6" r="2"/><circle cx="18" cy="10" r="2"/><path d="M8 17c0-3 2-5 4-5s4 2 4 5c0 2-8 2-8 0z"/></svg><b>Pets</b><small>Vet, flea treatment</small></div>
+ <div class="t"><svg viewBox="0 0 24 24"><path d="M3 13l18-7-7 18-2.5-8.5z"/></svg><b>Travel</b><small>Passport, visa</small></div>
+ <div class="t"><svg viewBox="0 0 24 24"><path d="M12 3c2.5 3 4 5.2 4 7.5a4 4 0 01-8 0C8 8.2 9.5 6 12 3z"/><path d="M7 21h10M12 14.5V21"/></svg><b>Faith</b><small>Prayer, fasts, festivals</small></div>
+</div>
+<div class="foot"><span class="skip">Skip</span><span class="go">Finish setup</span></div>
+</div></div>
+
+<div class="col"><p class="lab"><b>2</b>Right after setup: nothing to answer yet</p><div class="ph">
+<div class="greet">Good evening</div>
+<div class="card"><div class="kick">Wednesday · 30 September</div><div class="big">0 / 3</div><div style="color:var(--muted);font-size:14px">A fresh start. Nothing is due tonight.</div></div>
+<div class="card"><div class="row"><span class="tick"></span>Wake up on time</div><div class="row"><span class="tick"></span>Drink water</div><div class="row"><span class="tick"></span>Read 10 pages</div></div>
+<p class="hint">Health, home, money, family and the bike are set up and quiet.<br>Ritsu will ask about dates from tomorrow.</p>
+<div class="toast">That is it. Add anything else by typing it.</div>
+</div></div>
+
+<div class="col"><p class="lab"><b>3</b>Next morning: one question, the most urgent first</p><div class="ph">
+<div class="greet">Good morning</div>
+<div class="card"><div class="kick">Thursday · 1 October</div><div class="big">0 / 3</div><div style="color:var(--muted);font-size:14px">One small thing at a time.</div></div>
+<div class="ask"><span class="blob"></span><div><b>When is your car insurance due?</b><small>So Ritsu can remind you 3 weeks before.</small>
+ <div class="chips"><span class="c">This month</span><span class="c">Next month</span><span class="c">Later this year</span><span class="c">Not sure</span></div>
+ <div class="later">Later</div></div></div>
+<div class="card"><div class="row"><span class="tick"></span>Wake up on time</div><div class="row"><span class="tick"></span>Drink water</div><div class="row"><span class="tick"></span>Read 10 pages</div></div>
+<p class="hint">Ignore it and nothing happens.<br>It just asks again another day.</p>
+</div></div>
+
+<div class="col"><p class="lab"><b>4</b>Day after: the next question</p><div class="ph">
+<div class="greet">Good morning</div>
+<div class="card"><div class="kick">Friday · 2 October</div><div class="big">1 / 3</div><div style="color:var(--muted);font-size:14px">Nice start to the day.</div></div>
+<div class="ask"><span class="blob"></span><div><b>Which check-ups do you go for?</b><small>Tap any. Ask your doctor how often for you.</small>
+ <div class="chips"><span class="c on">Doctor</span><span class="c on">Dentist</span><span class="c">Eye test</span><span class="c on">Blood test</span></div>
+ <div class="chips" style="margin-top:10px"><span class="c pri">Done</span></div></div></div>
+<div class="card"><div class="row"><span class="tick" style="background:var(--accent);border-color:var(--accent)"></span>Wake up on time</div><div class="row"><span class="tick"></span>Drink water</div><div class="row"><span class="tick"></span>Read 10 pages</div></div>
+<p class="hint">Then: "When did you last see the doctor?"<br>and so on, one a day, for about a week.</p>
+</div></div>
+
+<div class="col"><p class="lab"><b>5</b>If Faith was picked: it starts empty, you choose</p><div class="ph">
+<div class="greet">Good morning</div>
+<div class="card"><div class="kick">Saturday · 3 October</div><div class="big">2 / 3</div><div style="color:var(--muted);font-size:14px">A calm start.</div></div>
+<div class="ask"><span class="blob"></span><div><b>What would you like help remembering?</b><small>Pick any, or none. These never count toward the day.</small>
+ <div class="chips"><span class="c on">Daily prayer</span><span class="c">Weekly worship</span><span class="c on">Fasting days</span><span class="c">Festivals</span></div>
+ <div class="chips" style="margin-top:10px"><span class="c pri">Done</span><span class="c">Nothing for now</span></div></div></div>
+<div class="card"><div class="row"><span class="tick" style="background:var(--accent);border-color:var(--accent)"></span>Wake up on time</div><div class="row"><span class="tick" style="background:var(--accent);border-color:var(--accent)"></span>Drink water</div><div class="row"><span class="tick"></span>Read 10 pages</div></div>
+<p class="hint">No religion is assumed. Names and times<br>are the person's own.</p>
+</div></div>
+</body></html>

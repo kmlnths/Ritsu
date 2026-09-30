@@ -10,12 +10,22 @@ all.forEach(x=>ok(GROUPS.includes(x.grp),x.t.t+" has group "+x.grp));
 const names=cc=>L.libFlat(cc,false).map(x=>x.t.t),find=(cc,t)=>L.libFlat(cc,true).map(x=>x.t.t).includes(t);
 ok(names("IN").includes("PUC certificate"),"PUC shows in India");ok(!names("GB").includes("PUC certificate"),"PUC hidden outside India");
 ok(names("GB").includes("MOT")&&!names("US").includes("MOT"),"MOT only in the UK");
-ok(!names("IN").includes("Dentist")&&find("IN","Dentist"),"dentist not up front in India, found by search");
+ok(names("IN").includes("Dentist"),"dentist offered in India too (setup asks instead of guessing)");
 ok(names("US").includes("Dentist")&&names("XX").includes("Dentist"),"dentist up front elsewhere");
 const sh=t=>L.libFlat("XX",true).find(x=>x.t.t===t).shared;
 ok(sh("Gym")&&sh("Reading")&&sh("Meditation"),"fitness, reading, calm are shared");
 ok(!sh("Weight")&&!sh("Brush teeth")&&!sh("Dentist")&&!sh("Mood out of 5"),"health, hygiene, checkups, private ones are never shared");
-const cb=L.libCB();ok(cb.map(d=>d.key).join()==="dentist,eye,insurance,taxes,subs,checkup","things that come back keep their order: "+cb.map(d=>d.key));
+const cb=L.libCB();ok(cb.slice(0,6).map(d=>d.key).join()==="dentist,eye,insurance,taxes,subs,checkup","the first six things that come back keep their order: "+cb.map(d=>d.key));
+ok(new Set(cb.map(d=>d.key)).size===cb.length,"come-back keys are unique");
+cb.forEach(d=>ok(d.every>0&&(d.rule==="fixed"||d.rule==="since")&&(d.kind==="visit"?d.book:d.act),d.key+" is a complete come-back entry"));
+/* life tiles: every key and pick points at a real come-back entry (or a habit), country specs parse */
+const la=src.indexOf("  var LIFE_TILES=["),lb=src.indexOf("  function lifeTile(");
+const LT=new Function(src.slice(la,lb)+";return {LIFE_TILES,lifeFits,lifeKey}")();
+const keys=new Set(cb.map(d=>d.key));
+ok(LT.LIFE_TILES.length===10,"ten life tiles");
+LT.LIFE_TILES.forEach(x=>{const specs=(x.keys||[]).concat((x.pick||[]).map(p=>p[0]));ok(specs.length>0,x.k+" has something inside");
+  specs.forEach(sp=>{const k=LT.lifeKey(sp);ok(k.startsWith("h:")?/^h:[^:]+:\d+$/.test(k):keys.has(k),x.k+": "+sp+" exists")})});
+ok(LT.lifeFits("puc@IN","IN")&&!LT.lifeFits("puc@IN","GB")&&LT.lifeFits("homeins@!IN","GB")&&!LT.lifeFits("homeins@!IN","IN")&&LT.lifeFits("taxes","XX"),"country specs");
 ok(cb[0].cat==="c_checkups"&&cb[2].list==="home"&&cb[3].list==="personal","come-back groups: "+[cb[0].cat,cb[2].list,cb[3].list]);
 [["Asia/Kolkata","en-US","IN"],["Asia/Calcutta","en-IN","IN"],["Europe/London","en-GB","GB"],["America/New_York","en-US","US"],["America/Toronto","en-US","CA"],["America/Chicago","en-CA","CA"],
  ["Australia/Sydney","en-US","AU"],["Asia/Singapore","en-GB","SG"],["Europe/Paris","en-IE","IE"],["","",""]].forEach(([tz,l,w])=>ok(L.guessCountry(tz,l)===w,"country "+tz+" "+l+" -> "+L.guessCountry(tz,l)+" want "+w));

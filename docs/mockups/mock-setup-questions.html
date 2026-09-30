@@ -1,0 +1,45 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Setup questions mock</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0D0E11;--panel:#16181D;--panel-2:#1E2128;--ink:#F4F5F7;--muted:#9CA3AF;--faint:#828A95;--line:#282C34;--accent:#34D399}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px "Space Grotesk",system-ui}
+.ph{width:390px;padding:28px 20px 24px;box-sizing:border-box}
+.steps{display:flex;gap:6px;margin-bottom:22px}.steps i{flex:1;height:4px;border-radius:2px;background:var(--line)}.steps i.on{background:var(--accent)}
+h1{font-size:28px;font-weight:500;margin:0 0 6px;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:0 0 22px;line-height:1.4}
+.q{background:var(--panel);border-radius:16px;padding:14px 16px;margin-bottom:10px}
+.q b{display:block;font-weight:500;margin-bottom:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.c{border-radius:999px;padding:8px 14px;background:var(--panel-2);color:var(--ink);font-size:14px}
+.c.on{background:color-mix(in srgb,var(--accent) 22%,var(--panel-2));box-shadow:inset 0 0 0 1.5px var(--accent)}
+.sq{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.sq>span{display:block;font-size:13px;color:var(--muted);margin-bottom:8px}
+.add{font-size:13px;color:var(--accent);margin-top:10px}
+.note{font-size:13px;color:var(--faint);margin:14px 2px 18px;line-height:1.4}
+.foot{display:flex;align-items:center;justify-content:space-between}
+.skip{color:var(--muted)}.go{background:var(--accent);color:#06281c;border-radius:999px;padding:13px 22px;font-weight:600}
+</style></head><body><div class="ph">
+<div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i></div>
+<h1>A few quick questions</h1>
+<p class="sub">Tap what fits. Ritsu sets up only what you pick and stays quiet until it is time.</p>
+
+<div class="q"><b>Do you go for health check-ups?</b>
+ <div class="chips"><span class="c on">Yes</span><span class="c">Sometimes</span><span class="c">Not yet</span></div>
+ <div class="sq"><span>Which ones?</span><div class="chips"><span class="c on">Doctor</span><span class="c on">Dentist</span><span class="c">Eye test</span><span class="c on">Blood test</span></div></div>
+</div>
+
+<div class="q"><b>Do you have a car or bike?</b>
+ <div class="chips"><span class="c on">Yes</span><span class="c">No</span></div>
+ <div class="sq"><span>When is the insurance due?</span><div class="chips"><span class="c">This month</span><span class="c on">Next month</span><span class="c">Later</span><span class="c">Not sure</span></div>
+ <div class="add">Also adds your PUC certificate</div></div>
+</div>
+
+<div class="q"><b>Any pets?</b><div class="chips"><span class="c">Yes</span><span class="c">No</span></div></div>
+<div class="q"><b>Do you file your own taxes?</b><div class="chips"><span class="c">Yes</span><span class="c">No</span></div></div>
+<div class="q"><b>Subscriptions to keep an eye on?</b><div class="chips"><span class="c">Yes</span><span class="c">No</span></div></div>
+
+<p class="note">Typical gaps, always editable. Ask your doctor for yours.</p>
+<div class="foot"><span class="skip">Skip</span><span class="go">Finish setup</span></div>
+</div></body></html>
