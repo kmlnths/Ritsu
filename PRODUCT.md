@@ -41,7 +41,7 @@ Health and to-dos in one place, instead of a pill app, a habit app, a body log a
 
 ## Brand Commitments
 
-- Name: Ritsu (律, rhythm, order, discipline).
+- Name: CHOSEN 2026-10-01: **Hiyori** (日和, the feel of a day, as in "a good day for laundry"). Tagline idea: "Whatever kind of day it is." Until the app is renamed, the code and live site still say Ritsu (律). Still to do before using it publicly: trademark search, domain, Play Store check (`docs/competitors.md`).
 - Voice: plain, warm, short. Real numbers only. Never nagging, never "overdue", never "too much", no guilt when nothing got done, no red pile-ups; red is reserved for genuine health misses.
 - No em dashes or en dashes anywhere in the interface.
 - It must look posh and considered, never like a generic AI-made app. Apple is the stated inspiration for the level of restraint and finish.
@@ -122,7 +122,7 @@ Each has a "done when" line. It is not finished until that is true.
    Done when: on Sundays Home shows a calm Plan the week card (spread tasks that have no day; skipping is safe), and a small link in setup step 3 reads a .ics or .csv file into cards and groups with each item tickable.
 6. **Remove dead code** (list in `ARCHITECTURE.md`, plus the old tag code paths). PARTLY DONE 2026-10-01: 35 unused functions removed (350 lines); unused styles and the old tag code paths remain.
    Done when: the file is smaller, the syntax check passes and every screen looks the same as before.
-7. **Choose the app name** before any store listing or paid launch (`docs/competitors.md`: another app called Ritsu exists).
+7. **Choose the app name** before any store listing or paid launch (`docs/competitors.md`: another app called Ritsu exists). CHOSEN 2026-10-01: Hiyori. Done when: a picture of the sidebar and Home with 日和 is approved, the app, icons, manifest and docs say Hiyori, and the trademark and domain checks are clear.
 
 **Phase B: accounts and a backend (Supabase or similar)**
 

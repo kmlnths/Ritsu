@@ -31,4 +31,6 @@ Picture: `docs/mockups/mock-structure.png`.
 - Same name, same store category, and theirs is already listed.
 - Risk is low while Ritsu is a free website; it grows at the native app step and if we charge money.
 - Before a paid launch or store listing: pick a name that can be fully ours, and get a proper trademark search (not legal advice).
-- Still open: a new name that keeps the meaning of 律 (rhythm, order).
+- Chosen 2026-10-01: **Hiyori** (日和). The user picked it for the story: every day has its own weather, so a grey day is not a failed day. Runners-up: Meguri (巡, "it all comes round", nothing found in habit apps) and Kurashi (暮らし, "how you live", only a language app found). Ruled out for being taken: Hibi, Ayumi, Tabi, Yutori, Kasane, Koyomi; Nagomi is crowded.
+- Found 2026-10-01 by web search only (the official trademark sites blocked the tools): no habit or routine app called Hiyori turned up. Hiyori is also a girl's name in Japan. No DNS records for hiyori.app, hiyori.life, hiyoriapp.com, gethiyori.com, usehiyori.com (not proof they are free); hiyori.com and hiyori.in are in use.
+- Still to do: check the US, India and WIPO trademark databases by hand, buy a domain, check Google Play, then rename the app.
