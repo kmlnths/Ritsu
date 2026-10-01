@@ -1,0 +1,76 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Templates mock</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0D0E11;--panel:#16181D;--panel-2:#1E2128;--ink:#F4F5F7;--muted:#9CA3AF;--faint:#828A95;--line:#282C34;--accent:#34D399}
+*{box-sizing:border-box}
+body{margin:0;background:#07080a;color:var(--ink);font:15px "Space Grotesk",system-ui;display:flex;gap:28px;padding:28px;align-items:flex-start}
+.lab{font-size:13px;color:var(--muted);margin:0 0 10px 4px}.lab b{color:var(--accent);margin-right:6px}
+.ph{width:360px;height:780px;background:var(--bg);border-radius:32px;padding:22px 18px;overflow:hidden;border:1px solid #1b1d22;position:relative}
+.top{display:flex;align-items:center;justify-content:space-between}
+h1{font-size:26px;font-weight:500;margin:0}
+.x{width:34px;height:34px;border-radius:50%;background:var(--panel-2);display:grid;place-items:center;color:var(--muted)}
+.sub{color:var(--muted);font-size:14px;margin:6px 0 14px}.sub u{color:var(--accent);text-decoration:none;font-weight:500}
+.search{background:var(--panel-2);border-radius:12px;padding:11px 14px;color:var(--faint);font-size:14px;margin-bottom:14px}
+.chips{display:flex;gap:6px;margin-bottom:14px}.chip{padding:7px 14px;border-radius:999px;background:var(--panel-2);font-size:13px}.chip.on{background:var(--accent);color:#06281c;font-weight:600}
+.k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:14px 2px 6px}
+.card{background:var(--panel);border-radius:16px;padding:2px 14px}
+.row{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line)}.row:first-child{border-top:0}
+.row div{flex:1}.row b{display:block;font-weight:500;font-size:15px}.row small{color:var(--muted);font-size:12px}
+.add{padding:6px 14px;border-radius:999px;background:var(--panel-2);font-size:13px;font-weight:600;color:var(--ink)}
+.have{font-size:12px;color:var(--accent)}
+.sheet{position:absolute;left:10px;right:10px;bottom:10px;background:#1b1e24;border-radius:18px;padding:18px;box-shadow:0 -10px 40px rgba(0,0,0,.6)}
+.sheet h3{margin:0 0 4px;font-size:19px;font-weight:500}.sheet p{margin:0 0 12px;color:var(--muted);font-size:14px}
+.opts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.o{padding:8px 14px;border-radius:999px;background:var(--panel-2);font-size:13px}.o.on{background:var(--accent);color:#06281c;font-weight:600}
+.btn{display:block;text-align:center;padding:13px;border-radius:999px;background:var(--accent);color:#06281c;font-weight:600}
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.5)}
+</style></head><body>
+
+<div><p class="lab"><b>1</b>Templates, sorted by topic</p><div class="ph">
+<div class="top"><h1>Templates</h1><span class="x">✕</span></div>
+<p class="sub">Ready-made ideas for India. <u>Change</u></p>
+<div class="search">Search dentist, reading, rent...</div>
+<div class="chips"><span class="chip on">All</span><span class="chip">Body</span><span class="chip">Mind</span><span class="chip">To-do</span></div>
+<div class="k">Checkups</div>
+<div class="card">
+ <div class="row"><div><b>Dentist</b><small>Reminder, every 6 months</small></div><span class="have">Added</span></div>
+ <div class="row"><div><b>Eye test</b><small>Reminder, yearly</small></div><span class="add">Add</span></div>
+ <div class="row"><div><b>Blood test</b><small>Reminder, yearly · Private</small></div><span class="add">Add</span></div>
+</div>
+<div class="k">Home</div>
+<div class="card">
+ <div class="row"><div><b>Book the gas cylinder</b><small>Reminder, monthly</small></div><span class="add">Add</span></div>
+ <div class="row"><div><b>Water purifier service</b><small>Reminder, every 6 months</small></div><span class="add">Add</span></div>
+</div>
+<div class="k">Reading</div>
+<div class="card">
+ <div class="row"><div><b>Reading</b><small>Daily, 50 pages</small></div><span class="add">Add</span></div>
+</div>
+</div></div>
+
+<div><p class="lab"><b>2</b>Tap Add on a check-up: choose the rhythm</p><div class="ph">
+<div class="top"><h1>Templates</h1><span class="x">✕</span></div>
+<p class="sub">Ready-made ideas for India. <u>Change</u></p>
+<div class="search">Search dentist, reading, rent...</div>
+<div class="dim"></div>
+<div class="sheet"><h3>Eye test</h3><p>Usually yearly. What suits you best?</p>
+<div class="opts"><span class="o">Every 6 Months</span><span class="o on">Yearly</span><span class="o">Every 2 Years</span></div>
+<span class="btn">Remind Me</span></div>
+</div></div>
+
+<div><p class="lab"><b>3</b>Country, from "Change" or Settings</p><div class="ph">
+<div class="top"><h1>Your Country</h1><span class="x">✕</span></div>
+<p class="sub">So I can suggest what's usual where you live.</p>
+<div class="card">
+ <div class="row"><div><b>India</b><small>From your phone</small></div><span class="have">✓</span></div>
+ <div class="row"><div><b>United Kingdom</b></div></div>
+ <div class="row"><div><b>United States</b></div></div>
+ <div class="row"><div><b>Canada</b></div></div>
+ <div class="row"><div><b>Australia</b></div></div>
+ <div class="row"><div><b>Singapore</b></div></div>
+ <div class="row"><div><b>Other</b><small>Shared list only</small></div></div>
+</div>
+</div></div>
+
+</body></html>
