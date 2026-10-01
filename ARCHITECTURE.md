@@ -35,7 +35,7 @@ One `<script>` holds everything inside one function (an IIFE). Rough order from 
 11. Companion blob (`var Buddy`) and pull cord (`Pull`), both adapted from MIT code, credits in Settings.
 12. Bottom menu `renderNav` (`.fnav`), `#fab`, `#fabMenu`.
 
-Dead code to remove later: `hmCardsHtml`, `hmArc`, `hmSpark`, `hmNextHtml`, `progressCard`, `todayTimeline`, `last7bars`, `buildDays` / `dayscroll*`, hero banner art, `hmThemeHtml`.
+Dead code: 35 unused functions removed 2026-10-01 (old progress card, day scroller, calendar panel and the like). Still left: their unused styles (`.dayscroll*`) and the old tag code paths.
 
 ## 3. Data
 
