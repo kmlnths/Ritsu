@@ -107,6 +107,20 @@ Not on this list, so never on the server: medicine, health logs, mood, weight, c
 
 Each step: show a picture first, build, check on phone and laptop, commit, ask before pushing.
 
+## To decide before building: rhythm and no FOMO (raised by the user 2026-10-02)
+
+**The user's point.** A plan of "workout 4 times a week" is a full plan, not a weak one. Someone who works out Mon, Tue, Thu, Fri and rests Wed has kept their whole week, and their Body light for the week should show that. Priya reading 5 days and Arjun reading 7 are different levels of challenge, not ahead and behind. Seeing "7 days" next to "4 days" must not cause FOMO.
+
+**Gap in the app today.** Repeating items only know "every N days" (`repeatEvery`: every day, every 2 days...). There is no "these days of the week" and no "N times a week, any days". This is needed before groups, for every item including body logs.
+
+**Proposed rhythm choices for every item:** Every day; Some days (pick Mon, Tue, Thu, Fri); A number of times a week, any days (for example 4); Every few days (every 2 = alternate days); Once a week or once a month. Body logs also get "follow for a week" or "every day".
+
+**Proposed counting:** a day off that is part of your plan is a rest day, shown calm (not an empty light, never counted against you). The week is full when the plan is kept: 4 of 4 looks exactly like 7 of 7.
+
+**Proposed no-FOMO rules for the group page:** each friend shows a ring that fills to their *own* plan; a kept plan looks the same at any size; no rankings, no "most active", no streak comparisons; the group total celebrates plans kept together ("4 of 5 kept their plan this week"). Open choice: do friends see each other's numbers (4 of 4, 7 of 7) or only "on plan / plan kept"?
+
+**The friends-test "days opened" dashboard.** Only the user sees it, only for the test week, only after each friend says yes; its point is to learn if people come back. If the user prefers, drop it and simply ask friends on day 8 (no database needed for the test).
+
 ## Open questions for the user
 
 - Sign-in: Google and email link (free) to start? Phone number by SMS costs money per message, so not at first.
