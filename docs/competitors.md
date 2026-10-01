@@ -70,3 +70,14 @@ Icon findings (shelf test with the real icons):
 - The shelf is bright colour tiles with one white symbol, or friendly round creatures (Daylio green face, Tiimo orb, Finch bird, Headspace orange ball). A green blob icon would sit in that crowd, so the blob stays the mascot inside the app, not the icon.
 - Dark, warm icons are rare, and a sunrise with rays does not exist on the shelf. Decision: the app icon is the three-lights sunrise (Body green, To-do amber, Mind violet rays over a half sun). The day stamp (日) is kept as a small in-app stamp, not the icon.
 - Ratings measure the app, not the icon. Icon scores are my opinion.
+
+## Things Take Time (Logbook), a closest-in-spirit tracker (checked 2026-10-02)
+
+Source: its App Store page and the developer's listing. The user likes its icon.
+
+- By Chester How, a solo developer. Free, with in-app purchases: $2.99 a month or $34.99 lifetime. Rated 5.0, but from only 8 ratings. Last update 1.3.0 added widgets. Needs iOS 18.6 or later; also on Mac, Vision and Watch.
+- Idea: "Good things take time. Real progress is built through small things done consistently. It won't feel like much, until it does." Custom trackers for habits, routines and metrics, all shown together in one month grid so patterns show. Data stays on the device or in iCloud, nothing is collected.
+- It is a logbook: no tasks, no medicine, no scoring. Hiyori adds tasks, health and fair scoring on top of the same calm idea.
+- Its icon: hand-inked slanted tally strokes plus a full stop, black on a white tile (the initials "ttt." in the shape of a tally). Why it works: one idea that is the product (counting small things), hand-made and warm in a sea of geometric ticks, one colour, and the mark is the name.
+- Pricing data point: a lifetime price of about $35 sits close to the $35 a year the user had in mind for a paid tier.
+- Lookalike caution: an ink tally on a white tile is theirs in spirit. A Hiyori mark should differ clearly (a tick, colour, or a different gesture).
