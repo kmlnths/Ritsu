@@ -119,6 +119,19 @@ Each step: show a picture first, build, check on phone and laptop, commit, ask b
 
 **Proposed no-FOMO rules for the group page:** each friend shows a ring that fills to their *own* plan; a kept plan looks the same at any size; no rankings, no "most active", no streak comparisons; the group total celebrates plans kept together ("4 of 5 kept their plan this week"). Open choice: do friends see each other's numbers (4 of 4, 7 of 7) or only "on plan / plan kept"?
 
+**Decided 2026-10-02: no numbers between friends** (friends see only "on plan" / "plan kept").
+
+**The catch the user raised.** Ravi plans Workout once a week and does it; Priya plans 5 and does 5. Both lights are on, which is fair as "own pace", but later, in group against group, a whole group could set every plan to 1 and win.
+
+**Proposed answer: two different scores for two different games.**
+1. *Inside a friend group (friends helping friends):* plan kept = light on. Kept honest by: the week's plan is locked from Monday (you can raise it mid-week, never lower it); each shared item has a small floor to count in a group (for example Workout at least 2 times a week, Reading 3), set in the library, not by the user.
+2. *Your own progression (only you see it):* the app shows your trend over weeks, for example "September: 1 a week. Now: 3 a week." After 3 kept weeks it may gently offer "Ready for one more next week?" (skip is always fine, never nagging).
+3. *Group against group (later, Phase E):* scored by **real days done**, each thing at most once a day, averaged per person, and groups are matched with groups at a similar level. Setting everything to 1 just gives a low score, so there is nothing to gain by gaming it. Plans kept still decide the friendly lights inside each group.
+
+Example: Sunday crew (Ravi plans 1, Priya 5, both keep them) vs Office gang. Inside Sunday crew both rings are full. In the match, Sunday crew counts Ravi's 1 day and Priya's 5 days, averaged per person, against the Office gang's real days.
+
+Open: the user to confirm this, and whether to keep the floor (point 1).
+
 **The friends-test "days opened" dashboard.** Only the user sees it, only for the test week, only after each friend says yes; its point is to learn if people come back. If the user prefers, drop it and simply ask friends on day 8 (no database needed for the test).
 
 ## Open questions for the user
