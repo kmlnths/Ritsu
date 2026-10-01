@@ -265,3 +265,11 @@ Single-context: one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/age
 - Chose the name Hiyori (日和) after research on Japanese, Latin and Sanskrit options and an App Store check (Meguri and Kurashi were the runners-up; Hibi, Ayumi, Tabi, Yutori, Kasane, Koyomi were taken or crowded). Renamed the app everywhere except the stored-data keys, the repo and the folder.
 - Logo work: about twenty directions were drawn and tested against 16 real App Store icons. Chosen: K5, a tick of five emerald tiles. Everything is in `docs/brand/README.md`; the research tables are in `docs/competitors.md`.
 - Lessons: read the vision board first; one idea taken deep beats many ideas drawn once; my own scores are opinion, not measurement.
+
+## 2026-10-02 (later the same day)
+
+- Icon changed to the ink 日 with a green tick ("1A"), traced from an AI picture the user chose after my own redraw was rejected as stiff; tail shortened so it is not a swoosh. Phone mockups in all iPhone and Android looks.
+- Name changed from Hiyori to Daywell after a direct App Store search found 6 small Hiyori apps; Daywell had none. Lesson: check the store directly before calling a name free.
+- Idea review (`founder/validate-idea.md`): 15/35; pitch it to people living with a health condition; run the 10-friend test before more brand work.
+- Your areas became wallet stacks; old areas tidied once with a backup and Undo; light mode given the same depth as dark.
+- Backend and friend groups planned in `docs/backend-plan.md`; nothing built yet. "Call at venky 5" dropped; amounts note was meditation.

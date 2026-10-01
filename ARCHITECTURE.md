@@ -68,6 +68,9 @@ Dead code: 35 unused functions removed 2026-10-01 (old progress card, day scroll
 
 ### Step 1: backend (Supabase or similar)
 
+The friend groups and friends test come first, as a small shared "noticeboard" that never holds health data; the full plan with tables and an example is `docs/backend-plan.md`. Full diary sync below is a later, opt-in step.
+
+
 Why: accounts, sync between devices, safe cloud backup, 8pm reminders and push notifications.
 
 - Put the backend behind the same `Store` API (`all`, `get`, `add`, `update`, `del`, `onChange`). Screens should not change.
