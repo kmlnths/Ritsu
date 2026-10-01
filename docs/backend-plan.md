@@ -130,7 +130,7 @@ Each step: show a picture first, build, check on phone and laptop, commit, ask b
 
 Example: Sunday crew (Ravi plans 1, Priya 5, both keep them) vs Office gang. Inside Sunday crew both rings are full. In the match, Sunday crew counts Ravi's 1 day and Priya's 5 days, averaged per person, against the Office gang's real days.
 
-Open: the user to confirm this, and whether to keep the floor (point 1).
+**Decided 2026-10-02:** two scores as above, **no floor** (the user: the group is for doing it together, so no one is limited; a beginner with 1 a week lights up too). The weekly plan lock stays as the honesty rule. Group against group still counts real days done.
 
 **The friends-test "days opened" dashboard.** Only the user sees it, only for the test week, only after each friend says yes; its point is to learn if people come back. If the user prefers, drop it and simply ask friends on day 8 (no database needed for the test).
 
