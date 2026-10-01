@@ -1,3 +1,3 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><title>Hiyori</title><g transform="translate(0 -6)">
-<g transform="rotate(-45 128 214)"><rect x="106" y="62" width="44" height="86" rx="22" fill="#111"/></g><g transform="rotate(45 128 214)"><rect x="106" y="62" width="44" height="86" rx="22" fill="#111"/></g><rect x="106" y="62" width="44" height="86" rx="22" fill="#111"/>
-<path d="M62 214a66 66 0 0 1 132 0Z" fill="#111"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><title>Hiyori</title>
+<path fill-rule="evenodd" fill="#111" d="M318 150H706A56 56 0 0 1 762 206V694A56 56 0 0 1 706 750H318A56 56 0 0 1 262 694V206A56 56 0 0 1 318 150Z M362 214H662A36 36 0 0 1 698 250V414A36 36 0 0 1 662 450H362A36 36 0 0 1 326 414V250A36 36 0 0 1 362 214Z"/>
+<rect x="190" y="780" width="644" height="100" rx="50" fill="#111"/></svg>
