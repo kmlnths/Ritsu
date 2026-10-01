@@ -43,6 +43,7 @@ Dead code: 35 unused functions removed 2026-10-01 (old progress card, day scroll
 
 `Store` keeps five collections in memory: `cats`, `items`, `people`, `tags`, `markers`. API: `Store.all(c)`, `Store.get(c,id)`, `Store.add(c,data)`, `Store.update(c,id,data)`, `Store.del(c,id)`. Every change calls `onChange`, which redraws.
 
+- **Name note:** the app is called Hiyori, but every stored key still starts `ritsu_` and backups carry `app:"ritsu"`. Keep them (renaming wipes people's data) or write a one-time move from the old keys first.
 - **Local mode (what runs today):** the whole cache is one JSON string in `localStorage["ritsu_local"]`.
 - **Private items** (`localOnly`) live apart in `ritsu_private_items` so they never reach shared storage.
 - There is an old second path (`window.claude.use("db")`, a Firestore-like cloud from when the app ran as a chat artifact). It is not used on GitHub Pages. It is the natural place to plug in a real backend.

@@ -1,7 +1,7 @@
-/* Ritsu service worker.
+/* Hiyori service worker.
    Cache-first for the app shell so it opens instantly and works offline.
    Bump CACHE when you deploy, or people keep the old version. */
-const CACHE = "ritsu-v42";
+const CACHE = "hiyori-v43";
 const SHELL = [
   "./",
   "./index.html",

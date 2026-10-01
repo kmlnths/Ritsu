@@ -1,10 +1,10 @@
-# Ritsu
+# Hiyori
 
-> 律 — rhythm, order, discipline.
+> 日和 — the feel of a day. Whatever kind of day it is.
 
 A shared to‑do, habit and health tracker for a small group of friends. Mobile‑first, installable to the home screen, and offline‑capable.
 
-Ritsu's one idea: **not everything you track deserves to be scored the same way.** Brushing your teeth, a bowel movement, and a cigarette are three different kinds of thing, and treating them identically is what makes most habit trackers feel wrong.
+Hiyori's one idea: **not everything you track deserves to be scored the same way.** Brushing your teeth, a bowel movement, and a cigarette are three different kinds of thing, and treating them identically is what makes most habit trackers feel wrong.
 
 ---
 
@@ -17,7 +17,7 @@ Every item has a **stance**, which decides how it's scored.
 | **Routine** | Things you mean to do — meds, gym, brushing | Hitting the target | Consecutive days met |
 | **Body** | Things that just happen — bowel, urination, sleep | Being in the usual range | **None.** A bowel movement is not an achievement |
 | **Limit** | Things you're cutting down — smoking, drinking | The empty day | Consecutive days **without** |
-| **Episode** | Things that run for days — a cold, back pain | Not applicable | Ritsu records how long it lasted |
+| **Episode** | Things that run for days — a cold, back pain | Not applicable | Hiyori records how long it lasted |
 | **Fasting** | A timed eating window | Reaching the target | Not applicable |
 
 Only **Routine** items feed the daily completion number. A skipped workout and a drink no longer dent the same score.
@@ -40,7 +40,7 @@ Five rules run over every logged item:
 
 A single odd day stays off the report on purpose. Two or three become **Recurring**; three in a week, two weeks running, or an urgent marker twice becomes **Persistent** and leads the weekly report with a plain "worth mentioning to a doctor".
 
-When a pattern sets in, Ritsu asks *once* why — and at most once a day. A prompt every day is a nag, and nagging apps get deleted.
+When a pattern sets in, Hiyori asks *once* why — and at most once a day. A prompt every day is a nag, and nagging apps get deleted.
 
 ### Consistency
 
@@ -110,7 +110,7 @@ Until that exists, don't put anything on a shared board that you'd mind a friend
 
 ## Not a medical device
 
-Ritsu records what you log. It does not interpret symptoms, diagnose anything, or give medical advice. Fasting stage names describe elapsed time, not health claims — and Ritsu deliberately doesn't chart autophagy, because when it peaks in humans isn't settled.
+Hiyori records what you log. It does not interpret symptoms, diagnose anything, or give medical advice. Fasting stage names describe elapsed time, not health claims — and Hiyori deliberately doesn't chart autophagy, because when it peaks in humans isn't settled.
 
 If you're pregnant, diabetic, on medication, under 18, or have a history of disordered eating, talk to a doctor before fasting — especially anything past a day.
 

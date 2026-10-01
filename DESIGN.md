@@ -112,7 +112,7 @@ Ritsu is a refined, warm friend: quietly confident, polite, gently enthusiastic,
 ## Laptop side panel (replaces the sidebar notes above, 2026-09-30)
 
 Shaped after a reference video the user supplied: a rounded floating panel inset from the window edge, not a full-height bar.
-- Top: the name and a small round button on the panel's edge that collapses it to a slim rail (律 mark, icons only). Then a "Main" label: Home, Day, then Body, Mind and To-do as parent items with an icon. A parent opens to its groups under a thin tree line (staggered slide, chevron flips). Then "More": Fasting, Patterns, People, Settings as plain items. Bottom: a soft "who you are" card.
+- Top: the name and a small round button on the panel's edge that collapses it to a slim rail (日 mark, icons only; the full panel shows Hiyori with 日和 beside it). Then a "Main" label: Home, Day, then Body, Mind and To-do as parent items with an icon. A parent opens to its groups under a thin tree line (staggered slide, chevron flips). Then "More": Fasting, Patterns, People, Settings as plain items. Bottom: a soft "who you are" card.
 - In the rail a parent opens as a small flyout beside it; only one at a time, closes on any outside click. The choice (wide or rail) is remembered.
 - The floating quick-nav pill on a laptop appears only after you scroll away from the top of the page, and hides again at the top. On phones it stays always visible.
 - No search box yet (the reference had one); add when there is something worth searching.

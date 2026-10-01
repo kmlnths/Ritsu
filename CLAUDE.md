@@ -1,4 +1,4 @@
-# Ritsu: rules for Claude
+# Hiyori (was Ritsu): rules for Claude
 
 Read this first in every chat. Rules only; history lives in `docs/history.md`.
 
@@ -6,7 +6,7 @@ Read this first in every chat. Rules only; history lives in `docs/history.md`.
 
 | File | What it holds |
 |---|---|
-| `PRODUCT.md` | What Ritsu is, who it is for, principles, the feature list (built, planned in order with "done when", dropped) |
+| `PRODUCT.md` | What Hiyori is, who it is for, principles, the feature list (built, planned in order with "done when", dropped) |
 | `DESIGN.md` | Colours, type, shapes, main pieces, motion, access and word rules |
 | `ARCHITECTURE.md` | How the code and data work, code map, the backend and phone app plan, how to test |
 | `docs/future-improvements.md` | Small problems and ideas noticed along the way, not decided yet. When the user says "add it to future improvements", add it there |
@@ -17,8 +17,9 @@ Read this first in every chat. Rules only; history lives in `docs/history.md`.
 
 ## Current state
 
+- **Renamed to Hiyori (日和) on 2026-10-01**, in the app, manifest, README and cache (`hiyori-v43`). NOT renamed yet, on purpose: the stored-data keys that start `ritsu_` and the backup marker `app:"ritsu"` (changing them would wipe saved data and break old backups), the repo `kmlnths/Ritsu` and live address (`kmlnths.github.io/Ritsu`, installed copies would break), the project folder (rename it between chats), and the app icon (three rings, no name). Trademark and domain checks are still open (`docs/competitors.md`). Older notes below still say Ritsu.
 - Working branch `v5`. **GitHub Pages serves `v5`**, so pushing v5 changes the live site (kmlnths.github.io/Ritsu). `main`, `v2`, `v3`, `v4` are old.
-- `sw.js` cache is `ritsu-v42`. Bump it on every push.
+- `sw.js` cache is `hiyori-v43` (not pushed yet; the last pushed one was `ritsu-v42`). Bump it on every push.
 - Everything up to 2026-09-30 is pushed (cache `ritsu-v40`, 2026-10-01), including the clash warning, the templates list, the life tiles, typing suggestions and the posh-friend voice with Apple-style capitals. Built: groups and no tags, setup with "Who is this for?", typing files into groups, @name on this phone, Full day pop-up, evening wrap-up, amounts that count with a kind line, floating side panel with a rail, laptop nav pill after scrolling, white-card night-mode fix.
 - Pushed 2026-10-01 (cache `ritsu-v42`, also the iPhone-style switch and Reminders grouped by topic): voice sweep of Settings and edit screens, Templates page (search at the bottom on phones, top on wide screens), Your Country, Custom rhythm on every reminder, Plan the week, Import a Calendar. Where we stopped, in order: (1) remove dead code, (2) choose the app name, (3) birthdays for the Family tile. Loose ends: ask the friend to re-check the finished Home card on iPhone Brave; check the new side panel in light theme; "Call at venky 5" is parked (options A or B in `docs/future-improvements.md`); the user said "medication" for amounts and I took it as meditation; sidebar search box skipped. Then Phase B onwards in `PRODUCT.md` (accounts, friend gangs).
 
