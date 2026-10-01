@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><title>Hiyori</title><defs>
+<radialGradient id="bgx" cx="50%" cy="0%" r="100%"><stop offset="0" stop-color="#3a2a1a"/><stop offset=".7" stop-color="#0E0C13"/></radialGradient>
+<linearGradient id="win" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE7AE"/><stop offset="1" stop-color="#FFB45C"/></linearGradient>
+<linearGradient id="smile" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#34D399"/><stop offset=".5" stop-color="#FBBF24"/><stop offset="1" stop-color="#A78BFA"/></linearGradient>
+<filter id="bloom" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="46"/></filter></defs>
+<rect width="1024" height="1024" fill="url(#bgx)"/><g filter="url(#bloom)" opacity=".5"><rect x="332" y="252" width="360" height="246" rx="38" fill="#FFB45C"/><rect x="332" y="526" width="360" height="246" rx="38" fill="#FFB45C"/></g>
+<rect x="332" y="252" width="360" height="246" rx="38" fill="url(#win)"/><rect x="332" y="526" width="360" height="246" rx="38" fill="url(#win)"/></svg>

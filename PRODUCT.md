@@ -122,7 +122,7 @@ Each has a "done when" line. It is not finished until that is true.
    Done when: on Sundays Home shows a calm Plan the week card (spread tasks that have no day; skipping is safe), and a small link in setup step 3 reads a .ics or .csv file into cards and groups with each item tickable.
 6. **Remove dead code** (list in `ARCHITECTURE.md`, plus the old tag code paths). PARTLY DONE 2026-10-01: 35 unused functions removed (350 lines); unused styles and the old tag code paths remain.
    Done when: the file is smaller, the syntax check passes and every screen looks the same as before.
-7. **Choose the app name** before any store listing or paid launch (`docs/competitors.md`: another app called Ritsu exists). CHOSEN 2026-10-01: Hiyori. Done when: a picture of the sidebar and Home with 日和 is approved, the app, icons, manifest and docs say Hiyori, and the trademark and domain checks are clear.
+7. **Choose the app name** before any store listing or paid launch (`docs/competitors.md`: another app called Ritsu exists). CHOSEN 2026-10-01: Hiyori. DONE 2026-10-01: sidebar, manifest, README, titles say Hiyori. Icon chosen 2026-10-02 (K5, `docs/brand/`). Still to do: put the icons into the app and the Home card tick, trademark and domain checks, rename the repo and folder (`docs/brand/README.md` has the order).
 
 **Phase B: accounts and a backend (Supabase or similar)**
 

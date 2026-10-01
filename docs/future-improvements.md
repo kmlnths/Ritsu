@@ -39,3 +39,13 @@ Noticed: 2026-09-29. The new Creative group (Mind) reuses the "pulse" icon becau
 ## 4. Laptop sidebar lists every group under "Areas"
 
 Noticed: 2026-09-30. On a laptop the left sidebar shows all 11 groups in one long list and the old sample "Home" area sits among them. Group them under Body, Mind and To-do. Listed as Phase A item 4 in PRODUCT.md.
+
+## Logo and brand follow-ups (added 2026-10-02)
+
+- **Home card tick.** The tick of five tiles lights as the day's things are done; unlit tiles are a soft outline, never red. At 5 of 5 the card says "a fine day". The story is in `docs/brand/README.md`.
+- **Welcome draw-in.** On first open the tick draws itself tile by tile in about two seconds. Respect reduced motion (show it complete).
+- **Week tick on the back of the Home card.** Seven tiles, Monday to Sunday, lighting as the week goes. Missed days stay a soft outline; no counts, no streaks.
+- **Icon tweaks.** A faint rim on the dark icon so it holds on dark home screens; a slightly deeper start colour on the light icon (about #6FDDB2).
+- **Storage keys.** Every key still starts `ritsu_`. A one-time move to `hiyori_` needs a migration step so nobody loses data.
+- **Dead styles.** `.dayscroll*` and other unused CSS, plus the old tag code paths, are still in `index.html`.
+- **Tryout with friends.** Show 5 friends the icon and the name for 5 seconds and ask what the app does. Also ask them to say "Hiyori" out loud.

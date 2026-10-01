@@ -258,3 +258,10 @@ Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-
 ### Domain docs
 
 Single-context: one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+
+## 2026-10-01 to 2026-10-02: dead code, the name and the logo
+
+- Removed 35 unused functions (350 lines) from `index.html`; all checks passed and the main screens loaded without errors.
+- Chose the name Hiyori (日和) after research on Japanese, Latin and Sanskrit options and an App Store check (Meguri and Kurashi were the runners-up; Hibi, Ayumi, Tabi, Yutori, Kasane, Koyomi were taken or crowded). Renamed the app everywhere except the stored-data keys, the repo and the folder.
+- Logo work: about twenty directions were drawn and tested against 16 real App Store icons. Chosen: K5, a tick of five emerald tiles. Everything is in `docs/brand/README.md`; the research tables are in `docs/competitors.md`.
+- Lessons: read the vision board first; one idea taken deep beats many ideas drawn once; my own scores are opinion, not measurement.
