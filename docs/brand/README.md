@@ -1,5 +1,7 @@
 # Hiyori brand notes (decided 2026-10-02)
 
+> **UPDATE 2026-10-02 (later): the icon is now the ink 日 with a green tick, "1A" (section below). It replaces K5/K6 and is already in `icons/`.** K5/K6 stay in this folder as the fallback.
+
 Read this first for anything about the name, the logo or the icon files. The long chat history is not kept; this is the summary.
 
 ## Name
@@ -18,7 +20,17 @@ Where the story shows up (to build, in this order):
 3. Welcome: the tick draws itself one tile at a time (about 2 seconds).
 4. Later idea: a seven-tile week tick on the back of the Home card (Monday to Sunday). The icon itself cannot change (it is a still picture), so it always shows the full tick.
 
-## The icon: K5 (dark) and K6 (light)
+## The icon: ink 日 with a green tick (1A), chosen 2026-10-02
+
+The user picked this from AI-made pictures: a black brush 日 ("day", the first half of 日和) on cream paper with a green brush tick across it. It also reads as a ticked box to anyone who cannot read Japanese. Story: a day, ticked off.
+
+How it was made: my own redraw (`build.js`, clean strokes) was rejected as stiff. The accepted version is a **trace of the AI picture** (`trace.js`, needs puppeteer-core), put onto 1024 tiles by `compose.js`. Source numbers are in `trace.json`. Colours: paper #F4F0E5, ink #0E0F12, tick #17A072 (dark twin: ink cream, tick #4ABD93 on #0A0B0D).
+
+Files, in `docs/brand/ink/`: `hiyori-ink-light.svg` (rounded, used in the app), `hiyori-ink-dark.svg`, `-full` (square corners), `-light-maskable.svg`, `renders/sheet.png` (picture of light, dark and small sizes). In the app: `icons/icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, `apple-touch-icon.png` are the light version.
+
+Known weak spots: the tick tail is thin and sweeping, close to the Nike swoosh shape (kept on purpose, the user wants it as picked; a blunter tick would be the safer legal choice). The paper grain and the see-through tick of the AI picture are gone. The source picture was small (about 235 px), so edges are soft; fine at phone sizes, blurry if printed large. Not yet tested on a real phone. Not yet tried: favicon cut for 16 px (the ink detail may mush), the dark twin in the app, the Home card tick and welcome draw-in (story below).
+
+## The older icon: K5 (dark) and K6 (light)
 
 Five rounded tiles on a diagonal that read as a tick. Deep emerald at the start, bright mint at the peak on dark (K5). On light the ramp is inverted, pale mint to deep emerald (K6), so the peak is always the strongest point. Only the app's emerald. No glow, no jelly, no amber, no sun.
 
@@ -31,7 +43,7 @@ Files, in `docs/brand/`:
 - `light/`: the same set for the light tile.
 - `explorations/`: a few earlier ideas kept for reference.
 
-NOT yet in the app. The app still ships the old three-rings icons in `icons/` and the manifest points at them.
+K5/K6 are NOT in the app (replaced by the ink icon above).
 
 Known weak spots (be honest about them):
 - On a dark home screen the near-black tile can vanish. A faint rim (white at 10%) fixes it; it was shown but is not the default yet.
@@ -70,8 +82,7 @@ A plain tick belongs to nobody. Nike owns the swoosh, a curved tapering check, s
 
 ## Next steps, in order
 
-1. Decide the two small tweaks (rim on dark, deeper start on light).
-2. Put the icons into the app: copy into `icons/` (icon-192, icon-512, icon-maskable-512, apple-touch-icon), check `manifest.webmanifest` and the `<link>` tags in `index.html`, bump the `sw.js` cache to `hiyori-v44`, test on a phone. Ask before pushing.
+1. (Done, unpushed) Ink icon copied into `icons/`, `sw.js` cache `hiyori-v44`. Test on a real phone after pushing. Maybe a favicon cut and `background_color` in the manifest.
 3. Build the lit tick on the Home card and the welcome draw-in (the story above).
 4. Trademark and domain checks by hand (US, India, WIPO), Google Play.
 5. Rename the repo and the folder (changes the live address; installed copies break). Do the folder between chats.
