@@ -41,7 +41,7 @@ Health and to-dos in one place, instead of a pill app, a habit app, a body log a
 
 ## Brand Commitments
 
-- Name: CHOSEN 2026-10-01: **Hiyori** (日和, the feel of a day, as in "a good day for laundry"). Tagline idea: "Whatever kind of day it is." The app, manifest and README say Hiyori since 2026-10-01; stored-data keys, the repo, live address and icon still say Ritsu or have no name. Still to do before using it publicly: trademark search, domain, Play Store check (`docs/competitors.md`).
+- Name: CHOSEN 2026-10-02: **Daywell** (day + well; replaced Hiyori the same week, see `docs/competitors.md`). Before that, 2026-10-01: **Hiyori** (日和, the feel of a day, as in "a good day for laundry"). Tagline idea: "Whatever kind of day it is." The app, manifest and README say Hiyori since 2026-10-01; stored-data keys, the repo, live address and icon still say Ritsu or have no name. Still to do before using it publicly: trademark search, domain, Play Store check (`docs/competitors.md`).
 - Voice: plain, warm, short. Real numbers only. Never nagging, never "overdue", never "too much", no guilt when nothing got done, no red pile-ups; red is reserved for genuine health misses.
 - No em dashes or en dashes anywhere in the interface.
 - It must look posh and considered, never like a generic AI-made app. Apple is the stated inspiration for the level of restraint and finish.

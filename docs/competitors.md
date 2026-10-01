@@ -33,7 +33,9 @@ Picture: `docs/mockups/mock-structure.png`.
 - Before a paid launch or store listing: pick a name that can be fully ours, and get a proper trademark search (not legal advice).
 - Chosen 2026-10-01: **Hiyori** (日和). The user picked it for the story: every day has its own weather, so a grey day is not a failed day. Runners-up: Meguri (巡, "it all comes round", nothing found in habit apps) and Kurashi (暮らし, "how you live", only a language app found). Ruled out for being taken: Hibi, Ayumi, Tabi, Yutori, Kasane, Koyomi; Nagomi is crowded.
 - Found 2026-10-01 by web search only (the official trademark sites blocked the tools): no habit or routine app called Hiyori turned up. Hiyori is also a girl's name in Japan. No DNS records for hiyori.app, hiyori.life, hiyoriapp.com, gethiyori.com, usehiyori.com (not proof they are free); hiyori.com and hiyori.in are in use.
-- Still to do: check the US, India and WIPO trademark databases by hand, buy a domain, check Google Play, then rename the app.
+- 2026-10-02: a direct App Store search (US, India) found 6 small apps named Hiyori, including "HIYORI - Shift Calendar" (Productivity) and "Hiyori - Have a Nice Day" (Lifestyle), all with 0 ratings. Meguri had 11, Kurashi 6. Simple English words are mostly taken (Tally 4.1K ratings, Tidy 1.9K). Portmanteau names with no app of that name: Daywell, Tickwell, Paceday, Helloday, Nestday, Wellist, Joyday. User ideas: Eazen and Flowell free (Flowell too close to the period app Flo), Kinday taken by a tiny app, Savora 9 food apps.
+- **Chosen 2026-10-02: Daywell** (day + well, "a day done well"). Renamed in the app the same day.
+- Still to do: check the US, India and WIPO trademark databases by hand for Daywell, buy a domain, check Google Play.
 
 ## Habit, routine and calm apps: the shelf (checked 2026-10-01)
 

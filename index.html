@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0D0E11" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#F7F8FA" media="(prefers-color-scheme: light)">
 <script>try{var _t=localStorage.getItem("ritsu_theme")||"dark";if(_t==="auto")_t=matchMedia("(prefers-color-scheme: light)").matches?"warm":"dark";document.documentElement.setAttribute("data-theme",_t);var _l=localStorage.getItem("ritsu_lights");if(_l)document.documentElement.setAttribute("data-lights",_l)}catch(e){}</script>
-<meta name="description" content="Hiyori - a shared to-do, habit and health tracker. Routines, body logs, episodes, fasting and things you're cutting down, each scored the way it deserves.">
+<meta name="description" content="Daywell - a shared to-do, habit and health tracker. Routines, body logs, episodes, fasting and things you're cutting down, each scored the way it deserves.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
 <link rel="icon" href="icons/icon-512.png" sizes="512x512" type="image/png">
@@ -14,12 +14,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Hiyori">
+<meta name="apple-mobile-web-app-title" content="Daywell">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap"></noscript>
-<title>Hiyori</title>
+<title>Daywell</title>
 <style>
   :root{
     --bg:#141009; --panel:#1D1810; --panel-2:#231C12; --raise:#271f14;
@@ -954,7 +954,7 @@
   .hm-hello{min-width:0;flex:1}
   .hm-quote{margin:8px 0 0;max-width:36ch;font-size:15px;line-height:1.45;color:var(--ink);opacity:.88;text-wrap:pretty}
   .hm-quote cite{display:block;margin-top:5px;font-style:normal;font-size:12px;letter-spacing:.02em;color:var(--muted)}
-  .topbar{display:none}   /* phones used to show a boxed "Hiyori" strip here; every page has its own heading */
+  .topbar{display:none}   /* phones used to show a boxed "Daywell" strip here; every page has its own heading */
   @media(max-width:820px){.main{padding-top:calc(16px + env(safe-area-inset-top))}}
 
   /* ===== batch 1: readability, real tap areas, keyboard, undo, day sheet ===== */
@@ -2270,8 +2270,8 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
 
 
 <div class="app">
-  <aside class="sidebar" id="sidebar"><button class="sb-toggle" id="sbToggle" data-sbt aria-label="Collapse the menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><div class="brand"><b class="serif">Hiyori</b><span class="jp">日和</span></div><div class="nav-scroll" id="nav"></div><div class="me" id="meCard"></div></aside>
-  <main class="main"><div class="topbar"><b class="serif">Hiyori</b><span class="sp"></span></div><div id="view"><div class="skeleton">loading…</div></div></main>
+  <aside class="sidebar" id="sidebar"><button class="sb-toggle" id="sbToggle" data-sbt aria-label="Collapse the menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><div class="brand"><b class="serif">Daywell</b></div><div class="nav-scroll" id="nav"></div><div class="me" id="meCard"></div></aside>
+  <main class="main"><div class="topbar"><b class="serif">Daywell</b><span class="sp"></span></div><div id="view"><div class="skeleton">loading…</div></div></main>
 </div>
 <nav class="bottomnav gdock" id="bottomnav" aria-label="Main"></nav>
 <button class="fab" id="fab" aria-label="Add, or press and hold for quick logs"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
@@ -2675,7 +2675,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   var theme="dark"; try{theme=localStorage.getItem("ritsu_theme")||"dark";}catch(e){}
   var _mq=window.matchMedia?matchMedia("(prefers-color-scheme: light)"):null;
   function effTheme(t){return t==="auto"?((_mq&&_mq.matches)?"warm":"dark"):t}
-  var LIGHT_SETS=[["classic","Classic","Green, violet, amber. The Hiyori look.",["#34D399","#A78BFA","#FBBF24"],["#0F7A57","#6B5BD2","#B07A1E"]],["ocean","Ocean","Sea green, deep blue, sky.",["#2DD4BF","#818CF8","#7DD3FC"],["#0F766E","#4338CA","#0369A1"]],["sunset","Sunset","Peach, rose, gold. Warm and soft.",["#FDBA74","#F9A8D4","#FDE047"],["#C8662E","#B8467E","#A7791A"]],["forest","Forest","Moss, sage, bark.",["#86EFAC","#A7C4A0","#D6B48A"],["#15803D","#4D7C5A","#8A5A2B"]],["clear","Easy to tell apart","Blue, orange, green. Chosen so colour blind eyes can tell them apart too.",["#56B4E9","#E69F00","#2EC4A0"],["#0072B2","#C67A00","#009E73"]]];
+  var LIGHT_SETS=[["classic","Classic","Green, violet, amber. The Daywell look.",["#34D399","#A78BFA","#FBBF24"],["#0F7A57","#6B5BD2","#B07A1E"]],["ocean","Ocean","Sea green, deep blue, sky.",["#2DD4BF","#818CF8","#7DD3FC"],["#0F766E","#4338CA","#0369A1"]],["sunset","Sunset","Peach, rose, gold. Warm and soft.",["#FDBA74","#F9A8D4","#FDE047"],["#C8662E","#B8467E","#A7791A"]],["forest","Forest","Moss, sage, bark.",["#86EFAC","#A7C4A0","#D6B48A"],["#15803D","#4D7C5A","#8A5A2B"]],["clear","Easy to tell apart","Blue, orange, green. Chosen so colour blind eyes can tell them apart too.",["#56B4E9","#E69F00","#2EC4A0"],["#0072B2","#C67A00","#009E73"]]];
   var lights="classic";try{lights=localStorage.getItem("ritsu_lights")||"classic"}catch(e){}
   function applyLights(id){lights=id;if(id==="classic")document.documentElement.removeAttribute("data-lights");else document.documentElement.setAttribute("data-lights",id);try{localStorage.setItem("ritsu_lights",id)}catch(e){}}
   function lightsRow(){var dk=effTheme(theme)==="dark";
@@ -4061,7 +4061,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     var rf=reflection();if(rf)side+='<div class="reflect"><p class="q">'+rf.q+'</p><p>'+esc(rf.p)+'</p></div>';
     var pb=(state.probeHide?null:pendingProbe());
     if(pb){
-      side+='<div class="probe"><p class="ph">Hiyori noticed something</p>'+
+      side+='<div class="probe"><p class="ph">Daywell noticed something</p>'+
          '<p class="pq">'+findingText(pb)+'</p>'+
          '<p class="psub">Not a telling-off, knowing the reason is what makes a pattern useful. Tap one, or skip it.</p><div class="prow">'+
          PROBE_REASONS.map(function(r){return '<button class="mchip" data-probe="'+pb.item.id+'|'+pb.k+'|'+r[0]+'">'+esc(r[1])+'</button>'}).join("")+
@@ -4320,7 +4320,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
         '<div class="statbox"><b>'+(epAvg(i)||"-")+'</b><small>usual length</small></div>'+
         '<div class="statbox"><b>'+(longest||"-")+'</b><small>longest</small></div></div>';
       h+='<div class="panel"><h4 aria-level="2">Every time this happened</h4>';
-      if(!all2.length)h+='<p class="kicker" style="color:var(--muted)">Nothing yet. Tap Start when it begins and It\'s over when it goes, Hiyori keeps the length so you learn what normal looks like for you.</p>';
+      if(!all2.length)h+='<p class="kicker" style="color:var(--muted)">Nothing yet. Tap Start when it begins and It\'s over when it goes, Daywell keeps the length so you learn what normal looks like for you.</p>';
       else{h+='<div class="noticed">';
         all2.forEach(function(e){
           var fl={};Object.keys(e.flags||{}).forEach(function(d){(e.flags[d]||[]).forEach(function(f){fl[f]=1})});
@@ -4493,7 +4493,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     });
     h+='</div>';
     h+='<button class="btn" style="width:100%;margin-top:8px" data-action="export">Export a doctor-ready summary</button>';
-    h+='<p style="font-size:12px;color:var(--faint);text-align:center;margin-top:14px;line-height:1.5">Hiyori records what you log. It reports times and dates only, no interpretation, and it is not a medical device.</p>';
+    h+='<p style="font-size:12px;color:var(--faint);text-align:center;margin-top:14px;line-height:1.5">Daywell records what you log. It reports times and dates only, no interpretation, and it is not a medical device.</p>';
     return h;
   }
 
@@ -4556,7 +4556,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     var conR=consistency(per==="week"?7:per==="year"?365:30);
     var adh=null,adhI=all.filter(function(i){return i.kind==="med"&&isRoutine(i)})[0];
     if(adhI){var am=0,ad=per==="week"?7:30;for(var qa=0;qa<ad;qa++)if(didOn(adhI,addDaysStr(today(),-qa)))am++;adh=Math.round(am/ad*100);}
-    if(conR==null&&!total)h+='<p class="rep-new">Patterns fill in as you use Hiyori. Give it a few days and this page starts to show your week.</p>';
+    if(conR==null&&!total)h+='<p class="rep-new">Patterns fill in as you use Daywell. Give it a few days and this page starts to show your week.</p>';
     h+='<div class="hm-hero rep-hero"><div class="hm-hero-h"><h3 aria-level="2">Consistency</h3><span>'+(per==="week"?"last 7 days":per==="year"?"last 12 months":"last 30 days")+'</span></div><div class="hm-gauge">'+hmArc(conR==null?0:conR/100,HM_ROWS_HERO,200,112,100,100)+'<div class="mid"><b>'+(conR==null?"-":conR+"%")+'</b><small>of the daily routine</small></div></div><div class="hm-facts f2"><div><b>'+total+'</b><small>things logged</small></div><div><b>'+(adh!=null?adh+"%":(avgSleep!=null?avgSleep+"h":"-"))+'</b><small>'+(adh!=null?"meds taken":"avg sleep")+'</small></div></div></div>';
     h+=pkStack(days,per);
     h+=numsPanel(days,per);
@@ -4598,7 +4598,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
            (r.level==="persistent"&&r.sev==="urgent"?' · <span style="color:var(--rust-ink)">worth mentioning to your doctor</span>':'')+'</p></div>';
       });
       if(finds.some(function(r){return r.sev==="urgent"&&r.level==="persistent"}))
-        h+='<p class="kicker" style="color:var(--faint);margin-top:14px;line-height:1.6">Hiyori records what you log. It doesn\'t interpret symptoms and isn\'t a medical device.</p>';
+        h+='<p class="kicker" style="color:var(--faint);margin-top:14px;line-height:1.6">Daywell records what you log. It doesn\'t interpret symptoms and isn\'t a medical device.</p>';
     }
     h+='</div>';
     return h;
@@ -4645,7 +4645,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     cust.forEach(function(m){var n2=Store.all("items").filter(function(i){return (i.markers||[]).indexOf(m.id)>-1}).length;
       h+='<div class="flagline"><span class="flagpill '+SEVCLS[m.severity||"note"]+'">'+esc(m.severity||"note")+'</span><b>'+esc(m.name)+'</b><span class="tagline-n" style="color:var(--faint);font-size:12px">'+n2+' item'+(n2===1?'':'s')+'</span><button class="x" data-del-marker="'+m.id+'" aria-label="Delete flag '+esc(m.name)+'">'+CROSS_SVG+'</button></div>';});
     h+='</div>';
-    h+='<p style="color:var(--faint);font-size:12px;text-align:center;margin-top:22px">Hiyori'+(Store.local?' · prototype, saved on this device':'')+'</p>';return h;
+    h+='<p style="color:var(--faint);font-size:12px;text-align:center;margin-top:22px">Daywell'+(Store.local?' · prototype, saved on this device':'')+'</p>';return h;
   }
 
   /* ---- modals ---- */
@@ -4682,7 +4682,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     var bl=document.getElementById("bk-last");if(bl)bl.textContent="Last backup: "+today()+". A backup file keeps everything safe.";toast("Backup saved to your downloads",null,"love");Buddy.react("love");
   }
   function restoreBackup(text,skipConfirm){
-    var bad=function(){var ws=document.getElementById("wStatus");if(ws)ws.textContent="Sorry, that file couldn\'t be read. Nothing has changed.";toast("Sorry, that file isn\'t a Hiyori backup")};
+    var bad=function(){var ws=document.getElementById("wStatus");if(ws)ws.textContent="Sorry, that file couldn\'t be read. Nothing has changed.";toast("Sorry, that file isn\'t a Daywell backup")};
     var b;try{b=JSON.parse(text)}catch(e){bad();return}
     var c=b&&b.cache;
     if(!b||b.app!=="ritsu"||!c||!c.items||!c.cats){bad();return}
@@ -4713,7 +4713,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     var last=null,prev=false;try{last=localStorage.getItem("ritsu_last_backup");prev=!!localStorage.getItem("ritsu_prev_backup")}catch(e){}
     if(navigator.storage&&navigator.storage.persisted)navigator.storage.persisted().then(function(p){
       var n=document.getElementById("persist-note"),b=document.getElementById("persist-ask");
-      if(n)n.textContent=p?"Yes. Your data is safe on this device.":"Not yet. Adding Hiyori to your home screen helps, and a backup keeps it safe.";
+      if(n)n.textContent=p?"Yes. Your data is safe on this device.":"Not yet. Adding Daywell to your home screen helps, and a backup keeps it safe.";
       if(b)b.hidden=!!p;
     });
     var h='<div class="sec-h"><h2>Your data</h2><span class="line"></span></div><div class="panel">';
@@ -4755,10 +4755,10 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function viewWelcome(){
     if(setupS)return setupHtml();
     var prev=false;try{prev=!!localStorage.getItem("ritsu_prev_backup")}catch(e){}
-    return '<div class="welcome-card"><div class="blob-host welcome-blob" id="welcomeBlob"></div><h1 class="hm-greet">Welcome</h1><p class="w-sub">Hiyori keeps your habits, health and to-dos in one calm place. Everything stays on this device.</p><p class="w-status" id="wStatus" role="status">Nothing is saved on this device yet.</p>'+
+    return '<div class="welcome-card"><div class="blob-host welcome-blob" id="welcomeBlob"></div><h1 class="hm-greet">Welcome</h1><p class="w-sub">Daywell keeps your habits, health and to-dos in one calm place. Everything stays on this device.</p><p class="w-status" id="wStatus" role="status">Nothing is saved on this device yet.</p>'+
       (prev?'<button class="w-opt" data-welcome="back"><b>Bring back what was here</b><small>You wiped this phone a moment ago. The copy is still here.</small></button>':'')+'<button class="w-opt pri" data-setup="start"><b>Set me up</b><small>About a minute, three short steps.</small></button>'+
-      '<button class="w-opt" data-welcome="examples"><b>Show me around</b><small>Fills Hiyori with example habits so you can see how it works. You can wipe them later in Settings.</small></button>'+
-      '<button class="w-link" data-welcome="clean">Skip setup and start empty</button><label class="w-link" for="welcome-file">Already use Hiyori? <u>Restore a backup</u></label><input type="file" id="welcome-file" accept=".json,application/json" hidden></div>';
+      '<button class="w-opt" data-welcome="examples"><b>Show me around</b><small>Fills Daywell with example habits so you can see how it works. You can wipe them later in Settings.</small></button>'+
+      '<button class="w-link" data-welcome="clean">Skip setup and start empty</button><label class="w-link" for="welcome-file">Already use Daywell? <u>Restore a backup</u></label><input type="file" id="welcome-file" accept=".json,application/json" hidden></div>';
   }
   function finishWelcome(){Store.welcome=false;Store._save();try{localStorage.setItem("ritsu_first_seen",today())}catch(e){}state.view="home";Store._emit();}
   function startClean(){GROUP_CATS.forEach(function(c){Store.cache.cats[c[0]]=groupCat(c);});finishWelcome();}
@@ -5135,7 +5135,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       });
       h+='</div><div class="su-foot"><button class="su-skip" data-setup="skip2">Skip</button><button class="btn primary su-next" data-setup="next">Continue to Step 3</button></div>';
     }else{
-      h+='<h1 class="su-title">Welcome. Shall we make Hiyori yours?</h1><p class="su-sub">Tap what applies. I\'ll take care of the reminders.</p><div class="su-tiles">';
+      h+='<h1 class="su-title">Welcome. Shall we make Daywell yours?</h1><p class="su-sub">Tap what applies. I\'ll take care of the reminders.</p><div class="su-tiles">';
       var cc=userCountry();
       LIFE_TILES.forEach(function(x){
         var on=!!S.life[x.k];
@@ -5622,7 +5622,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   window.addEventListener("pointermove",function(e){px=e.clientX;py=e.clientY;LASTMOVE=performance.now()/1000},{passive:true});
 
 
-  /* ---------- how the companion behaves in Hiyori ---------- */
+  /* ---------- how the companion behaves in Daywell ---------- */
   var KEY="ritsu_buddy",cfg={show:true,say:true,mode:"full"};
   function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
   function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
@@ -6334,7 +6334,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       var pf=(d.protocol&&d.protocol.fast)||16;
       h+='<div class="field"><label>Fasting window</label><div class="pick-wrap">'+PROTOCOLS.map(function(pr){return '<button type="button" class="tagpick '+(pf===pr.h?"on":"")+'" data-protoset="'+pr.h+'">'+protoLabel(pr.h)+'</button>'}).join("")+'</div><div class="hint">You can change this any time. Longer isn\'t always better.</div></div>';
     } else if(d.stance==="episode"){
-      h+='<div class="field"><div class="hint" style="margin-top:0">Nothing to set up. Tap <b>Start</b> when it begins and <b>It\'s over</b> when it goes, Hiyori keeps the length, so after a couple of these it can tell you whether this one is running longer than your usual.</div></div>';
+      h+='<div class="field"><div class="hint" style="margin-top:0">Nothing to set up. Tap <b>Start</b> when it begins and <b>It\'s over</b> when it goes, Daywell keeps the length, so after a couple of these it can tell you whether this one is running longer than your usual.</div></div>';
     } else if(d.akind==="activity"){h+='<div class="two"><div class="field"><label>Repeat</label><select id="i-rep">'+REPEATS.map(function(r){var sel=(r[0]===-1?isCustom:(!isCustom&&(d.repeatEvery||1)===r[0]));return '<option value="'+r[0]+'" '+(sel?"selected":"")+'>'+r[1]+'</option>'}).join("")+'</select>'+(isCustom?'<div style="margin-top:8px"><input type="number" id="i-repnum" min="1" value="'+d.repeatEvery+'"></div>':'')+'</div><div class="field"><label>Times a day</label><input type="number" id="i-perday" min="1" value="'+(d.perDay||1)+'"><div class="hint">Days over this are flagged as unusual.</div></div></div>';
       h+='<div class="two"><div class="field"><label id="l-prio">Priority</label><div class="seg" id="i-prio" role="group" aria-labelledby="l-prio">'+prioBtns(d.priority)+'</div></div><div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div></div>';
       h+=expectField(d);
@@ -6369,7 +6369,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       '<div><input type="number" id="i-exsl" min="0" step="15" value="'+(ex.slack==null?60:ex.slack)+'"><div class="hint">give or take, in minutes</div></div></div>';
     if(ex.at)h+='<div class="seg" id="i-exdir" style="margin-top:10px">'+
       [["late","Only if later"],["early","Only if earlier"],["either","Either way"]].map(function(x){return '<button type="button" data-v="'+x[0]+'" class="'+(((ex.dir||"either")===x[0])?"on":"")+'">'+x[1]+'</button>'}).join("")+'</div>';
-    h+='<div class="hint">One odd day is ignored. Hiyori raises it once it happens two or three times, and then it asks why, once.</div></div>';
+    h+='<div class="hint">One odd day is ignored. Daywell raises it once it happens two or three times, and then it asks why, once.</div></div>';
     return h;
   }
   function prioBtns(cur){return ["high","med","low","none"].map(function(p){return '<button type="button" data-v="'+p+'" class="'+((cur||"med")===p?"on":"")+'">'+(p==="med"?"Med":p[0].toUpperCase()+p.slice(1))+'</button>'}).join("")}
@@ -6614,7 +6614,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     return rows.slice(1).map(function(r){var d=dt(r[di]);if(!d||!(r[ti]||"").trim())return null;var st=si>-1?tm(r[si]):null,en=ei>-1?tm(r[ei]):null;
       return {title:r[ti].trim(),start:{date:d,time:st},end:en?{date:d,time:en}:null}}).filter(Boolean);
   }
-  /* from raw events to what Hiyori would add: the next date from today, one-offs only in the next 3 months, no duplicates */
+  /* from raw events to what Daywell would add: the next date from today, one-offs only in the next 3 months, no duplicates */
   function calPlan(evs,t0){
     var lim=calAddD(t0,90),seen={},out=[];
     evs.forEach(function(e){
@@ -6713,7 +6713,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
 
   /* ---- export: the data is yours, and a doctor-ready summary is the useful shape ---- */
   function exportJSON(){
-    var out={app:"Hiyori",exported:new Date().toISOString(),areas:cats(),people:people(),tags:tags(),
+    var out={app:"Daywell",exported:new Date().toISOString(),areas:cats(),people:people(),tags:tags(),
       markers:(Store.cache.markers?Store.all("markers"):[]),items:Store.all("items")};
     return JSON.stringify(out,null,2);
   }
@@ -6751,7 +6751,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(f7.length){L.push("PATTERNS IN THE LAST 7 DAYS");
       f7.forEach(function(r){L.push("  ["+r.level+"] "+r.item.title+", "+findingText(r).replace(/<[^>]+>/g,""))});
       L.push("");}
-    L.push("Hiyori keeps a record for you. It isn\'t a medical device.");
+    L.push("Daywell keeps a record for you. It isn\'t a medical device.");
     return L.join("\n");
   }
   function openExport(mode){
@@ -6771,14 +6771,14 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     var cur=targetOf(i),a=activeFast(i);
     if(ms.askExt){
       var h2='<div class="modal-h"><h3>Before a fast this long</h3><button class="x" data-close>\u00d7</button></div><div class="modal-b">';
-      h2+='<p style="font-size:14px;line-height:1.6;margin:0 0 14px">Anything past about a day is a different thing from a 16:8 window, and Hiyori should say so plainly rather than hand you a button.</p>';
+      h2+='<p style="font-size:14px;line-height:1.6;margin:0 0 14px">Anything past about a day is a different thing from a 16:8 window, and Daywell should say so plainly rather than hand you a button.</p>';
       h2+='<ul class="plain" style="font-size:14px">'+
         '<li>Talk to a doctor first if you take any medication, especially insulin or blood-pressure tablets, or if you are pregnant, breastfeeding, diabetic, under 18, or underweight.</li>'+
         '<li>Do not do this if you have a history of disordered eating. A timer is exactly the wrong tool there.</li>'+
         '<li>Water and electrolytes are the part people get wrong, not willpower.</li>'+
         '<li>Faint, dizzy, confused, or a racing heart means stop and eat. That is not failure, it is the correct response.</li>'+
         '</ul>';
-      h2+='<p style="font-size:13px;color:var(--muted);line-height:1.55;margin:14px 0 0">Hiyori records what you log. It cannot tell whether a long fast is safe for you.</p>';
+      h2+='<p style="font-size:13px;color:var(--muted);line-height:1.55;margin:14px 0 0">Daywell records what you log. It cannot tell whether a long fast is safe for you.</p>';
       h2+='</div><div class="modal-f"><span class="spacer"></span><button class="btn ghost" data-extback>Previous Step</button><button class="btn primary" data-extok="'+ms.askExt+'">I Understand</button></div>';
       openModal(h2);return;
     }
@@ -6796,7 +6796,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
         var on=(a&&phaseAt(fastHours(a))===ix);
         return '<div class="plrow '+(on?"on":"")+'"><span class="ph">'+pz[0]+(pz[1]>900?"h+":"-"+pz[1]+"h")+'</span><span class="pd"><b>'+pz[2]+'<span class="evtag '+(pz[4]==="est"?"est":"emg")+'">'+(pz[4]==="est"?"well established":"less settled")+'</span></b><small>'+pz[3]+'</small></span></div>';
       }).join("")+'</div>'+
-      '<p style="font-size:12px;color:var(--faint);line-height:1.55;margin:12px 0 0">Hiyori does not chart autophagy. It is real, but when it peaks in humans is not settled, and drawing a confident line would be making it up.</p></div>';
+      '<p style="font-size:12px;color:var(--faint);line-height:1.55;margin:12px 0 0">Daywell does not chart autophagy. It is real, but when it peaks in humans is not settled, and drawing a confident line would be making it up.</p></div>';
     h+='</div><div class="modal-f"><span class="spacer"></span><button class="btn ghost" data-close>Close</button></div>';
     openModal(h);
   }
@@ -6932,7 +6932,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if((el=e.target.closest("[data-backup-now]"))){downloadBackup();if(state.view==="home")render();return;}
     if((el=e.target.closest("[data-backup-later]"))){try{localStorage.setItem("ritsu_backup_snooze",addDaysStr(today(),14))}catch(e5){}render();return;}
     if((el=e.target.closest("[data-restore-undo]"))){undoRestore();return;}
-    if((el=e.target.closest("[data-persist-ask]"))){if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().then(function(ok){toast(ok?"Hiyori's data is now protected":"Not yet. Do try again later.");render();});return;}
+    if((el=e.target.closest("[data-persist-ask]"))){if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().then(function(ok){toast(ok?"Daywell's data is now protected":"Not yet. Do try again later.");render();});return;}
     if((el=e.target.closest("[data-welcome]"))){var wv=el.getAttribute("data-welcome"),wb=el.querySelector("b");if(wb)wb.textContent=wv==="back"?"Bringing it back…":"Setting up…";el.setAttribute("aria-busy","true");setTimeout(function(){if(wv==="clean")startClean();else if(wv==="back")bringBack();else startExamples();},60);return;}
     var railOn=document.body.classList.contains("sb-mini");
     if(railOn&&!e.target.closest(".ng"))[].forEach.call(document.querySelectorAll(".ng.open"),function(g){g.classList.remove("open")});
