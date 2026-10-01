@@ -2,7 +2,7 @@
 const fs = require('fs'), path = require('path');
 const t = JSON.parse(fs.readFileSync(path.join(__dirname, 'trace.json')));
 const [x0, y0, x1, y1] = [Math.min(t.inkBox[0], t.tickBox[0]), Math.min(t.inkBox[1], t.tickBox[1]), Math.max(t.inkBox[2], t.tickBox[2]), Math.max(t.inkBox[3], t.tickBox[3])];
-const WIDTH = 640, s = WIDTH / (x1 - x0), cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+const s = 3.28 /* fixed size, so trimming the tail does not enlarge the mark */, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
 const SQ = 'M230 0H794C960 0 1024 64 1024 230V794C1024 960 960 1024 794 1024H230C64 1024 0 960 0 794V230C0 64 64 0 230 0Z';
 const make = ({ bg, ink, tick, round = true, k = 1 }) =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">` +
