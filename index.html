@@ -2128,9 +2128,14 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
 .tp-row>div{flex:1;min-width:0}.tp-row b{display:block;font-weight:500;font-size:15px}.tp-row small{display:block;color:var(--muted);font-size:12px;margin-top:1px}
 .tp-have{font-size:13px;color:var(--accent-ink);font-weight:600}.tp-have svg{width:18px;height:18px}.tp-none{color:var(--muted);font-size:14px;padding:12px 2px}
 .tp-foot{position:sticky;bottom:0;padding:10px 16px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,transparent,var(--panel) 30%)}
+@media(min-width:620px){.modal:has(.tp-foot){display:flex;flex-direction:column}.modal:has(.tp-foot)>.modal-h{order:0}.modal:has(.tp-foot)>.tp-foot{order:1;position:static;padding:4px 22px 0;background:none}.modal:has(.tp-foot)>.modal-b{order:2}}
 .tp-foot input{width:100%;box-sizing:border-box;padding:12px 16px;border-radius:999px;border:1px solid var(--line);background:var(--panel-2);color:var(--ink);font:15px var(--sans)}
 .tp-opts{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}.cu-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
 .cu-row input{width:72px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel-2);color:var(--ink);font:600 17px var(--sans);text-align:center}.cu-seg{flex:1}
+.pw{margin:10px 0;padding:14px 16px;border-radius:16px;background:var(--panel);border:1px solid var(--line)}.pw-k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.pw-t{margin:6px 0 2px;font:600 17px/1.3 var(--sans)}.pw-s{margin:0 0 12px;color:var(--muted);font-size:14px}.pw-note{margin:10px 0 0;color:var(--faint);font-size:12px}
+.pw-week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;align-items:end;margin-bottom:4px}.pw-d{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:12px;color:var(--faint)}
+.pw-n{font-size:12px;color:var(--muted)}.pw-bar{width:100%;border-radius:6px;background:color-mix(in srgb,var(--accent) 45%,var(--panel-2))}.pw-bar.hi{background:color-mix(in srgb,var(--gold) 55%,var(--panel-2))}
 .lq .cbbtns{flex-wrap:wrap}.lq .cbbtns+.cbbtns{margin-top:8px}.cbask .cb-b.on{background:color-mix(in srgb,var(--accent) 22%,var(--panel-2));box-shadow:inset 0 0 0 1.5px var(--accent);color:var(--ink)}
 .lq-later{display:block;background:none;border:0;color:var(--muted);font-size:13px;padding:10px 0 0;min-height:32px}
 .fd-link{display:block;width:100%;text-align:center;background:none;border:0;color:var(--muted);font-size:14px;margin-top:8px;padding:10px}
@@ -4086,7 +4091,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function hmBody(){
     var hh=$("#hmHero");if(!hh||!_hmCons)return;
     var ds=hmDay(),st=hmStats(ds);
-    qcListFill(ds);wrapFill(ds);cbAskFill(ds);wk1Fill(ds);hmSideFill(ds);
+    qcListFill(ds);wrapFill(ds);cbAskFill(ds);pwFill(ds);wk1Fill(ds);hmSideFill(ds);
     hh.innerHTML=hmHeroHtml(ds,st);
     hh.classList.toggle("complete",!!hh.querySelector(".hm-done-flag"));
     hh.classList.toggle("switching",!!hh.querySelector(".qc-switch"));   /* the day just became complete: play the glow once */
@@ -4395,7 +4400,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       '<div class="hm-strip"><button class="hm-arrow" data-hmweek="-1" aria-label="Previous day">'+phicon("caretl")+'</button>'+
       '<div class="hm-scroll" id="hmScroll" aria-label="Pick a day">'+strip+'</div>'+
       '<button class="hm-arrow" data-hmweek="1" aria-label="Next day">'+phicon("caretr")+'</button></div>'+
-      '<div class="hm-hero qc" id="hmHero"></div>'+'<div id="hmWrap"></div><div id="cbAsk"></div>'+'<div id="wk1"></div>'+'<div id="hmList" class="qc-list"></div>'+backupNudge();
+      '<div class="hm-hero qc" id="hmHero"></div>'+'<div id="hmWrap"></div><div id="cbAsk"></div><div id="pwk"></div>'+'<div id="wk1"></div>'+'<div id="hmList" class="qc-list"></div>'+backupNudge();
 
     return '<div class="home-grid solo"><div class="home-main">'+main+'</div><aside class="home-side" id="hmSide" aria-label="The list for this day"></aside></div>';
   }
@@ -5341,6 +5346,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function cbPanel(){
     var h='<div class="sec-h"><h2>Reminders</h2><span class="line"></span></div><div class="panel">',cc=userCountry();
     h+='<div class="su-sw"><span class="su-ic">'+phicon("checklist")+'</span><span class="tx"><b>Templates</b><small>Ready-made ideas, sorted by topic</small></span><button class="cb-b" data-action="library">Browse</button></div>'+
+       '<div class="su-sw"><span class="su-ic">'+phicon("alarm")+'</span><span class="tx"><b>Import a Calendar</b><small>From Google, Outlook or Apple Calendar</small></span><button class="cb-b" data-cal="open">Choose File</button></div>'+
        '<div class="su-sw"><span class="su-ic">'+phicon("house")+'</span><span class="tx"><b>Your Country</b><small>'+esc(countryName(cc))+'</small></span><button class="cb-b" data-tp="country">Change</button></div>';
     CB_LIB.filter(function(d){return tplFits(d.tpl,cc,false)}).forEach(function(d){
       var on=cbFind(d.key);
@@ -5392,7 +5398,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
         var on=!!S.life[x.k];
         h+='<button class="su-tile'+(on?" on":"")+'" data-setup="life|'+x.k+'" aria-pressed="'+on+'"><span class="su-ck">'+(on?CHECK_SVG:"")+'</span><span class="su-tic">'+phicon(x.icon)+'</span><b>'+esc(x.n)+'</b><small>'+esc(lifeSub(x,cc))+'</small></button>';
       });
-      h+='</div><p class="su-note">Everything can be changed later.</p><div class="su-foot"><button class="su-skip" data-setup="skip3">Skip</button><button class="btn primary su-next" data-setup="finish">Finish Setup</button></div>';
+      h+='</div><p class="su-note">Everything can be changed later.</p><p class="su-note"><button type="button" class="tp-link" data-cal="open">Import from a calendar file</button></p><div class="su-foot"><button class="su-skip" data-setup="skip3">Skip</button><button class="btn primary su-next" data-setup="finish">Finish Setup</button></div>';
     }
     return h+'</div>';
   }
@@ -6821,6 +6827,145 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     else if(v[0]==="add")tpAdd(+v[1],+v[2]);
     else if(v[0]==="country")openCountry("library");
     else if(v[0]==="cc"){try{localStorage.setItem("ritsu_country",v[1])}catch(x){}var bk=ms.back;toast("Lovely. Suggestions now suit "+countryName(v[1])+".",null,"happy");if(bk==="library")openLibrary();else{closeModal();render();}}
+  });
+
+  /* ===== calendar import =====
+     Reads a calendar file people save from Google, Outlook or Apple Calendar (.ics), or a simple .csv. Nothing leaves the phone.
+     One-offs in the next 3 months become tasks, weekly and daily events become habits, monthly and yearly ones become reminders.
+     The parser is plain and self-contained so it can be checked: node docs/tools/test-cal.js
+     ponytail: times with a named time zone (TZID) are read as local time; Z (UTC) times are converted. */
+  function calD(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+  function calAddD(ds,n){var d=new Date(ds+"T12:00:00");d.setDate(d.getDate()+n);return calD(d)}
+  function calAddM(ds,n){var d=new Date(ds+"T12:00:00"),day=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+n);d.setDate(Math.min(day,new Date(d.getFullYear(),d.getMonth()+1,0).getDate()));return calD(d)}
+  function icsTime(val,key){
+    var m=/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})\d{0,2}(Z)?)?/.exec(val);if(!m)return null;
+    if(!m[4])return {date:m[1]+"-"+m[2]+"-"+m[3],time:null};
+    if(m[6]){var d=new Date(Date.UTC(+m[1],+m[2]-1,+m[3],+m[4],+m[5]));return {date:calD(d),time:String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}}
+    return {date:m[1]+"-"+m[2]+"-"+m[3],time:m[4]+":"+m[5]};
+  }
+  function icsParse(text){
+    var lines=String(text).replace(/\r\n?/g,"\n").replace(/\n[ \t]/g,"").split("\n"),out=[],ev=null;
+    lines.forEach(function(l){
+      if(/^BEGIN:VEVENT/i.test(l)){ev={};return}
+      if(/^END:VEVENT/i.test(l)){if(ev&&ev.title&&ev.start)out.push(ev);ev=null;return}
+      if(!ev)return;var ix=l.indexOf(":");if(ix<0)return;
+      var key=l.slice(0,ix),val=l.slice(ix+1),name=key.split(";")[0].toUpperCase();
+      if(name==="SUMMARY")ev.title=val.replace(/\\,/g,",").replace(/\\;/g,";").replace(/\\n/gi," ").trim();
+      else if(name==="DTSTART")ev.start=icsTime(val,key);
+      else if(name==="DTEND")ev.end=icsTime(val,key);
+      else if(name==="RRULE"){var f=/FREQ=(\w+)/i.exec(val),n=/INTERVAL=(\d+)/i.exec(val),u=/UNTIL=(\d{8})/i.exec(val);ev.freq=f?f[1].toLowerCase():null;ev.interval=n?+n[1]:1;ev.until=u?u[1].slice(0,4)+"-"+u[1].slice(4,6)+"-"+u[1].slice(6,8):null;}
+    });
+    return out;
+  }
+  function csvParse(text){
+    var rows=[],row=[],cur="",q=false,t=String(text).replace(/\r\n?/g,"\n");
+    for(var i=0;i<t.length;i++){var c=t[i];if(q){if(c==='"'){if(t[i+1]==='"'){cur+='"';i++}else q=false}else cur+=c}else if(c==='"')q=true;else if(c===","){row.push(cur);cur=""}else if(c==="\n"){row.push(cur);rows.push(row);row=[];cur=""}else cur+=c}
+    if(cur||row.length){row.push(cur);rows.push(row)}
+    if(rows.length<2)return [];
+    var h=rows[0].map(function(x){return x.trim().toLowerCase()}),col=function(re){for(var k=0;k<h.length;k++)if(re.test(h[k]))return k;return -1};
+    var ti=col(/^(subject|title|summary|event)/),di=col(/start ?date|^date$/),si=col(/start ?time/),ei=col(/end ?time/);if(ti<0||di<0)return [];
+    /* dates: 2026-10-09, or 9/10/2026 read day first when the first number is over 12, otherwise month first (Google and Outlook US style). ponytail: ambiguous dates follow US order */
+    var dt=function(v){v=(v||"").trim();var m=/^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(v);if(m)return m[1]+"-"+String(m[2]).padStart(2,"0")+"-"+String(m[3]).padStart(2,"0");
+      m=/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{4})/.exec(v);if(!m)return null;var a=+m[1],b=+m[2],mo=a>12?b:a,da=a>12?a:b;return m[3]+"-"+String(mo).padStart(2,"0")+"-"+String(da).padStart(2,"0")};
+    var tm=function(v){var m=/^(\d{1,2}):(\d{2})\s*([ap]m)?/i.exec((v||"").trim());if(!m)return null;var hh=+m[1];if(m[3]){var pm=/p/i.test(m[3]);hh=hh%12+(pm?12:0)}return String(hh).padStart(2,"0")+":"+m[2]};
+    return rows.slice(1).map(function(r){var d=dt(r[di]);if(!d||!(r[ti]||"").trim())return null;var st=si>-1?tm(r[si]):null,en=ei>-1?tm(r[ei]):null;
+      return {title:r[ti].trim(),start:{date:d,time:st},end:en?{date:d,time:en}:null}}).filter(Boolean);
+  }
+  /* from raw events to what Ritsu would add: the next date from today, one-offs only in the next 3 months, no duplicates */
+  function calPlan(evs,t0){
+    var lim=calAddD(t0,90),seen={},out=[];
+    evs.forEach(function(e){
+      var date=e.start.date,f=e.freq,n=e.interval||1;
+      if(f){
+        if(e.until&&e.until<t0)return;
+        var step=function(ds){return f==="yearly"?calAddM(ds,12*n):f==="monthly"?calAddM(ds,n):f==="weekly"?calAddD(ds,7*n):calAddD(ds,n)},g=0;
+        while(date<t0&&g++<5000)date=step(date);
+        if(f!=="yearly"&&f!=="monthly"&&f!=="weekly"&&f!=="daily")f=null;
+      }
+      if(!f&&(date<t0||date>lim))return;
+      var dur=null;if(e.start.time&&e.end&&e.end.time&&e.end.date===e.start.date){var a=e.start.time.split(":"),b=e.end.time.split(":");dur=(+b[0]*60+ +b[1])-(+a[0]*60+ +a[1]);if(dur<=0)dur=null}
+      var k=e.title.toLowerCase()+"|"+(f?f:date);if(seen[k])return;seen[k]=1;
+      out.push({title:e.title,date:date,time:e.start.time||null,dur:dur,freq:f||null,every:n});
+    });
+    return out.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0}).slice(0,300);
+  }
+  var _cal=null;
+  function calFileInput(){var el=$("#cal-file");if(el)return el;el=document.createElement("input");el.type="file";el.id="cal-file";el.accept=".ics,.csv,text/calendar,text/csv";el.hidden=true;document.body.appendChild(el);
+    el.addEventListener("change",function(){var f=el.files&&el.files[0];el.value="";if(!f)return;var rd=new FileReader();rd.onload=function(){calReview(String(rd.result||""),f.name)};rd.readAsText(f)});return el}
+  function calWhere(t){var g=tyGroup(t,familyOn());return g?{card:g.card,cat:g.card==="todo"?TODO_CAT:g.cat,list:g.card==="todo"?g.list:null,label:g.label}:{card:"todo",cat:TODO_CAT,list:"personal",label:"To-do, Personal"}}
+  function calReview(text,name){
+    var evs=/\.csv$/i.test(name||"")||!/BEGIN:VCALENDAR/i.test(text)?csvParse(text):icsParse(text);
+    var plan=calPlan(evs,today());
+    if(!plan.length){toast("Sorry, I couldn\u2019t find any upcoming events in that file.");return}
+    _cal={plan:plan,on:plan.map(function(){return true})};calPaint();
+  }
+  function calLabel(p){
+    var d=new Date(p.date+"T12:00:00"),when=p.freq==="yearly"?"Yearly, "+d.getDate()+" "+MON[d.getMonth()]:p.freq==="monthly"?"Monthly":p.freq==="weekly"?"Weekly, "+DOW[d.getDay()]:p.freq==="daily"?"Daily":dayShort(p.date);
+    if(p.time&&p.freq!=="yearly"&&p.freq!=="monthly")when+=", "+fmtTime(p.time);
+    return when+" \u00b7 "+(p.freq==="yearly"||p.freq==="monthly"?"Reminder":calWhere(p.title).label);
+  }
+  function calPaint(){
+    var c=_cal,n=c.on.filter(Boolean).length;ms={type:"cal"};
+    openModal('<div class="modal-h"><h3>Import a Calendar</h3><button class="x" data-close aria-label="Close">\u00d7</button></div><div class="modal-b"><p class="tp-sub">Tick what you\u2019d like to keep.</p><div class="card tp-card">'+
+      c.plan.map(function(p,i){var on=c.on[i];return '<button type="button" class="tp-row tp-pick" data-cal="t|'+i+'" aria-pressed="'+on+'"><span class="fd-ck'+(on?" on":"")+'">'+(on?CHECK_SVG:"")+'</span><div><b>'+esc(cap1(p.title))+'</b><small>'+esc(calLabel(p))+'</small></div></button>'}).join("")+
+      '</div><button type="button" class="fd-btn" data-cal="go"'+(n?"":" disabled")+'>Import '+n+'</button><p class="fd-note" style="text-align:center">Only the next 3 months come in. Nothing is sent anywhere.</p></div>');
+  }
+  function calImport(){
+    var c=_cal;if(!c)return;var snap=cbSnap(),n=0;
+    GROUP_CATS.forEach(function(g){if(!Store.get("cats",g[0]))Store.cache.cats[g[0]]=groupCat(g)});Store._save();
+    c.plan.forEach(function(p,i){
+      if(!c.on[i])return;n++;var title=cap1(p.title);
+      if(p.freq==="yearly"||p.freq==="monthly"){cbAddTyped(title,p.freq==="yearly"?12*p.every:p.every,p.date,[],"med");return}
+      var w=calWhere(title),rep=p.freq==="weekly"?7*p.every:p.freq==="daily"?p.every:0;
+      var d={catId:w.cat,sub:"",title:title,akind:rep?"activity":"oneoff",kind:"todo",notes:"",priority:"none",tags:[],assignees:[],private:false,done:false,
+        dueDate:rep?null:p.date,repeatEvery:rep,perDay:1,reminder:p.time,duration:p.time?p.dur:null,stance:"routine",list:w.list||"personal",markers:[],expect:null,normal:{min:1,max:1,maxGapDays:rep||null,maxPerWeek:null}};
+      ms={type:"item",mode:(w.cat===TODO_CAT&&!rep)?"task":"area",id:null,data:d,dateTouched:true};saveItem(true);
+    });
+    _cal=null;closeModal();toast("Lovely. "+n+" thing"+(n===1?"":"s")+" brought in from your calendar.",cbUndo(snap),"happy");
+  }
+  document.addEventListener("click",function(e){
+    var el=e.target.closest&&e.target.closest("[data-cal]");if(!el)return;var v=el.getAttribute("data-cal").split("|");
+    if(v[0]==="open")calFileInput().click();
+    else if(v[0]==="t"&&_cal){_cal.on[+v[1]]=!_cal.on[+v[1]];calPaint();}
+    else if(v[0]==="go")calImport();
+  });
+
+  /* ===== plan the week: on Sundays, a calm look at the next seven days =====
+     Only tasks with no time, no priority and no reminder rhythm move, from busy days to quiet ones. Looks Good hides it until next Sunday. */
+  var PW_DOW=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  function pwDays(){var a=[];for(var k=1;k<=7;k++)a.push(addDaysStr(today(),k));return a}
+  function pwPlan(days){
+    var open=days.map(function(d){return dayOneOffs(d).filter(function(i){return !i.done})}),cnt=open.map(function(a){return a.length});
+    var total=cnt.reduce(function(a,b){return a+b},0),cap=Math.max(3,Math.ceil(total/7)+1),moves=[];
+    days.forEach(function(d,ix){
+      var mov=open[ix].filter(function(i){return !i.reminder&&(!i.priority||i.priority==="none")&&!i.cb}).sort(function(a,b){return (b.createdAt||"")<(a.createdAt||"")?-1:1});
+      while(cnt[ix]>cap&&mov.length){
+        var to=-1;cnt.forEach(function(c,j){if(j!==ix&&(to<0||c<cnt[to]))to=j});
+        if(to<0||cnt[to]+1>cap)break;
+        moves.push({id:mov.shift().id,to:days[to]});cnt[ix]--;cnt[to]++;
+      }
+    });
+    return {cnt:open.map(function(a){return a.length}),total:total,moves:moves};
+  }
+  function pwHtml(){
+    if(new Date().getDay()!==0)return "";
+    var seen="";try{seen=localStorage.getItem("ritsu_pw")||""}catch(e){}if(seen===today())return "";
+    var days=pwDays(),p=pwPlan(days),mx=Math.max.apply(null,p.cnt.concat([1])),busy=p.cnt.indexOf(mx),n=p.moves.length;
+    var head=n?"A busy "+PW_DOW[new Date(days[busy]+"T12:00:00").getDay()]+" ahead.":p.total?"A balanced week ahead.":"A light week ahead.";
+    var sub=n?"Shall I move "+n+" untimed task"+(n===1?"":"s")+" to quieter days?":"Nothing needs moving. Enjoy it.";
+    var bars=days.map(function(d,i){var c=p.cnt[i],hi=n&&i===busy;return '<div class="pw-d"><span class="pw-n">'+c+'</span><div class="pw-bar'+(hi?" hi":"")+'" style="height:'+Math.max(3,Math.round(c/mx*64))+'px"></div>'+DOW[new Date(d+"T12:00:00").getDay()]+'</div>'}).join("");
+    return '<div class="pw"><div class="pw-k">Plan the week</div><h3 class="pw-t">'+head+'</h3><p class="pw-s">'+sub+'</p><div class="pw-week" role="img" aria-label="Tasks each day this coming week">'+bars+'</div>'+
+      '<div class="cbbtns">'+(n?'<button class="cb-b pri" data-pw="even">Even It Out</button><button class="cb-b" data-pw="ok">Looks Good</button>':'<button class="cb-b" data-pw="ok">Thank You</button>')+'</div>'+
+      (n?'<p class="pw-note">Only tasks with no time or priority move. Undo is always there.</p>':'')+'</div>';
+  }
+  function pwFill(ds){var el=$("#pwk");if(!el)return;var h=ds===today()?pwHtml():"";if(el._h===h)return;el._h=h;el.innerHTML=h;}
+  document.addEventListener("click",function(e){
+    var el=e.target.closest&&e.target.closest("[data-pw]");if(!el)return;var a=el.getAttribute("data-pw");
+    try{localStorage.setItem("ritsu_pw",today())}catch(x){}
+    if(a==="even"){var p=pwPlan(pwDays()),snap=cbSnap();p.moves.forEach(function(m){Store.update("items",m.id,{dueDate:m.to})});
+      toast("Done. Your week is a little lighter.",cbUndo(snap),"happy");}
+    else{toast("Lovely. Have a gentle week.",null,"happy");}
+    pwFill(hmDay());
   });
 
   /* ---- export: the data is yours, and a doctor-ready summary is the useful shape ---- */

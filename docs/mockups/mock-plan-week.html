@@ -1,0 +1,67 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plan the week mock</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0D0E11;--panel:#16181D;--panel-2:#1E2128;--ink:#F4F5F7;--muted:#9CA3AF;--faint:#828A95;--line:#282C34;--accent:#34D399;--gold:#FBBF24}
+*{box-sizing:border-box}
+body{margin:0;background:#07080a;color:var(--ink);font:15px "Space Grotesk",system-ui;display:flex;gap:28px;padding:28px;align-items:flex-start}
+.lab{font-size:13px;color:var(--muted);margin:0 0 10px 4px}.lab b{color:var(--accent);margin-right:6px}
+.ph{width:360px;height:760px;background:var(--bg);border-radius:32px;padding:22px 18px;overflow:hidden;border:1px solid #1b1d22;position:relative}
+.greet{font-size:28px;font-weight:500;margin:4px 0 16px}
+.card{background:var(--panel);border-radius:16px;padding:16px;margin-bottom:12px}
+.kick{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+h3{margin:6px 0 4px;font-size:19px;font-weight:500}.sub{color:var(--muted);font-size:14px;margin:0 0 14px}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;align-items:end;height:112px;margin-bottom:8px}
+.d{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:var(--faint)}
+.bar{width:100%;border-radius:6px;background:color-mix(in srgb,var(--accent) 45%,var(--panel-2))}.bar.heavy{background:color-mix(in srgb,var(--gold) 55%,var(--panel-2))}
+.n{font-size:12px;color:var(--muted)}
+.btns{display:flex;gap:8px;margin-top:14px}.b{padding:10px 16px;border-radius:999px;background:var(--panel-2);font-weight:600;font-size:14px}.b.pri{background:var(--accent);color:#06281c}
+.note{font-size:12px;color:var(--faint);margin-top:10px}
+.h1{font-size:24px;font-weight:500;margin:0 0 4px}.row{display:flex;gap:12px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}.row:first-child{border-top:0}
+.ck{width:22px;height:22px;border-radius:7px;background:var(--accent);flex:none;position:relative}.ck:after{content:"";position:absolute;left:7px;top:4px;width:5px;height:10px;border:solid #06281c;border-width:0 2px 2px 0;transform:rotate(45deg)}.ck.off{background:none;border:1.5px solid var(--faint)}.ck.off:after{display:none}
+.row div{flex:1}.row b{display:block;font-weight:500}.row small{color:var(--muted);font-size:12px}
+.grp{background:var(--panel-2);border-radius:16px;padding:2px 14px}
+.go{display:block;text-align:center;padding:13px;border-radius:999px;background:var(--accent);color:#06281c;font-weight:600;margin-top:14px}
+.link{color:var(--accent);font-size:14px;font-weight:500}
+.tile{background:var(--panel);border-radius:16px;padding:12px;margin-bottom:8px;font-size:14px}
+</style></head><body>
+
+<div><p class="lab"><b>1</b>Sunday on Home: a calm look at the week</p><div class="ph">
+<div class="greet">Good morning</div>
+<div class="card"><div class="kick">Plan the week</div><h3>A busy Wednesday ahead.</h3><p class="sub">Shall I move 3 untimed tasks to quieter days?</p>
+<div class="week">
+ <div class="d"><span class="n">2</span><div class="bar" style="height:16px"></div>Mon</div>
+ <div class="d"><span class="n">3</span><div class="bar" style="height:24px"></div>Tue</div>
+ <div class="d"><span class="n">9</span><div class="bar heavy" style="height:72px"></div>Wed</div>
+ <div class="d"><span class="n">1</span><div class="bar" style="height:8px"></div>Thu</div>
+ <div class="d"><span class="n">4</span><div class="bar" style="height:32px"></div>Fri</div>
+ <div class="d"><span class="n">0</span><div class="bar" style="height:3px"></div>Sat</div>
+ <div class="d"><span class="n">1</span><div class="bar" style="height:8px"></div>Sun</div>
+</div>
+<div class="btns"><span class="b pri">Even It Out</span><span class="b">Looks Good</span></div>
+<div class="note">Only tasks with no time or priority move. Undo is always there.</div></div>
+<div class="card"><div class="kick">Today</div><div style="margin-top:8px;color:var(--muted)">Your usual list sits here.</div></div>
+</div></div>
+
+<div><p class="lab"><b>2</b>Import from a calendar (setup or Settings)</p><div class="ph">
+<p class="h1">Import a Calendar</p><p class="sub">From Google, Outlook or Apple Calendar. Tick what you'd like to keep.</p>
+<div class="grp">
+ <div class="row"><span class="ck"></span><div><b>Team sync</b><small>Weekly, Mon 10:00am · To-do, Work</small></div></div>
+ <div class="row"><span class="ck"></span><div><b>Dentist</b><small>Fri 9 Oct, 4:00pm · Body, Checkups</small></div></div>
+ <div class="row"><span class="ck"></span><div><b>Mum's birthday</b><small>Yearly, 14 Nov · To-do, Personal</small></div></div>
+ <div class="row"><span class="ck off"></span><div><b>Flight to Delhi</b><small>Sat 17 Oct, 6:15am · To-do, Personal</small></div></div>
+ <div class="row"><span class="ck"></span><div><b>Car insurance</b><small>Yearly, 3 Dec · Reminder</small></div></div>
+</div>
+<span class="go">Import 4</span>
+<p class="note" style="text-align:center">Only the next 3 months come in. Nothing is sent anywhere.</p>
+</div></div>
+
+<div><p class="lab"><b>3</b>Where the import lives</p><div class="ph">
+<p class="h1">Welcome. Shall we make Ritsu yours?</p><p class="sub">Tap what applies. I'll take care of the reminders.</p>
+<div class="tile">Health · My home · Money · ... (the tiles)</div>
+<p style="text-align:center;margin-top:18px"><span class="link">Import from a calendar file</span></p>
+<p class="sub" style="text-align:center;margin-top:40px">And in Settings, under Reminders:<br><b style="color:var(--ink)">Import a Calendar</b></p>
+</div></div>
+
+</body></html>
