@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0D0E11" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#F7F8FA" media="(prefers-color-scheme: light)">
-<script>try{var _t=localStorage.getItem("ritsu_theme")||"dark";if(_t==="auto")_t=matchMedia("(prefers-color-scheme: light)").matches?"warm":"dark";document.documentElement.setAttribute("data-theme",_t);var _l=localStorage.getItem("ritsu_lights");if(_l)document.documentElement.setAttribute("data-lights",_l)}catch(e){}</script>
+<script>function _tc(t){[].forEach.call(document.querySelectorAll('meta[name="theme-color"]'),function(m){m.content=t==="warm"?"#E6EAEF":"#0D0E11"})}
+try{var _t=localStorage.getItem("ritsu_theme")||"dark";if(_t==="auto")_t=matchMedia("(prefers-color-scheme: light)").matches?"warm":"dark";document.documentElement.setAttribute("data-theme",_t);_tc(_t);var _l=localStorage.getItem("ritsu_lights");if(_l)document.documentElement.setAttribute("data-lights",_l)}catch(e){}</script>
 <meta name="description" content="Daywell - a shared to-do, habit and health tracker. Routines, body logs, episodes, fasting and things you're cutting down, each scored the way it deserves.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
@@ -1281,6 +1282,16 @@
   .qc-num{display:flex;align-items:baseline;gap:10px;margin-top:14px}
   .qc-num b{font-family:var(--serif);font-weight:200;font-size:88px;line-height:.86;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
   .qc-num span{font-size:17px;color:var(--muted)}
+  .qc-num b.roll{display:inline-block;animation:qcRoll .42s cubic-bezier(.2,.8,.2,1) both}
+  .qc-num b.roll.dn{animation-name:qcRollDn}
+  @keyframes qcRoll{from{transform:translateY(.32em);opacity:0}to{transform:none;opacity:1}}
+  @keyframes qcRollDn{from{transform:translateY(-.32em);opacity:0}to{transform:none;opacity:1}}
+  .qc-burst{position:fixed;width:0;height:0;pointer-events:none;z-index:50}
+  .qc-burst i{position:absolute;left:-4px;top:-4px;width:8px;height:8px;border-radius:50%;background:var(--c);opacity:0;
+    animation:qcBurst .9s cubic-bezier(.15,.7,.3,1) .15s both}
+  .qc-burst i:nth-child(even){width:6px;height:6px;animation-duration:1.05s}
+  @keyframes qcBurst{0%{opacity:1;transform:rotate(var(--a)) translateY(0) scale(.6)}70%{opacity:1}100%{opacity:0;transform:rotate(var(--a)) translateY(-78px) scale(1)}}
+  @media(prefers-reduced-motion:reduce){.qc-num b.roll{animation:none}.qc-burst{display:none}}
   .qc-say{margin:18px 0 0;max-width:30ch;font-size:20px;line-height:1.38;letter-spacing:-.012em;color:var(--ink);text-wrap:pretty}
   .qc-say em{font-style:normal;color:var(--accent-ink)}
   :root[data-theme="warm"] .qc-say em{color:var(--accent)}
@@ -2681,9 +2692,9 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function lightsRow(){var dk=effTheme(theme)==="dark";
     return '<div class="setrow lc-row"><div class="info"><b>Light colours</b><small>The colours of your three lights: Body, Mind, To-do. Pick what feels like you.</small></div><div class="lc-list" role="radiogroup" aria-label="Light colours">'+LIGHT_SETS.map(function(x){var c=dk?x[3]:x[4],on=x[0]===lights;
       return '<button class="lc-o'+(on?" on":"")+'" role="radio" aria-checked="'+on+'" data-lights-set="'+x[0]+'"><span class="lc-l" aria-hidden="true">'+c.map(function(v){return '<i style="--c:'+v+'"></i>'}).join("")+'</span><span class="lc-t"><b>'+x[1]+'</b><small>'+x[2]+'</small></span><span class="lc-k" aria-hidden="true"></span></button>'}).join("")+'</div></div>';}
-  function applyTheme(t){theme=t;document.documentElement.setAttribute("data-theme",effTheme(t));try{localStorage.setItem("ritsu_theme",t)}catch(e){}}
+  function applyTheme(t){theme=t;document.documentElement.setAttribute("data-theme",effTheme(t));_tc(effTheme(t));try{localStorage.setItem("ritsu_theme",t)}catch(e){}}
   applyTheme(theme);
-  if(_mq&&_mq.addEventListener)_mq.addEventListener("change",function(){if(theme==="auto")document.documentElement.setAttribute("data-theme",effTheme("auto"))});
+  if(_mq&&_mq.addEventListener)_mq.addEventListener("change",function(){if(theme==="auto"){document.documentElement.setAttribute("data-theme",effTheme("auto"));_tc(effTheme("auto"))}});
 
   function normalizeItem(v){
     if(v.kind==="habit")v.kind="todo";
@@ -3614,7 +3625,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   /* ===== The Home card. Front: the day's number, three LED lights (Body, Mind, To-do) and one kind sentence.
      Back: this week in lights, and the blob says the one thing worth saying. Tap a light to filter the list,
      tap anywhere else to turn the card. The card "switches on" when the whole day is done. ===== */
-  var _qcWasFull={},_qcDayWas=null;
+  var _qcWasFull={},_qcDayWas=null,_qcNumWas=null;
   function qcBar(dom,s,off){
     var p=s.tot?s.done/s.tot:0,full=!!s.tot&&s.done===s.tot,bloom=false;
     if(off===0){bloom=full&&_qcWasFull[dom]===false;_qcWasFull[dom]=full;}   /* glow once, only when it fills while Home is open */
@@ -3625,7 +3636,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(!tot)return off>0?"Nothing planned yet. <em>Room to breathe.</em>":off<0?"A quiet day.":"A clear day. <em>Enjoy the space.</em>";
     if(off<0)return done===tot?"All "+qcWord(tot)+" done. <em>A full day.</em>":qcWord(done,1)+" of "+qcWord(tot)+" done that day.";
     if(off>0)return qcWord(tot,1)+" planned. "+(nx?nm+" comes first.":"");
-    if(done===tot)return "All "+qcWord(tot)+" done. <em>Do take it easy tonight.</em>";
+    if(done===tot)return "All "+qcWord(tot)+" done. <em>A fine day.</em>";
     if(!done)return qcWord(tot,1)+(tot===1?" thing":" things")+" today. "+nm+" is first"+(at?", at "+at:"")+".";
     if(left===1)return "One to go. "+nm+" is the last"+(at?", at "+at:"")+".";
     if(done*2<tot)return "Good start. "+qcWord(left,1)+" to go, and "+nm+" is next.";
@@ -3637,7 +3648,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     var d=new Date(ds+"T00:00:00"),nx=qcNext(ds,st),at=nx?qcAt(nx,ds):"",all=tot>0&&done===tot;
     var bars='<div class="qc-bars">'+HM_DOMS.map(function(dm){var s=st[dm[0]],on=state.qcDom===dm[0];
       return '<button class="qc-br'+(on?" on":"")+(state.qcDom&&!on?" dim":"")+'" data-qclight="'+dm[0]+'" aria-pressed="'+on+'" aria-label="Show only '+dm[1]+'">'+qcBar(dm[0],s,off)+'<b>'+dm[1]+'</b><small>'+(s.tot?s.done+"/"+s.tot:"0")+'</small></button>'}).join("")+'</div>';
-    var front='<p class="qc-kick">'+DOW_LONG[d.getDay()]+" \u00b7 "+d.getDate()+" "+HM_MONTHS[d.getMonth()]+'</p><div class="qc-split"><div><div class="qc-num"><b>'+done+'</b><span>'+(all?"all<br>done":"of "+tot+"<br>done")+'</span></div></div>'+bars+'</div><p class="qc-say sm">'+qcSay(off,tot,done,nx,at)+'</p>';
+    var front='<p class="qc-kick">'+DOW_LONG[d.getDay()]+" \u00b7 "+d.getDate()+" "+HM_MONTHS[d.getMonth()]+'</p><div class="qc-split"><div><div class="qc-num"><b'+qcRoll(off,ds,done)+'>'+done+'</b><span>'+(all?"all<br>done":"of "+tot+"<br>done")+'</span></div></div>'+bars+'</div><p class="qc-say sm">'+qcSay(off,tot,done,nx,at)+'</p>';
     var fl=!!state.qcFlip,sw=off===0&&all&&_qcDayWas===false;
     if(off===0)_qcDayWas=all;
     return '<div class="qc-flip'+(fl?" on":"")+'" data-qcflip role="button" tabindex="0" aria-pressed="'+fl+'" aria-label="Turn the card over">'+
@@ -3645,6 +3656,17 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       '<div class="qc-dots" aria-hidden="true"><i'+(fl?'':' class="on"')+'></i><i'+(fl?' class="on"':'')+'></i></div>'+
       (off===0&&all?'<i class="hm-done-flag" hidden></i>':'')+(sw?'<i class="qc-switch" hidden></i>':'');
   }
+  /* the big number rolls up (or down) when a tick changes it while Home is open */
+  /* the card can redraw again straight after a tick, so a roll in progress carries on where it was */
+  function qcRoll(off,ds,n){if(off!==0)return "";var w=_qcNumWas,t=Date.now();
+    if(w&&w.ds===ds&&w.n!==n)w=_qcNumWas={ds:ds,n:n,t:t,dn:n<w.n};else if(!w||w.ds!==ds)w=_qcNumWas={ds:ds,n:n,t:0};
+    var e=t-w.t;return e<420?' class="roll'+(w.dn?" dn":"")+'" style="animation-delay:-'+e+'ms"':""}
+  /* the one celebration: a short burst in the three light colours, only when today becomes complete */
+  /* it lives outside the card, so a redraw cannot cut it short */
+  function qcBurst(el){if(!el)return;var r=el.getBoundingClientRect(),b=document.createElement("span"),h="",c=["body","mind","todo"];
+    for(var k=0;k<12;k++)h+='<i style="--a:'+(k*30)+'deg;--c:var(--c-'+c[k%3]+')"></i>';
+    b.className="qc-burst";b.setAttribute("aria-hidden","true");b.innerHTML=h;b.style.left=(r.left+r.width/2)+"px";b.style.top=(r.top+r.height/2)+"px";
+    document.body.appendChild(b);setTimeout(function(){b.remove()},1400)}
   function qcBackWeek(){
     var ws=qcWeekStart(),lit=0,past=0,rows="",perfect=[],best=-1,bestK=-1,dayAll=[1,1,1,1,1,1,1],dayAny=[0,0,0,0,0,0,0];
     HM_DOMS.forEach(function(dm){var g="",d=0,t=0;
@@ -3795,7 +3817,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     qcListFill(ds);wrapFill(ds);cbAskFill(ds);pwFill(ds);wk1Fill(ds);hmSideFill(ds);
     hh.innerHTML=hmHeroHtml(ds,st);
     hh.classList.toggle("complete",!!hh.querySelector(".hm-done-flag"));
-    hh.classList.toggle("switching",!!hh.querySelector(".qc-switch"));   /* the day just became complete: play the glow once */
+    hh.classList.toggle("switching",!!hh.querySelector(".qc-switch"));if(hh.querySelector(".qc-switch"))qcBurst(hh.querySelector(".qc-num b"));   /* the day just became complete: play the glow once */
     [].forEach.call(hh.querySelectorAll(".q7-blob:empty"),function(el){try{Buddy.temp(el,"happy",false,true)}catch(e){}});
     var old=document.querySelector(".qfw");if(old)old.remove();
     var fr=dCount(ds)===0?qfStrip():"";if(fr)hh.insertAdjacentHTML("afterend",fr);
