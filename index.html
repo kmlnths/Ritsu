@@ -972,6 +972,8 @@ try{var _t=localStorage.getItem("ritsu_theme")||"dark";if(_t==="auto")_t=matchMe
   .mini-toggle::after{inset:-14px}
   .tagpick,.pick,.seg button{position:relative}
   .seg.rhy{display:grid;grid-template-columns:1fr 1fr}
+  .mv-p{display:flex;align-items:center;gap:12px;margin-top:14px}.mv-p span{flex:1;color:var(--muted);font-size:14px}
+  .fd-rh{visibility:hidden}
   .rhy-days{display:flex;justify-content:space-between;gap:6px;margin-top:10px}
   .rhy-days button{flex:1;max-width:44px;aspect-ratio:1;border-radius:50%;border:1px solid var(--line);background:var(--panel-2);color:var(--muted);font-weight:600;font-size:13px;cursor:pointer}
   .rhy-days button.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
@@ -2859,6 +2861,13 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       if(o.length===7)return "Daily";if(o.join()==="1,2,3,4,5")return "Weekdays";if(o.join()==="6,0")return "Weekends";return o.map(function(k){return n[k]}).join(", ");}
     return repeatLabel(i.repeatEvery||1);
   }
+  /* a planned day not done yet can move to the next day the plan leaves free, so it never doubles up.
+     Every day has no free day, and times a week carries on by itself, so neither moves. */
+  function moveTarget(i){
+    var t=today();if(!hasRhythm(i)||i.perWeek||(i.moves||{})[t]||!planOn(i,t)||didOn(i,t))return null;
+    for(var k=1;k<7;k++){var x=addDaysStr(t,k);if(!planOn(i,x))return x;}return null;
+  }
+  function moveDay(i,to){var m=Object.assign({},i.moves||{});m[today()]=to;Store.update("items",i.id,{moves:m})}
   /* ===== rhythm (end) ===== */
   function streakOf(i){
     if(isEpisode(i)||isFast(i))return 0;
@@ -3957,22 +3966,28 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   }
   /* wrap-up */
   function wrapSeen(){try{return localStorage.getItem("ritsu_wrap")===today()}catch(e){return false}}
+  function mvName(ds){return dCount(ds)===1?"tomorrow":DOW_LONG[new Date(ds+"T00:00:00").getDay()]}
   function wrapDays(){var t=today(),m=addDaysStr(t,(8-new Date(t+"T00:00:00").getDay())%7||7);return [addDaysStr(t,1),addDaysStr(t,2),m]}
   function wrapHtml(){
     if(new Date().getHours()<20||wrapSeen())return "";
     var all=dayOneOffs(today()),open=all.filter(function(i){return !i.done}),done=all.length-open.length;
-    if(!open.length)return "";
+    var mov=visibleItems().filter(function(i){return !isTracker(i)&&moveTarget(i)});
+    if(!open.length&&!mov.length)return "";
     if(!_wr||_wr.day!==today())_wr={day:today(),tick:{},to:{}};
+    _wr.mv={};mov.forEach(function(i){_wr.mv[i.id]=moveTarget(i)});
     var ds=wrapDays();
-    var h='<div class="wrap"><h3 class="wrap-t">'+(done?done+" of "+all.length+" done. Well played.":"Some days are like that.")+'</h3><p class="fd-p">'+(done?open.length+" "+(open.length===1?"is":"are")+" still open. Where shall "+(open.length===1?"it":"they")+" go?":"Quite alright. Shall we try "+(open.length===1?"this":"these")+" again tomorrow?")+'</p><div class="fd-list">';
+    var h='<div class="wrap"><h3 class="wrap-t">'+(!open.length?"A few plans left today.":done?done+" of "+all.length+" done. Well played.":"Some days are like that.")+'</h3><p class="fd-p">'+(!open.length?"Move them along, or let them go.":done?open.length+" "+(open.length===1?"is":"are")+" still open. Where shall "+(open.length===1?"it":"they")+" go?":"Quite alright. Shall we try "+(open.length===1?"this":"these")+" again tomorrow?")+'</p><div class="fd-list">';
     open.forEach(function(i){var on=!!_wr.tick[i.id],to=_wr.to[i.id]||ds[0];
       h+='<div class="fd-row"><button class="fd-ck'+(on?" on":"")+'" data-wr="t|'+i.id+'" aria-pressed="'+on+'" aria-label="Done: '+esc(i.title)+'">'+(on?CHECK_SVG:"")+'</button><span>'+esc(i.title)+'</span>'+(on?'':'<button class="fd-day" data-wr="d|'+i.id+'">'+(to===ds[0]?"Tomorrow":dayShort(to))+'</button>')+'</div>'});
-    return h+'</div><p class="fd-note">Tick what you did, or tap the day to move it.</p><button class="fd-btn" data-wr="save">'+(done||open.some(function(i){return _wr.tick[i.id]})?"Save":"Try Again Tomorrow")+'</button><button class="fd-link" data-wr="skip">Not now</button></div>';
+    mov.forEach(function(i){var to=_wr.to[i.id]||_wr.mv[i.id];
+      h+='<div class="fd-row"><i class="fd-ck fd-rh" aria-hidden="true"></i><span>'+esc(i.title)+'</span><button class="fd-day" data-wr="d|'+i.id+'">'+(to==="go"?"Let it go":to===ds[0]?"Tomorrow":dayShort(to))+'</button></div>'});
+    return h+'</div><p class="fd-note">'+(open.length?"Tick what you did, or tap the day to move it.":"Tap the day to change it.")+'</p><button class="fd-btn" data-wr="save">'+(done||open.some(function(i){return _wr.tick[i.id]})?"Save":"Try Again Tomorrow")+'</button><button class="fd-link" data-wr="skip">Not now</button></div>';
   }
   function wrapFill(ds){var el=$("#hmWrap");if(!el)return;var h=ds===today()?wrapHtml():"";if(el._h===h)return;el._h=h;el.innerHTML=h;}
   function wrapAct(v){
     var ds=wrapDays();
     if(v[0]==="t"){_wr.tick[v[1]]=!_wr.tick[v[1]];}
+    else if(v[0]==="d"&&_wr.mv&&_wr.mv[v[1]]){_wr.to[v[1]]=(_wr.to[v[1]]||_wr.mv[v[1]])==="go"?_wr.mv[v[1]]:"go";}
     else if(v[0]==="d"){var cur=_wr.to[v[1]]||ds[0],ix=ds.indexOf(cur);_wr.to[v[1]]=ds[(ix+1)%ds.length];}
     else if(v[0]==="skip"){try{localStorage.setItem("ritsu_wrap",today())}catch(e){}}
     else if(v[0]==="save"){
@@ -3981,6 +3996,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
         if(_wr.tick[i.id]){nDone++;Store.update("items",i.id,{done:true,completedAt:fmt(new Date())+"T"+nowHM()+":00"});}
         else{nMove++;Store.update("items",i.id,{dueDate:_wr.to[i.id]||ds[0]});}
       });
+      Object.keys(_wr.mv||{}).forEach(function(id){var to=_wr.to[id]||_wr.mv[id],it=Store.get("items",id);if(to==="go"||!it)return;moveDay(it,to);nMove++;});
       try{localStorage.setItem("ritsu_wrap",today())}catch(e){}
       toast(nMove?"Saved. "+nMove+(nMove===1?" thing":" things")+" waiting for you.":"Saved. A clear day.",function(){var p=JSON.parse(snap);Store.cache=p.cache;Store._priv=p.priv||{};Store._save();Store._savePriv();try{localStorage.removeItem("ritsu_wrap")}catch(e){}Store._emit();});
       _wr=null;return;
@@ -4352,6 +4368,9 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     var c=Store.get("cats",i.catId);
     var h='<button class="back" data-back-area="'+i.catId+'">← '+esc(c?c.name:"Back")+'</button><div class="day-h" style="border:0;padding-bottom:0;margin-bottom:10px"><div class="d"><p class="kicker">'+esc(c?c.name:"")+(i.sub?" · "+esc(i.sub):"")+'</p><h1 class="title" style="font-size:30px">'+esc(i.title)+(i.private?" "+LOCK:"")+'</h1><p class="kicker" style="color:var(--muted);margin-top:8px">'+itemSubtitle(i)+(i.reminder?' · '+PI("bell")+esc(fmtSpan(i)):'')+'</p></div><button class="btn ghost sm" data-action="edit-item" data-id="'+i.id+'">Edit</button></div>';
     if(i.notes)h+='<p style="color:var(--muted);margin:0 0 6px;font-size:14px">'+esc(i.notes)+'</p>';
+    var mvt=moveTarget(i),mvd=(i.moves||{})[today()];
+    if(mvt)h+='<div class="panel mv-p"><span>Not today? It can move to '+mvName(mvt)+', and the plan carries on.</span><button class="btn sm" data-moveto="'+i.id+'">Move</button></div>';
+    else if(mvd)h+='<div class="panel mv-p"><span>Moved to '+mvName(mvd)+'.</span><button class="btn ghost sm" data-moveback="'+i.id+'">Undo</button></div>';
     if(i.tags&&i.tags.length)h+='<div class="rmeta" style="margin:10px 0">'+tagPills(i.tags)+'</div>';
     if(i.kind==="todo"&&!isRepeat(i)&&!isEpisode(i)){h+='<div class="panel" style="display:flex;align-items:center;gap:14px;margin-top:14px"><button class="tick '+(i.done?"on":"")+'" data-toggle="'+i.id+'" aria-label="'+esc(tickLabel(i))+'">'+CHECK_SVG+'</button><div style="flex:1"><b>'+(i.done?"Completed"+(i.completedAt?" · "+esc(fmtTime(completedLocal(i).slice(11,16))):""):"Not done yet")+'</b>'+(i.dueDate?'<div class="kicker" style="color:var(--muted);margin-top:3px">Due '+esc(dueLabel(i.dueDate))+'</div>':'')+'</div></div>';h+=assignPanel(i);return h;}
     if(i.kind==="upkeep"){var dl=dCount(nextDue(i));h+='<div class="stat-row"><div class="statbox"><b>'+dl+'</b><small>days left</small></div><div class="statbox"><b>'+(i.intervalDays||30)+'</b><small>every (d)</small></div><div class="statbox"><b>'+esc(dueLabel(nextDue(i)))+'</b><small>'+(i.mode==="rebuy"?"rebuy":"replace")+'</small></div></div><div class="panel" style="display:flex;align-items:center;justify-content:space-between;gap:12px"><div><b>Last done:</b> '+(i.lastDone||"-")+'</div><button class="mini-btn" data-reset="'+i.id+'">'+(i.mode==="rebuy"?"Bought today":"Replaced today")+'</button></div>';h+=assignPanel(i);return h;}
@@ -7107,6 +7126,8 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if((el=e.target.closest("[data-del-marker]"))){var mid=el.getAttribute("data-del-marker");if(gone("Flag deleted")){Store.del("markers",mid);Store.all("items").forEach(function(i){if((i.markers||[]).indexOf(mid)>-1)Store.update("items",i.id,{markers:i.markers.filter(function(x){return x!==mid})});});}return;}
     if((el=e.target.closest("#i-akind button"))){syncItem();ms.data.akind=el.getAttribute("data-v");renderItemModal();return;}
     if((el=e.target.closest("#i-mode button"))){ms.data.mode=el.getAttribute("data-v");renderItemModal();return;}
+    if((el=e.target.closest("[data-moveto]"))){var mvi=Store.get("items",el.getAttribute("data-moveto")),mvx=mvi&&moveTarget(mvi);if(mvx){moveDay(mvi,mvx);toast("Moved to "+mvName(mvx)+". The plan carries on.");}return;}
+    if((el=e.target.closest("[data-moveback]"))){var mvb=Store.get("items",el.getAttribute("data-moveback"));if(mvb){var mvm=Object.assign({},mvb.moves||{});delete mvm[today()];Store.update("items",mvb.id,{moves:mvm});}return;}
     if((el=e.target.closest("[data-protoset]"))){syncItem();var pv=parseInt(el.getAttribute("data-protoset"),10);ms.data.protocol={fast:pv,eat:24-pv};renderItemModal();return;}
     if((el=e.target.closest("#i-exdir button"))){syncItem();if(ms.data.expect)ms.data.expect.dir=el.getAttribute("data-v");renderItemModal();return;}
     if((el=e.target.closest("#i-rhy button"))){syncItem();var rd=ms.data,rv2=el.getAttribute("data-v");rd.days=rv2==="some"?((rd.days&&rd.days.length)?rd.days:[1,2,3,4,5]):null;rd.perWeek=rv2==="week"?(rd.perWeek||3):null;rd.repeatEvery=rv2==="few"?((rd.repeatEvery||1)>1?rd.repeatEvery:2):1;renderItemModal();return;}

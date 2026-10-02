@@ -9,7 +9,7 @@ function dCount(ds){return Math.round((new Date(ds+"T00:00:00")-new Date(TODAY+"
 function addDaysStr(ds,n){const d=new Date(ds+"T00:00:00");d.setDate(d.getDate()+n);return fmt(d)}
 function didOn(i,ds){return (i.counts||{})[ds]>0}
 function repeatLabel(n){return n===1?"Daily":"Every "+n+" days"}
-const R=new Function("addDaysStr","dCount","didOn","repeatLabel",src.slice(a,b)+";return {hasRhythm,planOn,rhythmLabel}")(addDaysStr,dCount,didOn,repeatLabel);
+const R=new Function("addDaysStr","dCount","didOn","repeatLabel","today",src.slice(a,b)+";return {hasRhythm,planOn,rhythmLabel,moveTarget}")(addDaysStr,dCount,didOn,repeatLabel,today);
 const gym={days:[1,2,4,5],repeatEvery:1};                       /* Mon Tue Thu Fri */
 const read={perWeek:2,repeatEvery:1,counts:{"2026-10-05":1}};    /* done Monday */
 const eggs={repeatEvery:1,days:[1,3,5],moves:{"2026-10-07":"2026-10-08"}};   /* Wednesday moved to Thursday */
@@ -27,6 +27,12 @@ const cases=[
  ["a plain daily item has none",R.hasRhythm({repeatEvery:1}),false],
  ["label Mon Tue Thu Fri",R.rhythmLabel(gym),"Mon, Tue, Thu, Fri"],
  ["label weekdays",R.rhythmLabel({days:[5,1,2,3,4]}),"Weekdays"],
+ ["eggs Wed and Fri, missed today: moves to Thursday",R.moveTarget({days:[3,5],repeatEvery:1}),"2026-10-08"],
+ ["weekdays, missed today: moves to Saturday, the next free day",R.moveTarget({days:[1,2,3,4,5],repeatEvery:1}),"2026-10-10"],
+ ["every day of the week cannot move",R.moveTarget({days:[0,1,2,3,4,5,6],repeatEvery:1}),null],
+ ["a rest day has nothing to move",R.moveTarget(gym),null],
+ ["done today, nothing to move",R.moveTarget({days:[3],repeatEvery:1,counts:{"2026-10-07":1}}),null],
+ ["times a week never moves",R.moveTarget(read),null],
  ["label times a week",R.rhythmLabel(read),"2 times a week"]
 ];
 let bad=0;for(const [t,got,want] of cases)if(got!==want){bad++;console.log("FAIL",t,"got",got,"want",want)}
