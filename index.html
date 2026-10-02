@@ -980,6 +980,10 @@ try{var _t=localStorage.getItem("ritsu_theme")||"dark";if(_t==="auto")_t=matchMe
   .le-more button{background:none;border:0;font:inherit;font-size:14px;cursor:pointer;padding:8px 0;color:var(--muted)}
   .le-more .le-go{color:var(--accent-ink);font-weight:600}
   .mv-pick{flex-direction:column;align-items:stretch}
+  .wk-ahead{padding:4px 0}
+  .wa-r{display:flex;justify-content:space-between;gap:12px;width:100%;padding:11px 16px;border:0;border-bottom:1px solid var(--line-2);background:none;color:var(--ink);font:inherit;font-size:14.5px;text-align:left;cursor:pointer}
+  .wa-r:last-child{border-bottom:0}.wa-d{color:var(--muted);white-space:nowrap}
+  .promises .pr-ck{width:22px;height:22px;flex:none;color:var(--accent)}.promises .pr-ck svg{width:22px;height:22px}
   .low-t{display:inline-flex;align-items:center;gap:6px;margin-right:12px;padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--muted);font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;vertical-align:middle}
   .low-t .pi{margin:0}.low-t.on{border-color:var(--c-mind);color:var(--c-mind);background:color-mix(in srgb,var(--c-mind) 12%,transparent)}
   .low-rest{display:flex;gap:10px;align-items:flex-start;margin:10px 0 4px;padding:13px 14px;border-radius:16px;border:1px dashed var(--line);color:var(--muted);font-size:13.5px;line-height:1.45}
@@ -2355,6 +2359,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     .bottomnav.fnav{left:8px;right:8px;padding:0 4px;gap:0}
     .fn-t,.fn-t.on{flex:1 1 0;min-width:0;padding:0;gap:0}.fn-t span{display:none}
     .qc-split{grid-template-columns:minmax(0,1fr);gap:14px}
+    .qc-flip{grid-template-columns:minmax(0,1fr)}.qc-face,.qc-split>*,.qc-br{min-width:0}.qc-br b{overflow-wrap:anywhere}
     .day-h,.sec-h,.setrow{flex-wrap:wrap}
     .setrow .info{flex-basis:100%}
     .themetoggle{flex-wrap:wrap;border-radius:18px}
@@ -3985,8 +3990,22 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(!its.length&&!extra.length)h+='<div class="cat-empty">'+(off===0?"Nothing planned yet. Tap + whenever you\'re ready.":off>0?"Nothing planned for this day yet.":"Nothing was on the list this day.")+'</div>';
     if(its.length)h+=qcGrouped(its,ds);
     if(extra.length){h+='<div class="qc-lh qc-xh"><h3 aria-level="2">'+(extra.every(function(i){return i.kind==="med"})?"Medicine":"Also today")+'</h3><span>not counted in your day</span></div><div class="card">';extra.forEach(function(i){h+=itemRow(i,{ds:ds})});h+='</div>';}
-    if(off===0)h+=leftoverHtml();
+    if(off===0)h+=weekAheadHtml()+leftoverHtml();
     el.innerHTML=h;
+  }
+  /* Later this week: some-days, weekly and every-few-days plans between tomorrow and Sunday. Daily and times-a-week plans are left out. */
+  function weekAheadHtml(){
+    var t=today(),n=(7-new Date(t+"T00:00:00").getDay())%7;if(!n)return "";
+    var rows=[];visibleItems().forEach(function(i){
+      if(!isRoutine(i)||isTracker(i)||isFast(i)||!trackable(i)||i.perWeek||i.archived)return;
+      if(state.qcDom&&areaDomain(i.catId)!==state.qcDom)return;
+      if(!hasRhythm(i)&&(i.repeatEvery||1)===1)return;
+      var ds=[];for(var k=1;k<=n;k++){var x=addDaysStr(t,k);if(dueOnDate(i,x,k))ds.push(k===1?"Tomorrow":DOW[new Date(x+"T00:00:00").getDay()])}
+      if(ds.length)rows.push([i,ds]);
+    });
+    if(!rows.length)return "";
+    return '<div class="qc-lh qc-xh"><h3 aria-level="2">Later this week</h3><span></span></div><div class="card wk-ahead">'+
+      rows.slice(0,6).map(function(r){return '<button class="wa-r" data-open="'+r[0].id+'"><span>'+esc(r[0].title)+'</span><span class="wa-d">'+esc(r[1].join(", "))+'</span></button>'}).join("")+'</div>';
   }
   /* From earlier: the 3 oldest leftovers in their area colour; the rest fold away behind one calm line, never hidden */
   function leftoverHtml(){
@@ -6047,6 +6066,14 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     var on=familyOn();
     return '<div class="sec-h"><h2>Family</h2><span class="line"></span></div><div class="panel"><div class="setrow"><div class="info"><b>Family list and @name</b><small>Adds a Family list to To-do and lets you type @name to give someone a task. Sharing between phones comes with accounts.</small></div><div class="themetoggle"><button class="'+(on?"on":"")+'" data-family="1">On</button><button class="'+(!on?"on":"")+'" data-family="0">Off</button></div></div></div>';
   }
+  /* rules the app already keeps, said out loud (also for the store page) */
+  function promisesHtml(){
+    var P=["No guilt notifications. Ever.","A missed day never wipes your progress.","Medicine and body logs never count against your day.",
+      "No ads, and your health data is never sold.","Works without an account. Your data stays on this phone.","No medical advice. For that, your doctor."];
+    return '<div class="sec-h"><h2>Our promises</h2><span class="line"></span></div><div class="panel promises">'+
+      P.map(function(p){return '<div class="setrow"><span class="pr-ck">'+CHECK_SVG+'</span><div class="info"><b>'+p+'</b></div></div>'}).join("")+
+      '<div class="setrow"><div class="info"><small>A kept plan is a full week, whatever its size.</small></div></div></div>';
+  }
   function buddyPanel(){
     var c=Buddy.cfg;
     function two(key,a,b,on){return '<div class="themetoggle"><button class="'+(on?"on":"")+'" data-buddy="'+key+'-'+a[0]+'">'+a[1]+'</button><button class="'+(!on?"on":"")+'" data-buddy="'+key+'-'+b[0]+'">'+b[1]+'</button></div>'}
@@ -6054,7 +6081,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       '<div class="setrow"><div class="info"><b>Show the companion</b><small>The small blob on Home and on the Welcome screen.</small></div>'+two("show",["1","On"],["0","Off"],c.show)+'</div>'+
       '<div class="setrow"><div class="info"><b>Speech bubbles</b><small>A short line at a real moment, never more than four a day.</small></div>'+two("say",["1","On"],["0","Off"],c.say)+'</div>'+
       '<div class="setrow"><div class="info"><b>How lively</b><small>Quiet keeps only the daily wave and a finished day.</small></div>'+two("mode",["full","Full"],["quiet","Quiet"],c.mode==="full")+'</div>'+
-      '<div class="setrow"><div class="info"><small>The companion\u2019s shape and face are adapted from feral-blob (MIT licence, by mortspace), and the light cord rope from pullcord (MIT licence, by iisac). Icons are Phosphor (MIT licence, by Helena Zhang and Tobias Fried). Colours and words are ours.</small></div></div></div>';
+      '<div class="setrow"><div class="info"><small>The companion\u2019s shape and face are adapted from feral-blob (MIT licence, by mortspace), and the light cord rope from pullcord (MIT licence, by iisac). Icons are Phosphor (MIT licence, by Helena Zhang and Tobias Fried). Colours and words are ours.</small></div></div></div>'+promisesHtml();
   }
   /* Deleting is undoable: keep a copy and offer Undo for a few seconds, instead of asking a question first. */
   function gone(msg){
