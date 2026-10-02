@@ -43,6 +43,9 @@ h1 b{color:var(--ink);font-weight:600}
 .card .days b{display:block;font-size:64px;font-weight:200;line-height:.85;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
 .card .days span{font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase}
 .card .ask{font-size:13px;color:var(--faint);text-align:right;line-height:1.35}
+/* one gentle sway on the first card, so the swipe is found without arrows */
+.card.sway{animation:sway 1.6s var(--out) .5s both}
+@keyframes sway{0%{transform:none}25%{transform:translateX(26px) rotateZ(1.6deg)}55%{transform:translateX(-20px) rotateZ(-1.2deg)}80%,100%{transform:none}}
 /* the hint that grows as you drag */
 .tag{position:absolute;top:56%;padding:8px 13px;border-radius:999px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;
   background:rgba(10,11,14,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12)}
@@ -60,7 +63,9 @@ h1 b{color:var(--ink);font-weight:600}
 .acts button{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 10px;border-radius:16px;border:1px solid var(--line);
   background:#15171b;color:var(--ink);font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:transform .14s var(--out),background .2s}
 .acts button:active{transform:scale(.96)}
-.acts button span{color:var(--faint);font-weight:500}
+svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}svg .f{fill:currentColor;stroke:none}
+.acts button svg{color:var(--mut)}
+.tag{display:inline-flex;align-items:center;gap:7px}.tag svg{width:16px;height:16px}
 .acts button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 
 /* sheet and toast */
@@ -69,6 +74,12 @@ h1 b{color:var(--ink);font-weight:600}
 .sheet{position:absolute;left:0;right:0;bottom:0;padding:22px 22px 30px;border-radius:28px 28px 0 0;background:#1a1c21;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 -20px 50px -20px rgba(0,0,0,.8);transform:translateY(105%);transition:transform .5s var(--out)}
 .sheet.on{transform:none}
+.sheet.nudge{animation:nudge .45s var(--out)}
+@keyframes nudge{0%{transform:none}35%{transform:translateY(-12px)}100%{transform:none}}
+.sheet.nudge .def{animation:pulse .9s var(--out)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.5)}100%{box-shadow:0 0 0 12px rgba(52,211,153,0)}}
+.chips button.def{border-color:var(--acc);color:#6EE7B7;background:rgba(52,211,153,.12)}
+.putback{display:block;margin:18px auto 0;background:none;border:0;color:var(--mut);font:inherit;font-size:14px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .sheet h3{margin:0 0 4px;font-size:18px}.sheet p{margin:0 0 16px;color:var(--mut);font-size:14px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chips button{padding:11px 16px;border-radius:999px;border:1px solid var(--line);background:#22252b;color:var(--ink);font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:transform .14s var(--out)}
@@ -94,10 +105,10 @@ h1 b{color:var(--ink);font-weight:600}
   <h1><b>What is in the way?</b> Swipe, or use the buttons.</h1>
   <div class="stage" id="stage"></div>
   <div class="acts">
-    <button data-a="left"><span>←</span>Let it go</button>
-    <button data-a="right"><span>→</span>Give it a day</button>
-    <button data-a="up"><span>↑</span>Back in a week</button>
-    <button data-a="big"><span>tap</span>It is too big</button>
+    <button data-a="left"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.2 9.2l5.6 5.6M14.8 9.2l-5.6 5.6"/></svg>Let it go</button>
+    <button data-a="right"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="12" cy="15" r="1.4" class="f"/></svg>Give it a day</button>
+    <button data-a="up"><svg viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4 4.5v3.6h3.6"/><path d="M12 8.2V12l2.6 1.8"/></svg>Back in a week</button>
+    <button data-a="big"><svg viewBox="0 0 24 24"><path d="M4 19.5h5v-5h5v-5h6"/><path d="M17 6.5l3 3-3 3"/></svg>It is too big</button>
   </div>
   <div class="end" id="end"><div class="ring">✓</div><b>All tidy</b><p id="endp"></p></div>
   <div class="scrim" id="scrim"></div>
@@ -114,6 +125,7 @@ h1 b{color:var(--ink);font-weight:600}
     {t:"Reply to Priya about Sunday",a:"To-do",g:"Personal",c:"todo",d:5,since:"28 September"},
     {t:"Write in the gratitude journal",a:"Mind",g:"Calm",c:"mind",d:4,since:"29 September"}
   ];
+  var IC={"day":"<svg viewBox=\"0 0 24 24\"><rect x=\"3.5\" y=\"5\" width=\"17\" height=\"15.5\" rx=\"3\"/><path d=\"M3.5 10h17M8 3v4M16 3v4\"/><circle cx=\"12\" cy=\"15\" r=\"1.4\" class=\"f\"/></svg>","go":"<svg viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M9.2 9.2l5.6 5.6M14.8 9.2l-5.6 5.6\"/></svg>","wk":"<svg viewBox=\"0 0 24 24\"><path d=\"M4.5 12a7.5 7.5 0 1 0 2.2-5.3\"/><path d=\"M4 4.5v3.6h3.6\"/><path d=\"M12 8.2V12l2.6 1.8\"/></svg>","big":"<svg viewBox=\"0 0 24 24\"><path d=\"M4 19.5h5v-5h5v-5h6\"/><path d=\"M17 6.5l3 3-3 3\"/></svg>"};
   var total=DATA.length,idx=0,history=[],reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
   var stage=document.getElementById("stage"),sheet=document.getElementById("sheet"),scrim=document.getElementById("scrim"),
       toast=document.getElementById("toast"),tmsg=document.getElementById("tmsg"),bar=document.getElementById("bar"),ct=document.getElementById("ct");
@@ -122,7 +134,7 @@ h1 b{color:var(--ink);font-weight:600}
     e.setAttribute("role","group");e.setAttribute("aria-label",x.t+", "+x.a+", waiting "+x.d+" days");
     e.innerHTML='<span class="light"><i></i>'+esc(x.a)+' · '+esc(x.g)+'</span><h2>'+esc(x.t)+'</h2><p class="since">Waiting since '+esc(x.since)+'</p>'+
       '<div class="foot"><div class="days"><b>'+x.d+'</b><span>days waiting</span></div><div class="ask">Tap if it<br>is too big</div></div>'+
-      '<span class="tag r">Give it a day →</span><span class="tag l">← Let it go</span><span class="tag u">↑ Back in a week</span>';
+      '<span class="tag r">'+IC.day+'Give it a day</span><span class="tag l">'+IC.go+'Let it go</span><span class="tag u">'+IC.wk+'Back in a week</span>';
     return e}
   function paint(rising){
     stage.innerHTML="";
@@ -172,9 +184,11 @@ h1 b{color:var(--ink);font-weight:600}
   function done(msg){history.push({i:idx});idx++;closeSheet();paint(true);say(msg)}
   function openDays(x){
     sheet.style.setProperty("--c","var(--"+x.c+")");
-    sheet.innerHTML='<h3>Which day?</h3><p>'+esc(x.t)+' joins that day as a normal to-do.</p><div class="chips">'+
-      ["Tomorrow","Sat 10","Mon 12","Next week"].map(function(d){return '<button data-day="'+d+'">'+d+'</button>'}).join("")+'</div>';
-    openSheet(function(){paint(false)});
+    sheet.innerHTML='<h3>Which day?</h3><p>'+esc(x.t)+' joins that day as a normal to-do. Not sure? Next week is fine.</p><div class="chips">'+
+      ["Tomorrow","Sat 10","Mon 12","Next week"].map(function(d){return '<button data-day="'+d+'"'+(d==="Next week"?' class="def"':'')+'>'+d+'</button>'}).join("")+'</div>'+
+      '<button class="putback" id="putback">Put it back in the pile</button>';
+    openSheet(null,true);
+    document.getElementById("putback").onclick=function(){closeSheet();paint(true)};
     [].forEach.call(sheet.querySelectorAll("[data-day]"),function(b){b.onclick=function(){done("Moved to "+b.getAttribute("data-day")+": "+x.t)}});
   }
   function openBig(x){
@@ -185,10 +199,11 @@ h1 b{color:var(--ink);font-weight:600}
     setTimeout(function(){var s=document.getElementById("step");if(s)s.focus()},350);
     [].forEach.call(sheet.querySelectorAll("[data-day]"),function(b){b.onclick=function(){var s=document.getElementById("step").value.trim()||"First step";fling("up",0,0,function(){done(s+", "+b.getAttribute("data-day"))})}});
   }
-  var onCancel=null;
-  function openSheet(cancel){onCancel=cancel;scrim.classList.add("on");sheet.classList.add("on")}
-  function closeSheet(){scrim.classList.remove("on");sheet.classList.remove("on");onCancel=null}
-  scrim.onclick=function(){var c=onCancel;closeSheet();if(c)c()};
+  var onCancel=null,modal=false;
+  function openSheet(cancel,mustAnswer){onCancel=cancel;modal=!!mustAnswer;scrim.classList.add("on");sheet.classList.add("on")}
+  function closeSheet(){scrim.classList.remove("on");sheet.classList.remove("on");onCancel=null;modal=false}
+  /* a tap outside never decides for you: a must-answer sheet just bounces and points at the easy default */
+  scrim.onclick=function(){if(modal){sheet.classList.remove("nudge");void sheet.offsetWidth;sheet.classList.add("nudge");return}var c=onCancel;closeSheet();if(c)c()};
   var tt=null;
   function say(m){tmsg.textContent=m;toast.classList.add("on");clearTimeout(tt);tt=setTimeout(function(){toast.classList.remove("on")},4000)}
   document.getElementById("undo").onclick=function(){var h=history.pop();if(!h)return;idx=h.i;toast.classList.remove("on");paint(true)};
@@ -196,6 +211,7 @@ h1 b{color:var(--ink);font-weight:600}
   [].forEach.call(document.querySelectorAll(".acts button"),function(b){b.onclick=function(){act(b.getAttribute("data-a"))}});
   addEventListener("keydown",function(e){if(sheet.classList.contains("on"))return;var m={ArrowRight:"right",ArrowLeft:"left",ArrowUp:"up",Enter:"big"}[e.key];if(m){e.preventDefault();act(m)}});
   paint(false);
+  if(!reduce){var f0=topCard();if(f0){f0.classList.add("sway");f0.addEventListener("animationend",function(){f0.classList.remove("sway")},{once:true});f0.addEventListener("pointerdown",function(){f0.classList.remove("sway")},{once:true})}}
 })();
 </script>
 </body></html>
