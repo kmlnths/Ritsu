@@ -2931,6 +2931,14 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   }
   function moveDay(i,to){var m=Object.assign({},i.moves||{});m[today()]=to;Store.update("items",i.id,{moves:m})}
   /* ===== rhythm (end) ===== */
+  /* how many days it has been done, ever. Shown instead of a streak, so one missed day never wipes the number */
+  function totalOf(i){
+    if(i.kind==="measure"){var n=0;for(var k in(i.values||{}))if(measureHit(i,k))n++;return n}
+    if(i.kind==="med")return (i.log||[]).length;
+    if(i.kind==="todo"&&isRepeat(i)){var ks={};Object.keys(i.counts||{}).concat(Object.keys(i.events||{})).forEach(function(k){if(countOn(i,k)>0)ks[k]=1});return Object.keys(ks).length}
+    return 0;
+  }
+  function totalPill(i){var n=totalOf(i);return n>1?'<span class="pill tot">'+n+' times</span>':''}
   function streakOf(i){
     if(isEpisode(i)||isFast(i))return 0;
     if(isLimit(i))return cleanStreak(i);      /* consecutive days WITHOUT */
@@ -4506,11 +4514,11 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
         else if(a.type==="low")h+='<span class="pill">under usual</span>';
       });
     } else if(i.kind==="todo"){
-      if(isRepeat(i)){h+='<span class="pill rep">'+PI("repeat")+esc(planLabel(i))+'</span>';if(pd>1)h+='<span class="pill">'+cc+'/'+pd+' today</span>';if(countOn(i,today())>pd)h+='<span class="pill warnflag">'+cc+'× · over usual</span>';st=streakOf(i);if(st>1)h+='<span class="streak">'+PI("flame")+st+'</span>';}
+      if(isRepeat(i)){h+='<span class="pill rep">'+PI("repeat")+esc(planLabel(i))+'</span>';if(pd>1)h+='<span class="pill">'+cc+'/'+pd+' today</span>';if(countOn(i,today())>pd)h+='<span class="pill warnflag">'+cc+'× · over usual</span>';h+=totalPill(i);}
       else if(i.dueDate&&!i.done)h+='<span class="pill due '+dueClass(i.dueDate)+'">'+esc(dueLabel(i.dueDate))+'</span>';
       if(i.priority==="high"&&!complete)h+='<span class="pill hi">High</span>';
-    } else if(i.kind==="med"){var dl=medDaysLeft(i);h+='<span class="pill due '+(dl<=0?"over":medLow(i)?"soon":"")+'">'+PI("pill")+dl+'d · '+(i.stock||0)+' left</span>';var st2=streakOf(i);if(st2>1)h+='<span class="streak">'+PI("flame")+st2+'</span>';var cl=medCourseLeft(i);if(cl!=null&&cl>=0)h+='<span class="pill">course '+cl+'d</span>';}
-    else if(i.kind==="measure"){h+='<span class="pill" style="color:var(--accent-ink)">'+PI("target")+esc((i.target||0)+(i.unit?" "+i.unit:""))+'</span>';var st3=streakOf(i);if(st3>1)h+='<span class="streak">'+PI("flame")+st3+'</span>';}
+    } else if(i.kind==="med"){var dl=medDaysLeft(i);h+='<span class="pill due '+(dl<=0?"over":medLow(i)?"soon":"")+'">'+PI("pill")+dl+'d · '+(i.stock||0)+' left</span>';h+=totalPill(i);var cl=medCourseLeft(i);if(cl!=null&&cl>=0)h+='<span class="pill">course '+cl+'d</span>';}
+    else if(i.kind==="measure"){h+='<span class="pill" style="color:var(--accent-ink)">'+PI("target")+esc((i.target||0)+(i.unit?" "+i.unit:""))+'</span>';h+=totalPill(i);}
     else if(i.kind==="upkeep"){var d3=dCount(nextDue(i));h+='<span class="pill due '+(d3<=0?"over":d3<=7?"soon":"")+'">'+(i.mode==="rebuy"?"rebuy":"replace")+' in '+(d3<=0?"now":d3+"d")+'</span>';}
     h+=flagPills(i,today());
     if(i.reminder)h+='<span class="pill">'+PI("bell")+esc(fmtSpan(i))+'</span>';
@@ -4657,9 +4665,8 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       h+='<div class="stat-row"><div class="statbox '+(r7.ok>=6?"good":"")+'"><b>'+r7.ok+'/7</b><small>in usual range</small></div><div class="statbox"><b>'+r30.ok+'/30</b><small>over a month</small></div><div class="statbox"><b>'+typical+'</b><small>typical per day</small></div></div>';
       h+='<p class="kicker" style="color:var(--faint);margin:-6px 0 14px">No streak here, this is a pattern to read, not a score to keep.</p>';
     } else {
-      var st=streakOf(i),best=bestStreakOf(i);var d30=0,dn=0;for(var k=0;k<30;k++){var dd=addDaysStr(today(),-k);d30++;if(metOn(i,dd))dn++;}
-      h+='<div class="stat-row"><div class="statbox '+(st>0?"flame":"")+'"><b>'+(st>0?st:best)+'</b><small>'+(st>0?"current streak":"best streak")+'</small></div><div class="statbox"><b>'+Math.round(dn/d30*100)+'%</b><small>last 30 days</small></div><div class="statbox good"><b>'+dn+'</b><small>days in 30</small></div></div>';
-      if(st===0&&best>1)h+='<p class="kicker" style="color:var(--muted);margin:-6px 0 14px">Best run was '+best+' days, back to it today.</p>';
+      var d30=0,dn=0;for(var k=0;k<30;k++){var dd=addDaysStr(today(),-k);d30++;if(metOn(i,dd))dn++;}
+      h+='<div class="stat-row"><div class="statbox"><b>'+totalOf(i)+'</b><small>times so far</small></div><div class="statbox"><b>'+Math.round(dn/d30*100)+'%</b><small>last 30 days</small></div><div class="statbox good"><b>'+dn+'</b><small>days in 30</small></div></div>';
     }
     if(i.kind==="measure"){var tv=(i.values||{})[today()];h+='<div class="panel" style="display:flex;align-items:center;justify-content:space-between;gap:12px"><div><b>Today:</b> '+(tv!=null?tv:"-")+' '+esc(i.unit||"")+' <span style="color:var(--faint)">/ '+(i.target||0)+'</span></div><button class="btn primary sm" data-measure="'+i.id+'">Log Today</button></div><div class="panel"><h4 aria-level="2">Last 14 days</h4><div class="mbars">';var mx=i.target||1;for(var m=13;m>=0;m--){var v0=(i.values||{})[addDaysStr(today(),-m)];if(v0>mx)mx=v0;}for(var mm=13;mm>=0;mm--){var d2=addDaysStr(today(),-mm);var vv=(i.values||{})[d2];var hh=vv!=null?Math.max(3,Math.round(vv/mx*50)):2;var dd2=new Date(d2+"T00:00:00");h+='<div class="mb"><i class="'+(measureHit(i,d2)?"hit":"")+'" style="height:'+hh+'px"></i><small>'+dd2.getDate()+'</small></div>';}h+='</div></div>';}
     var bf=scannable(i);
