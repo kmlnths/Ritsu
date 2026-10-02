@@ -980,6 +980,7 @@ try{var _t=localStorage.getItem("ritsu_theme")||"dark";if(_t==="auto")_t=matchMe
   .le-more button{background:none;border:0;font:inherit;font-size:14px;cursor:pointer;padding:8px 0;color:var(--muted)}
   .le-more .le-go{color:var(--accent-ink);font-weight:600}
   .mv-pick{flex-direction:column;align-items:stretch}
+  button.mval{background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;text-align:right}
   .wk-ahead{padding:4px 0}
   .wa-r{display:flex;justify-content:space-between;gap:12px;width:100%;padding:11px 16px;border:0;border-bottom:1px solid var(--line-2);background:none;color:var(--ink);font:inherit;font-size:14.5px;text-align:left;cursor:pointer}
   .wa-r:last-child{border-bottom:0}.wa-d{color:var(--muted);white-space:nowrap}
@@ -2901,7 +2902,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function lastDoneOf(i){if(i.kind==="todo"){var ks=Object.keys(i.counts||{}).filter(function(k){return i.counts[k]>0});ks.sort();return ks.length?ks[ks.length-1]:null;}if(i.kind==="med"){var l=(i.log||[]).slice().sort();return l.length?l[l.length-1]:null;}return i.lastDone||null}
   function nextDue(i){if(i.kind==="todo"){if(isRepeat(i)){var ld=lastDoneOf(i);return ld?addDaysStr(ld,i.repeatEvery):today();}return i.dueDate||null;}if(i.kind==="measure"||i.kind==="med"){var ld2=lastDoneOf(i);return ld2?addDaysStr(ld2,i.repeatEvery||1):today();}return addDaysStr(i.lastDone||i.createdDate||today(),i.intervalDays||30)}
   function doneForNow(i){if(i.kind==="measure")return measureHit(i,today());if(i.kind==="med")return didOn(i,today());if(i.kind==="todo"){if(isRepeat(i))return metOn(i,today());return !!i.done;}return dCount(nextDue(i))>0}
-  function onToday(i){if(isLimit(i)||isEpisode(i)||isFast(i))return false;if(hasRhythm(i))return planOn(i,today());if(i.kind==="measure"||i.kind==="med")return (i.repeatEvery||1)===1||didOn(i,today())||dCount(nextDue(i))<=0;if(i.kind!=="todo")return false;if(isRepeat(i))return metOn(i,today())||dCount(nextDue(i))<=0;return i.dueDate!=null&&dCount(i.dueDate)<=0}
+  function onToday(i){if(isLimit(i)||isEpisode(i)||isFast(i))return false;if(hasRhythm(i))return planOn(i,today());if(i.kind==="measure"||i.kind==="med")return (i.repeatEvery||1)===1||didOn(i,today())||dCount(nextDue(i))<=0;if(i.kind!=="todo")return false;if(isRepeat(i))return countOn(i,today())>0||dCount(nextDue(i))<=0;return i.dueDate!=null&&dCount(i.dueDate)<=0}
   function medLow(i){return (i.reorderTablets>0&&(i.stock||0)<=i.reorderTablets)||(i.reorderAt>0&&medDaysLeft(i)<=i.reorderAt)}
   function attention(i){
     if(isLimit(i)||isBody(i)||isEpisode(i)||isFast(i))return null; /* these are never "overdue", nothing was promised */
@@ -2941,6 +2942,8 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function moveDay(i,to){var m=Object.assign({},i.moves||{});m[today()]=to;Store.update("items",i.id,{moves:m})}
   /* ===== rhythm (end) ===== */
   /* how many days it has been done, ever. Shown instead of a streak, so one missed day never wipes the number */
+  /* a number you count one at a time (8 glasses of water): one tap adds one, the circle shows the day's number */
+  function tapCount(i){return i.kind==="measure"&&/^(glass(es)?|cups?|bottles?|servings?|times?|pieces?|portions?|scoops?)$/i.test((i.unit||"").trim())}
   function totalOf(i){
     if(i.kind==="measure"){var n=0;for(var k in(i.values||{}))if(measureHit(i,k))n++;return n}
     if(i.kind==="med")return (i.log||[]).length;
@@ -4520,6 +4523,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       var okB=inRangeOn(i,today())&&!flagsOn(i,today()).length;
       h+='<button aria-label="'+esc(tickLabel(i))+'" class="tick round '+(cc>0&&okB?"on":"")+'" '+(cc>0&&!okB?'style="border-color:var(--gold);color:var(--gold-ink);background:var(--gold-soft)"':'')+' data-toggle="'+i.id+'">'+(cc>0?cc:"＋")+'</button>';
     } else if(i.kind==="todo"){var cls=complete?("on"+(i.id===_justDone?" pop":"")):(cc>0?"part":"");var lbl=complete?CHECK_SVG:(pd>1&&cc>0?cc:"");h+='<button aria-label="'+esc(tickLabel(i))+'" class="tick '+(isRepeat(i)?"round ":"")+cls+'" data-toggle="'+i.id+'">'+lbl+'</button>';}
+    else if(i.kind==="measure"&&isT&&tapCount(i)){var tv0=+((i.values||{})[today()])||0;h+='<button aria-label="Add one, '+esc(i.title)+'" class="tick round '+(complete?"on":tv0>0?"part":"")+'" data-mplus="'+i.id+'">'+(tv0>0?tv0:"＋")+'</button>';}
     else if(i.kind==="measure")h+='<button aria-label="'+esc(tickLabel(i))+'" class="tick round '+(complete?"on":"")+'" data-measure="'+i.id+'">'+(complete?CHECK_SVG:"＋")+'</button>';
     else if(i.kind==="med")h+='<button aria-label="'+esc(tickLabel(i))+'" class="tick round '+(complete?"on"+(i.id===_justDone?" pop":""):"")+'" data-toggle="'+i.id+'">'+(complete?CHECK_SVG:"＋")+'</button>';
     else h+='<span class="tick" style="border-style:dashed">↻</span>';
@@ -4563,7 +4567,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(isEpisode(i)){h+='<button class="mini-btn" data-ep="'+i.id+'">'+(activeEp(i)?"It\'s over":"Start")+'</button>';}
     else if(i.kind==="upkeep"&&isRoutine(i)){var d4=dCount(nextDue(i));h+='<span class="days '+(d4<=0?"bad":d4<=7?"warn":"ok")+'">'+(d4<=0?"now":d4+"d")+'</span><button class="mini-btn" data-reset="'+i.id+'">'+(i.mode==="rebuy"?"Bought":"Mark done")+'</button>';}
     else if(i.kind==="med"&&isRoutine(i))h+='<button class="mini-btn" data-restock="'+i.id+'">Restock</button>';
-    else if(i.kind==="measure"){var tv=(i.values||{})[today()];h+='<span class="mval"><b class="'+(complete?"hit":"")+'">'+(tv!=null?tv:"-")+'</b><small>'+esc(i.unit||"")+'</small></span>';}
+    else if(i.kind==="measure"){var tv=(i.values||{})[today()],mt=tapCount(i)?'button data-measure="'+i.id+'" aria-label="Type the exact amount"':'span';h+='<'+mt+' class="mval"><b class="'+(complete?"hit":"")+'">'+(tv!=null?tv:"-")+'</b><small>'+esc(i.unit||"")+'</small></'+mt.split(" ")[0]+'>';}
     else if(i.kind==="todo"&&isRepeat(i)&&i.small&&isT&&!complete&&isRoutine(i))h+='<button class="mini-btn" data-small="'+i.id+'" title="'+esc(i.small)+'">Small one</button>';
     else h+=avatarStack(i.assignees,3);
     h+='</div></div>';
@@ -4617,7 +4621,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function dueOnDate(i,ds,off){
     if(isLimit(i)||isEpisode(i)||isFast(i))return false; /* nothing is "due", it lives in its own strip */
     if(hasRhythm(i))return planOn(i,ds);
-    if(i.kind==="todo"){if(isRepeat(i)){var base=nextDue(i);if(dCount(base)<0)base=today();var diff=dCount(ds)-dCount(base);if(off===0&&dCount(nextDue(i))<=0)return true;return diff>=0&&diff%(i.repeatEvery)===0;}return i.dueDate===ds||(off===0&&i.dueDate&&dCount(i.dueDate)<0&&!i.done&&!waitingOnStep(i));}
+    if(i.kind==="todo"){if(isRepeat(i)){var base=nextDue(i);if(dCount(base)<0)base=today();var diff=dCount(ds)-dCount(base);if(off===0&&(dCount(nextDue(i))<=0||countOn(i,today())>0))return true;return diff>=0&&diff%(i.repeatEvery)===0;}return i.dueDate===ds||(off===0&&i.dueDate&&dCount(i.dueDate)<0&&!i.done&&!waitingOnStep(i));}
     if(i.kind==="measure"||i.kind==="med"){if(off===0)return true;var diff2=dCount(ds)-dCount(nextDue(i));return diff2>=0&&diff2%(i.repeatEvery||1)===0;}
     return nextDue(i)===ds;
   }
@@ -7336,6 +7340,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if((el=e.target.closest("[data-tagf]"))){state.filterTag=el.getAttribute("data-tagf")||null;render();return;}
     if((el=e.target.closest("[data-back-area]"))){var ba=el.getAttribute("data-back-area");if(ba===TODO_CAT)go("day");else go("area",ba);return;}
     if((el=e.target.closest("[data-area]"))&&!e.target.closest("[data-action]")){go("area",el.getAttribute("data-area"));return;}
+    if((el=e.target.closest("[data-mplus]"))){e.stopPropagation();var mi=Store.get("items",el.getAttribute("data-mplus"));if(mi){var mu=storeSnap(),mv=Object.assign({},mi.values||{}),t1=today();mv[t1]=(+mv[t1]||0)+1;if(mv[t1]>=(mi.target||1)){_justDone=mi.id;setTimeout(jdClear,1400);}Store.update("items",mi.id,{values:mv});toast(mi.title+": "+mv[t1]+" "+(mi.unit||"")+" today",mu);}return;}
     if((el=e.target.closest("[data-small]"))){e.stopPropagation();var si=Store.get("items",el.getAttribute("data-small"));if(si&&si.small){var su=storeSnap(),sc=Object.assign({},si.counts||{}),sd=Object.assign({},si.smallDays||{}),stt=Object.assign({},si.logTimes||{}),t0=today();sc[t0]=Math.max(sc[t0]||0,perDayOf(si));sd[t0]=1;stt[t0]=stt[t0]||nowHM();var sp={counts:sc,smallDays:sd,logTimes:stt};if((si.events||{})[t0]){var se=Object.assign({},si.events);se[t0]=se[t0].concat(Array(Math.max(0,perDayOf(si)-se[t0].length)).fill(nowHM()));sp.events=se;}_justDone=si.id;setTimeout(jdClear,1400);Store.update("items",si.id,sp);toast("Small one done: "+si.small+". It counts.",su);}return;}
     if((el=e.target.closest("[data-low]"))){var lo=!isLowDay(today());setLowDay(today(),lo);render();toast(lo?"A low day. Only what matters stays.":"The day is back as planned.");return;}
     if((el=e.target.closest("[data-toggle]"))){e.stopPropagation();toggleItem(el.getAttribute("data-toggle"));return;}
