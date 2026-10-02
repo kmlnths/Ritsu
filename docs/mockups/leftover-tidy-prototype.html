@@ -44,7 +44,7 @@ h1 b{color:var(--ink);font-weight:600}
 .card .days span{font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase}
 .card .ask{font-size:13px;color:var(--faint);text-align:right;line-height:1.35}
 /* the hint that grows as you drag */
-.tag{position:absolute;top:20px;padding:8px 13px;border-radius:999px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;
+.tag{position:absolute;top:56%;padding:8px 13px;border-radius:999px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;
   background:rgba(10,11,14,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12)}
 .tag.r{left:20px}.tag.l{right:20px}.tag.u{left:50%;transform:translateX(-50%);top:auto;bottom:20px}
 /* cards waiting behind */
@@ -52,7 +52,7 @@ h1 b{color:var(--ink);font-weight:600}
 .card.n2{transform:translateY(30px) scale(.88);filter:brightness(.5)}
 .card.n3{transform:translateY(42px) scale(.82);filter:brightness(.3);opacity:0}
 .card.n1,.card.n2,.card.n3{transition:transform .6s var(--rise),filter .6s var(--rise),opacity .6s var(--rise);pointer-events:none}
-.card.rise{animation:rise .6s var(--rise) both}
+.card.rise{animation:rise .6s var(--rise) backwards}
 @keyframes rise{from{filter:blur(6px) brightness(.72);transform:translateY(16px) scale(.94)}to{filter:none;transform:none}}
 
 /* buttons */
@@ -126,7 +126,7 @@ h1 b{color:var(--ink);font-weight:600}
     return e}
   function paint(rising){
     stage.innerHTML="";
-    for(var k=Math.min(idx+3,total)-1;k>=idx;k--){var e=cardEl(DATA[k]);var p=k-idx;if(p>0)e.classList.add("n"+p);else{if(rising&&!reduce)e.classList.add("rise");bind(e);}stage.appendChild(e);}
+    for(var k=Math.min(idx+3,total)-1;k>=idx;k--){var e=cardEl(DATA[k]);var p=k-idx;if(p>0)e.classList.add("n"+p);else{if(rising&&!reduce){e.classList.add("rise");e.addEventListener("animationend",function(){this.classList.remove("rise")},{once:true})}bind(e);}stage.appendChild(e);}
     ct.textContent=Math.min(idx+1,total)+" of "+total;bar.style.width=(idx/total*100)+"%";
     document.getElementById("end").classList.toggle("on",idx>=total);
     if(idx>=total){document.getElementById("endp").textContent=total+" things have a home now.";ct.textContent=total+" of "+total;}
