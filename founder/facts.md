@@ -5,3 +5,4 @@
 - Team: one founder, not a techie, building with Claude. 2026-10-02, validate-idea
 - Price idea: a paid tier of about $35 a year (a WhatsApp companion was discussed). 2026-10-02, validate-idea
 - Name: Hiyori chosen 2026-10-01; reconsidering for a simpler English name (Daywell, Tickwell shortlisted). 2026-10-02, validate-idea
+- Platform: Daywell is a phone app going to the App Store and Play Store soon; the web version is the early build. 2026-10-03, competitor-matrix (founder)

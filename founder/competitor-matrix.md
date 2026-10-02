@@ -3,6 +3,7 @@
 # Competitor matrix: Daywell
 
 Assumption: Daywell is the calm daily app for medicine, body logs, habits and to-dos described in `PRODUCT.md`, now pitched to people living with a health condition (`founder/validate-idea.md`).
+Daywell is a phone app on its way to the App Store and Play Store. Today it runs as an early version at kmlnths.github.io/Ritsu.
 Assumption: the target customer is someone with daily medicine or symptoms to track who also runs a normal day of work and chores.
 All pages were read on 2026-10-03. Apps were not installed or tried.
 
@@ -21,7 +22,7 @@ Haven sits in a crowded "squat to scroll" niche (BootyBlock, SquatScroll, Tacet,
 
 ## 2. Feature comparison
 
-Daywell column: "Yes" means live on kmlnths.github.io/Ritsu today.
+Daywell column: "Yes" means built and working in the early version today. "Building" means on its way.
 
 | Feature | Daywell | Enough Today | Somehow | Haven | Bearable | Finch | Tiimo |
 |---|---|---|---|---|---|---|---|
@@ -35,8 +36,8 @@ Daywell column: "Yes" means live on kmlnths.github.io/Ritsu today.
 | One thing at a time | Partial ("next" on the Home card) | Yes (Gentle Mode) | Yes | No | No | No | Unknown |
 | Works offline, no account | Yes | Partial (local-first, with sync) | Yes | Yes | Unknown | Unknown | Unknown |
 | Friends or group support | Planned (no numbers, "plan kept") | Unknown | No (stated) | No | Unknown | Partial (friends) | Unknown |
-| Native iPhone app | No (web app) | Yes | Yes | Yes | Yes | Yes | Yes |
-| Android | Partial (web app) | No | No | No | Yes | Yes | Yes |
+| Native iPhone app | Building (App Store soon) | Yes | Yes | Yes | Yes | Yes | Yes |
+| Android | Building (Play Store soon) | No | No | No | Yes | Yes | Yes |
 | Paid tier | Planned (about $35 a year) | No | No | Yes | Yes | Yes | Yes |
 
 ## 3. Positioning gaps
@@ -73,4 +74,4 @@ Somehow and Haven: low. Somehow is chores only. Haven is a different job (stop s
 - **Feature to ship first:** friend groups that show only "plan kept", with medicine and logs kept private. It is both the clearest difference and the only built-in way to find users. It needs the backend, so the next step stays the same.
 - **Competitor to watch:** Enough Today. Its users (low energy, ADHD) overlap with people living with a condition, and adding medicine reminders is a small step for it. Check its App Store page each month.
 
-One more thing the table shows: all three apps you sent are native iPhone apps. Daywell is a web app. Being in the App Store matters more for trust with health users than any single feature.
+One more thing the table shows: the three apps you sent are iPhone only. Enough Today, Somehow and Haven have no Android app, so launching on both stores at once puts Daywell in front of Android users none of them reach.
