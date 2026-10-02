@@ -80,7 +80,7 @@ Build next, best first. "Fit" is how well it suits people with a health conditio
 | 2 | Small version | Enough Today, Haven | Gym gets "10 minute walk". On a low day, or when missed, doing the small one counts as done. | Medium | High |
 | 3 | Totals, not streaks | Enough Today, Somehow | Replace the streak flame with "48 times". Missed days never wipe progress. | Small | High |
 | 4 | Coming up this week | Rhythm | Under today's list, a short "Later this week" line for some-days items (for example "Wash towels, Sunday"). | Small | Medium |
-| 5 | No pile-ups | Somehow | Old open to-dos do not stack on today; one gentle "a few from earlier" line instead. | Small | Medium |
+| 5 | Never lost, never buried (decided 2026-10-03, brainstorm) | Somehow, reworked | Unfinished to-dos still carry to today and are never hidden. (a) Today first, then a "From earlier (12)" line, each saying where it came from ("from Tuesday"). (b) Leftovers never count against today; doing one is a bonus. (c) After 7 untouched days, ask once: Keep, Someday, or Let it go. Never delete without asking. | Small | High |
 | 6 | "Never do" list | Somehow, Haven | A short list on the store page and in Settings: no guilt alerts, no streak punishment, no ads, health data stays yours. | Tiny | High |
 | 7 | Widget | Rhythm reviews | Home screen widget with the day's lights and next thing. Native app only. | Medium | Medium |
 | 8 | Tip jar, then lifetime price | Somehow, Haven | A tip jar before the paid tier; later, a lifetime price next to the yearly one. | Small | Low |
