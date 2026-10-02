@@ -2902,14 +2902,14 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function perDayOf(i){return Math.max(1,i.perDay||1)}
   function countOn(i,ds){var e=(i.events||{})[ds];if(e)return e.length;return (i.counts||{})[ds]||0}
   function measureHit(i,ds){var val=(i.values||{})[ds];if(val!=null&&(i.okDays||[]).indexOf(ds)>-1)return true;return val!=null&&val>=(i.target||1)}
-  function medDaysLeft(i){return Math.floor((i.stock||0)/(i.dosesPerDay||1))}
+  function medDaysLeft(i){return Math.floor((i.stock||0)/((i.dosesPerDay||1)*Math.max(1,i.timesADay||1)))}
   function medCourseLeft(i){return (i.courseDays||0)>0?dCount(addDaysStr(i.courseStart||today(),i.courseDays)):null}
   function didOn(i,ds){if(i.kind==="measure")return measureHit(i,ds);if(i.kind==="med")return (i.log||[]).indexOf(ds)>-1;if(i.kind==="todo"){if(isRepeat(i))return countOn(i,ds)>0;return !!i.done;}return false}
-  function metOn(i,ds){if(i.kind==="todo"&&isRepeat(i))return countOn(i,ds)>=perDayOf(i);return didOn(i,ds)}
+  function metOn(i,ds){if(i.kind==="todo"&&isRepeat(i))return countOn(i,ds)>=perDayOf(i);if(i.kind==="med"&&(i.timesADay||1)>1)return countOn(i,ds)>=i.timesADay;return didOn(i,ds)}
   function abnormalOn(i,ds){return i.kind==="todo"&&isRepeat(i)&&countOn(i,ds)>perDayOf(i)}
   function lastDoneOf(i){if(i.kind==="todo"){var ks=Object.keys(i.counts||{}).filter(function(k){return i.counts[k]>0});ks.sort();return ks.length?ks[ks.length-1]:null;}if(i.kind==="med"){var l=(i.log||[]).slice().sort();return l.length?l[l.length-1]:null;}return i.lastDone||null}
   function nextDue(i){if(i.kind==="todo"){if(isRepeat(i)){var ld=lastDoneOf(i);return ld?addDaysStr(ld,i.repeatEvery):today();}return i.dueDate||null;}if(i.kind==="measure"||i.kind==="med"){var ld2=lastDoneOf(i);return ld2?addDaysStr(ld2,i.repeatEvery||1):today();}return addDaysStr(i.lastDone||i.createdDate||today(),i.intervalDays||30)}
-  function doneForNow(i){if(i.kind==="measure")return measureHit(i,today());if(i.kind==="med")return didOn(i,today());if(i.kind==="todo"){if(isRepeat(i))return metOn(i,today());return !!i.done;}return dCount(nextDue(i))>0}
+  function doneForNow(i){if(i.kind==="measure")return measureHit(i,today());if(i.kind==="med")return metOn(i,today());if(i.kind==="todo"){if(isRepeat(i))return metOn(i,today());return !!i.done;}return dCount(nextDue(i))>0}
   function onToday(i){if(isLimit(i)||isEpisode(i)||isFast(i))return false;if(hasRhythm(i))return planOn(i,today());if(i.kind==="measure"||i.kind==="med")return (i.repeatEvery||1)===1||didOn(i,today())||dCount(nextDue(i))<=0;if(i.kind!=="todo")return false;if(isRepeat(i))return countOn(i,today())>0||dCount(nextDue(i))<=0;return i.dueDate!=null&&dCount(i.dueDate)<=0}
   function medLow(i){return (i.reorderTablets>0&&(i.stock||0)<=i.reorderTablets)||(i.reorderAt>0&&medDaysLeft(i)<=i.reorderAt)}
   function attention(i){
@@ -4551,7 +4551,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     } else if(i.kind==="todo"){var cls=complete?("on"+(i.id===_justDone?" pop":"")):(cc>0?"part":"");var lbl=complete?CHECK_SVG:(pd>1&&cc>0?cc:"");h+='<button aria-label="'+esc(tickLabel(i))+'" class="tick '+(isRepeat(i)?"round ":"")+cls+'" data-toggle="'+i.id+'">'+lbl+'</button>';}
     else if(i.kind==="measure"&&isT&&tapCount(i)){var tv0=+((i.values||{})[today()])||0;h+='<button aria-label="Add one, '+esc(i.title)+'" class="tick round '+(complete?"on":tv0>0?"part":"")+'" data-mplus="'+i.id+'">'+(tv0>0?tv0:"＋")+'</button>';}
     else if(i.kind==="measure")h+='<button aria-label="'+esc(tickLabel(i))+'" class="tick round '+(complete?"on":"")+'" data-measure="'+i.id+'">'+(complete?CHECK_SVG:"＋")+'</button>';
-    else if(i.kind==="med")h+='<button aria-label="'+esc(tickLabel(i))+'" class="tick round '+(complete?"on"+(i.id===_justDone?" pop":""):"")+'" data-toggle="'+i.id+'">'+(complete?CHECK_SVG:"＋")+'</button>';
+    else if(i.kind==="med"){var mN=Math.max(1,i.timesADay||1),mc=isT?countOn(i,today()):0;h+='<button aria-label="'+esc(tickLabel(i))+'" class="tick round '+(complete?"on"+(i.id===_justDone?" pop":""):(mN>1&&mc>0?"part":""))+'" data-toggle="'+i.id+'">'+(complete?CHECK_SVG:(mN>1&&mc>0?mc:"＋"))+'</button>';}
     else h+='<span class="tick" style="border-style:dashed">↻</span>';
 
     h+='<div class="rb"><div class="rt"><button class="rtb" data-open="'+i.id+'">'+esc(cbTitle(i))+'</button>'+(i.private?LOCK:"")+(i.localOnly?'<span class="flagpill" style="margin-left:7px">this device</span>':"")+'</div><div class="rmeta">'+(opts.topic?'<span class="topic-tag" style="--c:var(--c-'+(areaDomain(i.catId)||"todo")+')">'+esc(qcGroupOf(i)[1])+'</span>':'');
@@ -4582,7 +4582,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       if(isRepeat(i)){h+='<span class="pill rep">'+PI("repeat")+esc(planLabel(i))+'</span>';if((i.smallDays||{})[dsR])h+='<span class="pill">done small · '+esc(i.small||"")+'</span>';if(pd>1)h+='<span class="pill">'+cc+'/'+pd+' today</span>';if(countOn(i,today())>pd)h+='<span class="pill warnflag">'+cc+'× · over usual</span>';h+=totalPill(i);}
       else if(i.dueDate&&!i.done)h+='<span class="pill due '+dueClass(i.dueDate)+'">'+esc(dueLabel(i.dueDate))+'</span>';
       if(i.priority==="high"&&!complete)h+='<span class="pill hi">High</span>';
-    } else if(i.kind==="med"){var dl=medDaysLeft(i);h+='<span class="pill due '+(dl<=0?"over":medLow(i)?"soon":"")+'">'+PI("pill")+dl+'d · '+(i.stock||0)+' left</span>';h+=totalPill(i);var cl=medCourseLeft(i);if(cl!=null&&cl>=0)h+='<span class="pill">course '+cl+'d</span>';}
+    } else if(i.kind==="med"){var dl=medDaysLeft(i);if((i.timesADay||1)>1&&isT)h+='<span class="pill">'+countOn(i,today())+'/'+i.timesADay+' today</span>';h+='<span class="pill due '+(dl<=0?"over":medLow(i)?"soon":"")+'">'+PI("pill")+dl+'d · '+(i.stock||0)+' left</span>';h+=totalPill(i);var cl=medCourseLeft(i);if(cl!=null&&cl>=0)h+='<span class="pill">course '+cl+'d</span>';}
     else if(i.kind==="measure"){h+='<span class="pill" style="color:var(--accent-ink)">'+PI("target")+esc((i.target||0)+(i.unit?" "+i.unit:""))+'</span>';h+=totalPill(i);}
     else if(i.kind==="upkeep"){var d3=dCount(nextDue(i));h+='<span class="pill due '+(d3<=0?"over":d3<=7?"soon":"")+'">'+(i.mode==="rebuy"?"rebuy":"replace")+' in '+(d3<=0?"now":d3+"d")+'</span>';}
     h+=flagPills(i,today());
@@ -6728,11 +6728,11 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       h+='<div class="two"><div class="field"><label id="l-prio">Priority</label><div class="seg" id="i-prio" role="group" aria-labelledby="l-prio">'+prioBtns(d.priority)+'</div></div>'+((d.perDay||1)>1?'':'<div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div>')+'</div>';
       h+=expectField(d);
     } else if(d.akind==="oneoff"){h+='<div class="two"><div class="field"><label>Due date</label><input type="date" id="i-due" value="'+esc(d.dueDate||"")+'"></div><div class="field"><label id="l-prio">Priority</label><div class="seg" id="i-prio" role="group" aria-labelledby="l-prio">'+prioBtns(d.priority)+'</div></div></div>';
-    } else if(d.akind==="med"){h+=rhythmField(d)+'<div class="two"><div class="field"><label>Pills on hand</label><input type="number" id="i-stock" min="0" value="'+(d.stock||0)+'"></div><div class="field"><label>Doses per day</label><input type="number" id="i-doses" min="0.5" step="0.5" value="'+(d.dosesPerDay||1)+'"></div></div><div class="two"><div class="field"><label>Remind at ≤ pills</label><input type="number" id="i-rtab" min="0" value="'+(d.reorderTablets||0)+'"></div><div class="field"><label>…or ≤ days left</label><input type="number" id="i-rday" min="0" value="'+(d.reorderAt||0)+'"></div></div><div class="two"><div class="field"><label>Course length (days)</label><input type="number" id="i-course" min="0" value="'+(d.courseDays||0)+'"><div class="hint">0 = ongoing.</div></div><div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div></div>';
+    } else if(d.akind==="med"){h+=rhythmField(d)+'<div class="two"><div class="field"><label>Pills on hand</label><input type="number" id="i-stock" min="0" value="'+(d.stock||0)+'"></div><div class="field"><label>Pills each time</label><input type="number" id="i-doses" min="0.5" step="0.5" value="'+(d.dosesPerDay||1)+'"></div></div><div class="two"><div class="field"><label>Times a day</label><input type="number" id="i-tad" min="1" max="12" value="'+(d.timesADay||1)+'"></div></div>'+timesField(d,d.timesADay||1)+'<div class="two"><div class="field"><label>Remind at ≤ pills</label><input type="number" id="i-rtab" min="0" value="'+(d.reorderTablets||0)+'"></div><div class="field"><label>…or ≤ days left</label><input type="number" id="i-rday" min="0" value="'+(d.reorderAt||0)+'"></div></div><div class="two"><div class="field"><label>Course length (days)</label><input type="number" id="i-course" min="0" value="'+(d.courseDays||0)+'"><div class="hint">0 = ongoing.</div></div>'+((d.timesADay||1)>1?'':'<div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div>')+'</div>';
     } else if(d.akind==="measure"){h+=rhythmField(d)+'<div class="two"><div class="field"><label>Daily goal</label><input type="number" id="i-target" min="0" step="any" value="'+(d.target||1)+'"></div><div class="field"><label>Unit</label><input type="text" id="i-unit" value="'+esc(d.unit||"")+'" placeholder="hrs, glasses…"></div></div><div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div>';
     } else if(d.akind==="upkeep"){h+='<div class="field"><label>What happens</label><div class="seg" id="i-mode"><button type="button" data-v="replace" class="'+(d.mode!=="rebuy"?"on":"")+'">Replace It</button><button type="button" data-v="rebuy" class="'+(d.mode==="rebuy"?"on":"")+'">Rebuy It</button></div></div><div class="two"><div class="field"><label>Every (days)</label><input type="number" id="i-int" min="1" value="'+(d.intervalDays||30)+'"><div class="hint">e.g. 90 for a 3-month toothbrush.</div></div><div class="field"><label>Last done</label><input type="date" id="i-last" value="'+esc(d.lastDone||today())+'"></div></div>';}
     if(d.stance==="routine"){var _cnt=(d.akind==="med")?(d.count===true):(d.count!==false);
-      h+='<label class="toggle-line"><input type="checkbox" id="i-count" '+(_cnt?"checked":"")+'> Counts toward my day'+(d.akind==="med"?' <span class="sub-lbl">(medicine is off by default, still tracked)</span>':'')+'</label><div class="hint">On for what matters, like a workout. Off for nice to haves, like eggs: they sit under Also today, and a missed day is fine.</div>';}
+      h+='<div class="field"><label class="toggle-line"><input type="checkbox" id="i-count" '+(_cnt?"checked":"")+'> Counts toward my day'+(d.akind==="med"?' <span class="sub-lbl">(medicine is off by default, still tracked)</span>':'')+'</label><div class="hint">On for what matters, like a workout. Off for nice to haves, like eggs: they sit under Also today, and a missed day is fine.</div></div>';}
     /* flags are opt-in per item. Nothing appears unless you put it there. */
     var chosen=(d.markers||[]);
     h+='<div class="field"><label>'+(d.stance==="limit"?"Triggers you can tag":"Things you can flag")+' <span class="sub-lbl">(optional)</span></label><div class="pick-wrap" id="i-markers">';
@@ -6793,6 +6793,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function syncItem(){var d=ms.data;if(!d)return;var g=function(id){return $("#"+id)};
     if(g("i-title"))d.title=g("i-title").value;if(g("i-sub"))d.sub=g("i-sub").value.trim();if(g("i-due"))d.dueDate=g("i-due").value||null;if(g("i-int"))d.intervalDays=parseInt(g("i-int").value,10)||30;if(g("i-last"))d.lastDone=g("i-last").value||null;if(g("i-notes"))d.notes=g("i-notes").value;if(g("i-target"))d.target=parseFloat(g("i-target").value)||1;if(g("i-unit"))d.unit=g("i-unit").value.trim();if(g("i-rem"))d.reminder=g("i-rem").value||null;if(g("i-stock"))d.stock=parseInt(g("i-stock").value,10)||0;if(g("i-doses"))d.dosesPerDay=parseFloat(g("i-doses").value)||1;if(g("i-rtab"))d.reorderTablets=parseInt(g("i-rtab").value,10)||0;if(g("i-rday"))d.reorderAt=parseInt(g("i-rday").value,10)||0;if(g("i-course"))d.courseDays=parseInt(g("i-course").value,10)||0;if(g("i-perday"))d.perDay=Math.max(1,Math.min(12,parseInt(g("i-perday").value,10)||1));
     if(g("i-t1")){d.times=[g("i-rem")?(g("i-rem").value||null):d.reminder];for(var tk=1;tk<12;tk++){var te=g("i-t"+tk);if(!te)break;d.times.push(te.value||null)}}
+    if(g("i-tad"))d.timesADay=Math.max(1,Math.min(12,parseInt(g("i-tad").value,10)||1));
     if(g("i-everyh"))d.everyH=Math.max(1,Math.min(24,parseInt(g("i-everyh").value,10)||6));if(g("i-private"))d.private=g("i-private").checked;
     if(g("i-count"))d.count=g("i-count").checked;
     if(g("i-small"))d.small=g("i-small").value.trim();
@@ -6853,7 +6854,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     }
     if(kind==="todo"){var rep=(ms.mode==="task"||d.akind==="oneoff")?0:(d.repeatEvery||1);base.repeatEvery=rep;base.perDay=rep>0?Math.max(1,d.perDay||1):1;base.normal={min:base.perDay,max:base.perDay,maxGapDays:rep>0?rep:null,maxPerWeek:null};base.dueDate=rep>0?null:(d.dueDate||(d.catId===TODO_CAT?today():null));base.done=rep>0?false:!!d.done;if(!ms.id&&rep>0){base.counts={};base.logTimes={};base.events={};}}
     if(kind==="measure"){base.repeatEvery=1;base.target=d.target||1;base.unit=d.unit||"";if(!ms.id)base.values={};}
-    if(kind==="med"){base.repeatEvery=1;base.dosesPerDay=d.dosesPerDay||1;base.stock=d.stock||0;base.reorderTablets=d.reorderTablets||0;base.reorderAt=d.reorderAt||0;base.courseDays=d.courseDays||0;base.courseStart=d.courseStart||today();if(!ms.id){base.log=[];base.logTimes={};}}
+    if(kind==="med"){base.repeatEvery=1;base.dosesPerDay=d.dosesPerDay||1;base.timesADay=Math.max(1,d.timesADay||1);base.everyH=base.timesADay>1&&d.everyH?d.everyH:null;base.times=base.timesADay>1&&!d.everyH&&d.times?d.times.slice(0,base.timesADay):null;base.stock=d.stock||0;base.reorderTablets=d.reorderTablets||0;base.reorderAt=d.reorderAt||0;base.courseDays=d.courseDays||0;base.courseStart=d.courseStart||today();if(!ms.id){base.log=[];base.logTimes={};}}
     if(kind==="todo"&&base.repeatEvery>0){base.small=d.small||"";var bn=base.perDay||1;base.everyH=bn>1&&d.everyH?d.everyH:null;base.times=bn>1&&!d.everyH&&d.times?d.times.slice(0,bn):null;}
     if(kind==="measure"||kind==="med"||(kind==="todo"&&base.repeatEvery>0)){base.days=(d.days&&d.days.length)?d.days.slice():null;base.perWeek=d.perWeek||null;base.repeatEvery=(base.days||base.perWeek)?1:(d.repeatEvery||1);}
     if(kind==="upkeep"){base.mode=d.mode||"replace";base.intervalDays=d.intervalDays||30;base.lastDone=d.lastDone||today();}
@@ -7280,6 +7281,10 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     setDayCount(i,ds,countOn(i,ds)>0?0:1);
   }
   function toggleItem(id){var i=Store.get("items",id);if(!i)return;
+    if(i.kind==="med"&&!isLimit(i)&&!isBody(i)&&(i.timesADay||1)>1){var mN2=i.timesADay,mc2=countOn(i,today());
+      if(mc2<mN2){if(mc2+1>=mN2){_justDone=i.id;setTimeout(jdClear,1400);}Buddy.react("done");setDayCount(i,today(),mc2+1);toast("Dose "+(mc2+1)+" of "+mN2+": "+i.title,function(){var fi=Store.get("items",i.id);if(fi)setDayCount(fi,today(),mc2)});}
+      else{setDayCount(i,today(),0);toast("Marked not taken: "+i.title,function(){var fi=Store.get("items",i.id);if(fi)setDayCount(fi,today(),mN2)});}
+      return;}
     if(i.kind==="med"){if(isLimit(i)||isBody(i)){addEvent(i,today());openStrip(i.id);}else{var was0=countOn(i,today())>0;if(!was0){_justDone=i.id;setTimeout(jdClear,1400);Buddy.react("done");}logToggleDate(i,today());toast(was0?"Marked not taken":"Taken: "+i.title,function(){var fi=Store.get("items",i.id);if(fi)logToggleDate(fi,today());},was0?null:(dayFinished()?"joy":"happy"));}}
     else if(i.kind==="todo")tapTodo(i);}
 
@@ -7323,7 +7328,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   $("#fab").addEventListener("click",function(){if(state.view==="area")openAdd(null,state.areaId);else if(state.view==="day")openAdd(state.day);else openAdd(today());});
   var _ms=$("#mSettings");if(_ms)_ms.addEventListener("click",function(){go("settings");});
   document.addEventListener("keydown",function(e){if(e.key==="Escape"&&$("#overlay").classList.contains("show"))closeModal();});
-  document.addEventListener("change",function(e){if(e.target&&e.target.id==="i-rep"||e.target.id==="i-perday"){syncItem();renderItemModal();}});
+  document.addEventListener("change",function(e){if(e.target&&e.target.id==="i-rep"||e.target.id==="i-perday"||e.target.id==="i-tad"){syncItem();renderItemModal();}});
   document.addEventListener("input",function(e){if(e.target&&e.target.id==="lib-q"&&ms.type==="library"){ms.q=e.target.value;tpPaint();}});
   /* hold a card to open its list: a soft fill grows across it, and letting go early cancels */
   var _hmLong=false;
