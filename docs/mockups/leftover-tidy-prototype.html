@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Leftover tidy prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+<style>
+/* Prototype only, not the app. Motion borrowed in spirit from ramp.design:
+   long ease-out curves, objects that tilt with the hand, new things rising out of a soft blur. */
+:root{--bg:#0B0C0F;--ink:#F2F3F5;--mut:#9AA2AD;--faint:#6B7380;--line:#2A2D33;--acc:#34D399;
+  --body:#34D399;--mind:#A78BFA;--todo:#FBBF24;
+  --out:cubic-bezier(.22,1,.36,1);--rise:cubic-bezier(.16,1,.3,1)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#050608;color:var(--ink);font-family:"Space Grotesk",system-ui,sans-serif}
+.phone{position:relative;width:390px;max-width:100%;height:844px;max-height:100vh;margin:0 auto;overflow:hidden;
+  background:radial-gradient(120% 60% at 50% 0%,#171a22 0%,var(--bg) 60%)}
+.top{padding:22px 22px 0;display:flex;justify-content:space-between;align-items:baseline}
+.k{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);font-weight:600}
+.count{font-size:13px;color:var(--faint);font-variant-numeric:tabular-nums}
+.done-now{background:none;border:0;color:var(--mut);font:inherit;font-size:13px;cursor:pointer;padding:0;margin-left:10px}
+.bar{margin:12px 22px 0;height:3px;border-radius:3px;background:#1d2026;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#6b7380,#d7dbe0);border-radius:3px;transition:width .6s var(--out)}
+h1{margin:18px 22px 0;font-size:15px;font-weight:500;color:var(--mut)}
+h1 b{color:var(--ink);font-weight:600}
+
+/* the stack */
+.stage{position:relative;height:430px;margin-top:22px;perspective:1100px}
+.card{--c:var(--todo);position:absolute;left:26px;right:26px;top:10px;height:380px;border-radius:30px;padding:22px 22px 20px;
+  display:flex;flex-direction:column;touch-action:none;user-select:none;cursor:grab;will-change:transform;
+  background:
+    radial-gradient(110% 80% at 0% 0%,color-mix(in srgb,var(--c) 30%,transparent),transparent 58%),
+    radial-gradient(90% 60% at 100% 110%,color-mix(in srgb,var(--c) 12%,transparent),transparent 70%),
+    linear-gradient(180deg,#1F2128,#15161A);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 0 0 1px rgba(255,255,255,.045),
+    0 1px 2px rgba(0,0,0,.5),0 22px 44px -14px rgba(0,0,0,.75),0 50px 90px -40px rgba(0,0,0,.6);
+  transform-origin:50% 90%}
+.card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:.07;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.card.dragging{cursor:grabbing}
+.card .light{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600;letter-spacing:.03em;color:color-mix(in srgb,var(--c) 85%,#fff)}
+.card .light i{width:22px;height:7px;border-radius:5px;background:var(--c);box-shadow:0 0 10px var(--c),0 0 2px var(--c)}
+.card h2{margin:26px 0 0;font-size:30px;line-height:1.08;font-weight:600;letter-spacing:-.02em}
+.card .since{margin:10px 0 0;color:var(--mut);font-size:14px}
+.card .foot{margin-top:auto;display:flex;align-items:flex-end;justify-content:space-between}
+.card .days b{display:block;font-size:64px;font-weight:200;line-height:.85;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.card .days span{font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase}
+.card .ask{font-size:13px;color:var(--faint);text-align:right;line-height:1.35}
+/* the hint that grows as you drag */
+.tag{position:absolute;top:20px;padding:8px 13px;border-radius:999px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;
+  background:rgba(10,11,14,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12)}
+.tag.r{left:20px}.tag.l{right:20px}.tag.u{left:50%;transform:translateX(-50%);top:auto;bottom:20px}
+/* cards waiting behind */
+.card.n1{transform:translateY(16px) scale(.94);filter:brightness(.72)}
+.card.n2{transform:translateY(30px) scale(.88);filter:brightness(.5)}
+.card.n3{transform:translateY(42px) scale(.82);filter:brightness(.3);opacity:0}
+.card.n1,.card.n2,.card.n3{transition:transform .6s var(--rise),filter .6s var(--rise),opacity .6s var(--rise);pointer-events:none}
+.card.rise{animation:rise .6s var(--rise) both}
+@keyframes rise{from{filter:blur(6px) brightness(.72);transform:translateY(16px) scale(.94)}to{filter:none;transform:none}}
+
+/* buttons */
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 22px}
+.acts button{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 10px;border-radius:16px;border:1px solid var(--line);
+  background:#15171b;color:var(--ink);font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:transform .14s var(--out),background .2s}
+.acts button:active{transform:scale(.96)}
+.acts button span{color:var(--faint);font-weight:500}
+.acts button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* sheet and toast */
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .35s var(--out)}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;padding:22px 22px 30px;border-radius:28px 28px 0 0;background:#1a1c21;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 -20px 50px -20px rgba(0,0,0,.8);transform:translateY(105%);transition:transform .5s var(--out)}
+.sheet.on{transform:none}
+.sheet h3{margin:0 0 4px;font-size:18px}.sheet p{margin:0 0 16px;color:var(--mut);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{padding:11px 16px;border-radius:999px;border:1px solid var(--line);background:#22252b;color:var(--ink);font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:transform .14s var(--out)}
+.chips button:active{transform:scale(.95)}
+.sheet input{width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:#121418;color:var(--ink);font:inherit;font-size:15px;margin-bottom:12px}
+.sheet input:focus{outline:none;border-color:var(--c,var(--acc))}
+.toast{position:absolute;left:18px;right:18px;bottom:22px;display:flex;align-items:center;gap:12px;padding:12px 12px 12px 16px;border-radius:18px;
+  background:#f2f3f5;color:#111;font-size:14px;transform:translateY(140%);opacity:0;transition:transform .5s var(--out),opacity .3s}
+.toast.on{transform:none;opacity:1}
+.toast span{flex:1}
+.toast button{border:0;background:#111;color:#fff;font:inherit;font-weight:600;font-size:13px;padding:9px 14px;border-radius:999px;cursor:pointer}
+.end{position:absolute;left:0;right:0;top:170px;text-align:center;opacity:0;transform:translateY(16px);filter:blur(6px);transition:all .7s var(--rise);pointer-events:none}
+.end.on{opacity:1;transform:none;filter:none}
+.end b{display:block;font-size:30px;font-weight:600;margin-bottom:8px}.end p{color:var(--mut);margin:0}
+.end .ring{width:64px;height:64px;margin:0 auto 18px;border-radius:50%;border:2px solid var(--acc);display:grid;place-items:center;color:var(--acc);font-size:28px}
+.help{position:absolute;left:0;right:0;top:-1000px}
+@media (prefers-reduced-motion:reduce){.card,.card.rise,.sheet,.toast,.end{animation:none!important;transition:opacity .2s!important}}
+</style></head>
+<body>
+<div class="phone" id="ph">
+  <div class="top"><span class="k">Tidy</span><span><span class="count" id="ct"></span><button class="done-now" id="stop">Done for now</button></span></div>
+  <div class="bar"><i id="bar"></i></div>
+  <h1><b>What is in the way?</b> Swipe, or use the buttons.</h1>
+  <div class="stage" id="stage"></div>
+  <div class="acts">
+    <button data-a="left"><span>←</span>Let it go</button>
+    <button data-a="right"><span>→</span>Give it a day</button>
+    <button data-a="up"><span>↑</span>Back in a week</button>
+    <button data-a="big"><span>tap</span>It is too big</button>
+  </div>
+  <div class="end" id="end"><div class="ring">✓</div><b>All tidy</b><p id="endp"></p></div>
+  <div class="scrim" id="scrim"></div>
+  <div class="sheet" id="sheet"></div>
+  <div class="toast" id="toast"><span id="tmsg"></span><button id="undo">Undo</button></div>
+</div>
+<script>
+(function(){
+  var DATA=[
+    {t:"Book physio follow-up",a:"Body",g:"Checkups",c:"body",d:12,since:"21 September"},
+    {t:"Finish course module 3",a:"Mind",g:"Learning",c:"mind",d:8,since:"25 September"},
+    {t:"Fix the shelf",a:"To-do",g:"Home",c:"todo",d:7,since:"26 September"},
+    {t:"Order new running shoes",a:"Body",g:"Fitness",c:"body",d:6,since:"27 September"},
+    {t:"Reply to Priya about Sunday",a:"To-do",g:"Personal",c:"todo",d:5,since:"28 September"},
+    {t:"Write in the gratitude journal",a:"Mind",g:"Calm",c:"mind",d:4,since:"29 September"}
+  ];
+  var total=DATA.length,idx=0,history=[],reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var stage=document.getElementById("stage"),sheet=document.getElementById("sheet"),scrim=document.getElementById("scrim"),
+      toast=document.getElementById("toast"),tmsg=document.getElementById("tmsg"),bar=document.getElementById("bar"),ct=document.getElementById("ct");
+  function esc(s){return String(s).replace(/[&<>"]/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]})}
+  function cardEl(x){var e=document.createElement("div");e.className="card";e.style.setProperty("--c","var(--"+x.c+")");
+    e.setAttribute("role","group");e.setAttribute("aria-label",x.t+", "+x.a+", waiting "+x.d+" days");
+    e.innerHTML='<span class="light"><i></i>'+esc(x.a)+' · '+esc(x.g)+'</span><h2>'+esc(x.t)+'</h2><p class="since">Waiting since '+esc(x.since)+'</p>'+
+      '<div class="foot"><div class="days"><b>'+x.d+'</b><span>days waiting</span></div><div class="ask">Tap if it<br>is too big</div></div>'+
+      '<span class="tag r">Give it a day →</span><span class="tag l">← Let it go</span><span class="tag u">↑ Back in a week</span>';
+    return e}
+  function paint(rising){
+    stage.innerHTML="";
+    for(var k=Math.min(idx+3,total)-1;k>=idx;k--){var e=cardEl(DATA[k]);var p=k-idx;if(p>0)e.classList.add("n"+p);else{if(rising&&!reduce)e.classList.add("rise");bind(e);}stage.appendChild(e);}
+    ct.textContent=Math.min(idx+1,total)+" of "+total;bar.style.width=(idx/total*100)+"%";
+    document.getElementById("end").classList.toggle("on",idx>=total);
+    if(idx>=total){document.getElementById("endp").textContent=total+" things have a home now.";ct.textContent=total+" of "+total;}
+  }
+  function topCard(){return stage.querySelector(".card:not(.n1):not(.n2):not(.n3)")}
+  /* drag: the card follows the hand 1:1 and leans the way it is going */
+  function bind(e){
+    var sx,sy,dx=0,dy=0,t0,moved=false,id=null;
+    e.addEventListener("pointerdown",function(ev){id=ev.pointerId;e.setPointerCapture(id);sx=ev.clientX;sy=ev.clientY;dx=dy=0;t0=performance.now();moved=false;e.style.transition="none";e.classList.add("dragging")});
+    e.addEventListener("pointermove",function(ev){if(ev.pointerId!==id)return;dx=ev.clientX-sx;dy=ev.clientY-sy;if(Math.abs(dx)+Math.abs(dy)>6)moved=true;set(e,dx,dy)});
+    function up(ev){if(ev.pointerId!==id)return;id=null;e.classList.remove("dragging");
+      var dt=Math.max(1,performance.now()-t0),vx=dx/dt,vy=dy/dt;
+      if(!moved){act("big");return}
+      if(dx>110||vx>.6)return act("right",dx,dy);
+      if(dx<-110||vx<-.6)return act("left",dx,dy);
+      if(dy<-110||vy<-.6)return act("up",dx,dy);
+      e.style.transition="transform .55s var(--out)";set(e,0,0)}
+    e.addEventListener("pointerup",up);e.addEventListener("pointercancel",up);
+  }
+  function set(e,dx,dy){
+    var rz=reduce?0:dx*.05,ry=reduce?0:dx*.03,rx=reduce?0:-dy*.02;
+    e.style.transform="translate3d("+dx+"px,"+dy+"px,0) rotateZ("+rz+"deg) rotateY("+ry+"deg) rotateX("+rx+"deg)";
+    var r=e.querySelector(".tag.r"),l=e.querySelector(".tag.l"),u=e.querySelector(".tag.u");
+    r.style.opacity=Math.max(0,Math.min(1,dx/110));l.style.opacity=Math.max(0,Math.min(1,-dx/110));u.style.opacity=Math.max(0,Math.min(1,-dy/110))*(Math.abs(dx)<60?1:0);
+    var n=stage.querySelector(".n1");if(n){var p=Math.min(1,Math.hypot(dx,dy)/160);n.style.transition="none";n.style.transform="translateY("+(16-16*p)+"px) scale("+(.94+.06*p)+")";n.style.filter="brightness("+(.72+.28*p)+")"}
+  }
+  /* fling out along the throw, then the next card rises out of a soft blur */
+  function fling(dir,dx,dy,then){
+    var e=topCard();if(!e)return;
+    var W=innerWidth,tx=dir==="right"?W:dir==="left"?-W:(dx||0)*.4,ty=dir==="up"?-900:(dy||0)+40,rz=dir==="right"?18:dir==="left"?-18:0;
+    e.style.transition=reduce?"opacity .2s":"transform .5s var(--out),opacity .5s";
+    e.style.transform="translate3d("+tx+"px,"+ty+"px,0) rotateZ("+rz+"deg)";e.style.opacity=reduce?"0":"1";
+    setTimeout(then,reduce?120:260);
+  }
+  function act(a,dx,dy){
+    var x=DATA[idx];if(!x)return;
+    if(a==="big")return openBig(x);
+    fling(a,dx,dy,function(){
+      if(a==="right")openDays(x);
+      else{history.push({i:idx,a:a});idx++;paint(true);say(a==="left"?"Let go: "+x.t:"Back on Sat 17 Oct: "+x.t)}
+    });
+  }
+  function done(msg){history.push({i:idx});idx++;closeSheet();paint(true);say(msg)}
+  function openDays(x){
+    sheet.style.setProperty("--c","var(--"+x.c+")");
+    sheet.innerHTML='<h3>Which day?</h3><p>'+esc(x.t)+' joins that day as a normal to-do.</p><div class="chips">'+
+      ["Tomorrow","Sat 10","Mon 12","Next week"].map(function(d){return '<button data-day="'+d+'">'+d+'</button>'}).join("")+'</div>';
+    openSheet(function(){paint(false)});
+    [].forEach.call(sheet.querySelectorAll("[data-day]"),function(b){b.onclick=function(){done("Moved to "+b.getAttribute("data-day")+": "+x.t)}});
+  }
+  function openBig(x){
+    sheet.style.setProperty("--c","var(--"+x.c+")");
+    sheet.innerHTML='<h3>The first small step</h3><p>It becomes the to-do. '+esc(x.t)+' waits behind it.</p><input id="step" placeholder="For example: buy screws and wall plugs">'+
+      '<div class="chips">'+["Today","Tomorrow","Sat 10"].map(function(d){return '<button data-day="'+d+'">'+d+'</button>'}).join("")+'</div>';
+    openSheet(function(){});
+    setTimeout(function(){var s=document.getElementById("step");if(s)s.focus()},350);
+    [].forEach.call(sheet.querySelectorAll("[data-day]"),function(b){b.onclick=function(){var s=document.getElementById("step").value.trim()||"First step";fling("up",0,0,function(){done(s+", "+b.getAttribute("data-day"))})}});
+  }
+  var onCancel=null;
+  function openSheet(cancel){onCancel=cancel;scrim.classList.add("on");sheet.classList.add("on")}
+  function closeSheet(){scrim.classList.remove("on");sheet.classList.remove("on");onCancel=null}
+  scrim.onclick=function(){var c=onCancel;closeSheet();if(c)c()};
+  var tt=null;
+  function say(m){tmsg.textContent=m;toast.classList.add("on");clearTimeout(tt);tt=setTimeout(function(){toast.classList.remove("on")},4000)}
+  document.getElementById("undo").onclick=function(){var h=history.pop();if(!h)return;idx=h.i;toast.classList.remove("on");paint(true)};
+  document.getElementById("stop").onclick=function(){say("Saved. The rest wait for next time.")};
+  [].forEach.call(document.querySelectorAll(".acts button"),function(b){b.onclick=function(){act(b.getAttribute("data-a"))}});
+  addEventListener("keydown",function(e){if(sheet.classList.contains("on"))return;var m={ArrowRight:"right",ArrowLeft:"left",ArrowUp:"up",Enter:"big"}[e.key];if(m){e.preventDefault();act(m)}});
+  paint(false);
+})();
+</script>
+</body></html>
