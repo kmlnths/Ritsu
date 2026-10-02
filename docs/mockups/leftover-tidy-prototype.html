@@ -22,7 +22,7 @@ h1{margin:18px 22px 0;font-size:15px;font-weight:500;color:var(--mut)}
 h1 b{color:var(--ink);font-weight:600}
 
 /* the stack */
-.stage{position:relative;height:430px;margin-top:22px;perspective:1100px}
+.stage{position:relative;height:420px;margin-top:4px;perspective:1100px}
 .card{--c:var(--todo);position:absolute;left:26px;right:26px;top:10px;height:380px;border-radius:30px;padding:22px 22px 20px;
   display:flex;flex-direction:column;touch-action:none;user-select:none;cursor:grab;will-change:transform;
   background:
@@ -59,12 +59,18 @@ h1 b{color:var(--ink);font-weight:600}
 @keyframes rise{from{filter:blur(6px) brightness(.72);transform:translateY(16px) scale(.94)}to{filter:none;transform:none}}
 
 /* buttons */
-.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 22px}
+.acts{display:grid;grid-template-columns:1fr .78fr 1fr;gap:10px;padding:0 22px}
 .acts button{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 10px;border-radius:16px;border:1px solid var(--line);
   background:#15171b;color:var(--ink);font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:transform .14s var(--out),background .2s}
 .acts button:active{transform:scale(.96)}
 svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}svg .f{fill:currentColor;stroke:none}
+.acts button{flex-direction:column;gap:7px;padding:13px 6px 12px;font-size:13.5px}
 .acts button svg{color:var(--mut)}
+.acts .ico{display:flex;align-items:center;gap:3px}
+.acts .mid small{display:block;margin-top:-4px;font-size:11px;color:var(--faint);font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+svg.chev{width:15px;height:15px;stroke-width:2.2;color:var(--faint)}
+.upbtn{display:flex;align-items:center;gap:7px;margin:16px auto 0;padding:9px 15px 9px 11px;border-radius:999px;border:1px solid var(--line);background:#15171b;color:var(--ink);font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;transition:transform .14s var(--out)}
+.upbtn:active{transform:scale(.96)}.upbtn svg{color:var(--mut)}.upbtn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .tag{display:inline-flex;align-items:center;gap:7px}.tag svg{width:16px;height:16px}
 .acts button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 
@@ -103,12 +109,12 @@ svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:
   <div class="top"><span class="k">Tidy</span><span><span class="count" id="ct"></span><button class="done-now" id="stop">Done for now</button></span></div>
   <div class="bar"><i id="bar"></i></div>
   <h1><b>What is in the way?</b> Swipe, or use the buttons.</h1>
+  <button class="upbtn" data-a="up" aria-label="Back in a week, or swipe up"><svg class="chev" viewBox="0 0 24 24"><path d="M6 14.5l6-6 6 6"/></svg><svg viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4 4.5v3.6h3.6"/><path d="M12 8.2V12l2.6 1.8"/></svg>Back in a week</button>
   <div class="stage" id="stage"></div>
   <div class="acts">
-    <button data-a="left"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.2 9.2l5.6 5.6M14.8 9.2l-5.6 5.6"/></svg>Let it go</button>
-    <button data-a="right"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="12" cy="15" r="1.4" class="f"/></svg>Give it a day</button>
-    <button data-a="up"><svg viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4 4.5v3.6h3.6"/><path d="M12 8.2V12l2.6 1.8"/></svg>Back in a week</button>
-    <button data-a="big"><svg viewBox="0 0 24 24"><path d="M4 19.5h5v-5h5v-5h6"/><path d="M17 6.5l3 3-3 3"/></svg>It is too big</button>
+    <button data-a="left" aria-label="Let it go, or swipe left"><span class="ico"><svg class="chev" viewBox="0 0 24 24"><path d="M14.5 6l-6 6 6 6"/></svg><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.2 9.2l5.6 5.6M14.8 9.2l-5.6 5.6"/></svg></span>Let it go</button>
+    <button data-a="big" class="mid" aria-label="It is too big, or tap the card"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 19.5h5v-5h5v-5h6"/><path d="M17 6.5l3 3-3 3"/></svg></span>Too big<small>tap</small></button>
+    <button data-a="right" aria-label="Give it a day, or swipe right"><span class="ico"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="12" cy="15" r="1.4" class="f"/></svg><svg class="chev" viewBox="0 0 24 24"><path d="M9.5 6l6 6-6 6"/></svg></span>Give it a day</button>
   </div>
   <div class="end" id="end"><div class="ring">✓</div><b>All tidy</b><p id="endp"></p></div>
   <div class="scrim" id="scrim"></div>
@@ -125,7 +131,7 @@ svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:
     {t:"Reply to Priya about Sunday",a:"To-do",g:"Personal",c:"todo",d:5,since:"28 September"},
     {t:"Write in the gratitude journal",a:"Mind",g:"Calm",c:"mind",d:4,since:"29 September"}
   ];
-  var IC={"day":"<svg viewBox=\"0 0 24 24\"><rect x=\"3.5\" y=\"5\" width=\"17\" height=\"15.5\" rx=\"3\"/><path d=\"M3.5 10h17M8 3v4M16 3v4\"/><circle cx=\"12\" cy=\"15\" r=\"1.4\" class=\"f\"/></svg>","go":"<svg viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M9.2 9.2l5.6 5.6M14.8 9.2l-5.6 5.6\"/></svg>","wk":"<svg viewBox=\"0 0 24 24\"><path d=\"M4.5 12a7.5 7.5 0 1 0 2.2-5.3\"/><path d=\"M4 4.5v3.6h3.6\"/><path d=\"M12 8.2V12l2.6 1.8\"/></svg>","big":"<svg viewBox=\"0 0 24 24\"><path d=\"M4 19.5h5v-5h5v-5h6\"/><path d=\"M17 6.5l3 3-3 3\"/></svg>"};
+  var IC={"cl":"<svg class=\"chev\" viewBox=\"0 0 24 24\"><path d=\"M14.5 6l-6 6 6 6\"/></svg>","cr":"<svg class=\"chev\" viewBox=\"0 0 24 24\"><path d=\"M9.5 6l6 6-6 6\"/></svg>","cu":"<svg class=\"chev\" viewBox=\"0 0 24 24\"><path d=\"M6 14.5l6-6 6 6\"/></svg>","day":"<svg viewBox=\"0 0 24 24\"><rect x=\"3.5\" y=\"5\" width=\"17\" height=\"15.5\" rx=\"3\"/><path d=\"M3.5 10h17M8 3v4M16 3v4\"/><circle cx=\"12\" cy=\"15\" r=\"1.4\" class=\"f\"/></svg>","go":"<svg viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M9.2 9.2l5.6 5.6M14.8 9.2l-5.6 5.6\"/></svg>","wk":"<svg viewBox=\"0 0 24 24\"><path d=\"M4.5 12a7.5 7.5 0 1 0 2.2-5.3\"/><path d=\"M4 4.5v3.6h3.6\"/><path d=\"M12 8.2V12l2.6 1.8\"/></svg>","big":"<svg viewBox=\"0 0 24 24\"><path d=\"M4 19.5h5v-5h5v-5h6\"/><path d=\"M17 6.5l3 3-3 3\"/></svg>"};
   var total=DATA.length,idx=0,history=[],reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
   var stage=document.getElementById("stage"),sheet=document.getElementById("sheet"),scrim=document.getElementById("scrim"),
       toast=document.getElementById("toast"),tmsg=document.getElementById("tmsg"),bar=document.getElementById("bar"),ct=document.getElementById("ct");
@@ -134,7 +140,7 @@ svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:
     e.setAttribute("role","group");e.setAttribute("aria-label",x.t+", "+x.a+", waiting "+x.d+" days");
     e.innerHTML='<span class="light"><i></i>'+esc(x.a)+' · '+esc(x.g)+'</span><h2>'+esc(x.t)+'</h2><p class="since">Waiting since '+esc(x.since)+'</p>'+
       '<div class="foot"><div class="days"><b>'+x.d+'</b><span>days waiting</span></div><div class="ask">Tap if it<br>is too big</div></div>'+
-      '<span class="tag r">'+IC.day+'Give it a day</span><span class="tag l">'+IC.go+'Let it go</span><span class="tag u">'+IC.wk+'Back in a week</span>';
+      '<span class="tag r">'+IC.day+'Give it a day'+IC.cr+'</span><span class="tag l">'+IC.cl+IC.go+'Let it go</span><span class="tag u">'+IC.cu+IC.wk+'Back in a week</span>';
     return e}
   function paint(rising){
     stage.innerHTML="";
@@ -208,7 +214,7 @@ svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:
   function say(m){tmsg.textContent=m;toast.classList.add("on");clearTimeout(tt);tt=setTimeout(function(){toast.classList.remove("on")},4000)}
   document.getElementById("undo").onclick=function(){var h=history.pop();if(!h)return;idx=h.i;toast.classList.remove("on");paint(true)};
   document.getElementById("stop").onclick=function(){say("Saved. The rest wait for next time.")};
-  [].forEach.call(document.querySelectorAll(".acts button"),function(b){b.onclick=function(){act(b.getAttribute("data-a"))}});
+  [].forEach.call(document.querySelectorAll(".acts button,.upbtn"),function(b){b.onclick=function(){act(b.getAttribute("data-a"))}});
   addEventListener("keydown",function(e){if(sheet.classList.contains("on"))return;var m={ArrowRight:"right",ArrowLeft:"left",ArrowUp:"up",Enter:"big"}[e.key];if(m){e.preventDefault();act(m)}});
   paint(false);
   if(!reduce){var f0=topCard();if(f0){f0.classList.add("sway");f0.addEventListener("animationend",function(){f0.classList.remove("sway")},{once:true});f0.addEventListener("pointerdown",function(){f0.classList.remove("sway")},{once:true})}}
