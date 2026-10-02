@@ -2007,7 +2007,7 @@ try{var _t=localStorage.getItem("ritsu_theme")||"dark";if(_t==="auto")_t=matchMe
   /* Your areas: three wallet stacks (Body, Mind, To-do). Tops peek out; the last card shows its face; tap lifts one out */
   .wl-lab{display:flex;align-items:center;gap:8px;margin:18px 4px 10px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
   .wl-lab i{width:18px;height:6px;border-radius:3px;background:var(--c);box-shadow:0 0 8px color-mix(in srgb,var(--c) 70%,transparent)}
-  .wl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:0 22px;align-items:start}
+  .wl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:0 22px;align-items:start}
   .wl-c{--c:var(--c-body);position:relative;margin-top:-18px;border-radius:18px;border:1px solid color-mix(in srgb,var(--c) 22%,var(--line));
     background:linear-gradient(160deg,color-mix(in srgb,var(--c) 18%,var(--panel)) 0%,var(--panel) 70%);
     box-shadow:0 -10px 22px -12px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06);transition:margin .35s cubic-bezier(.32,.72,.24,1),transform .35s cubic-bezier(.32,.72,.24,1),box-shadow .35s}
@@ -2275,6 +2275,25 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   body.scrolled .bottomnav.fnav{opacity:1;pointer-events:auto;transform:translateX(-50%)}
   #view{padding-bottom:60px}body:not(.scrolled) .toast{bottom:28px!important}
 }
+  /* ===== big text: a 390px phone at 200% zoom is a 195px wide page. Stack what sat side by side, keep the nav to icons ===== */
+  @media(max-width:300px){
+    .bottomnav.fnav{left:8px;right:8px;padding:0 4px;gap:0}
+    .fn-t,.fn-t.on{flex:1 1 0;min-width:0;padding:0;gap:0}.fn-t span{display:none}
+    .qc-split{grid-template-columns:minmax(0,1fr);gap:14px}
+    .day-h,.sec-h,.setrow{flex-wrap:wrap}
+    .setrow .info{flex-basis:100%}
+    .themetoggle{flex-wrap:wrap;border-radius:18px}
+    .qf-mid{position:static;margin-top:6px}.qf-mid b{font-size:30px}.qf-ends{flex-wrap:wrap;gap:10px}
+    .rtabs{flex-wrap:wrap;border-radius:18px}
+    .qfs,.hm-hero-h{flex-wrap:wrap}.qfs-tx{flex-basis:calc(100% - 60px)}.qfs-bar{flex:1 1 100%}
+    .hm-gauge .mid b{font-size:26px!important}.hm-gauge .mid{font-size:11px}
+    .gc{padding:10px}.gc-grid{gap:2px}.gc-grid>*{min-width:0}
+    .fp-stats{grid-template-columns:minmax(0,1fr)}
+    .tod{flex-wrap:wrap}.tod .t{flex-basis:100%}
+    .fp-tabs{flex-wrap:wrap;border-radius:18px}
+    .setrow>*,.pk-body>*,.wl-grid>*,.wl-body>*,.wl-stack,.wl-c,.wl-nm{min-width:0;max-width:100%}
+    .wl-nm,.lc-o{overflow-wrap:anywhere}
+  }
 </style>
 </head>
 <body>
