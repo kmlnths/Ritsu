@@ -981,6 +981,14 @@ try{var _t=localStorage.getItem("ritsu_theme")||"dark";if(_t==="auto")_t=matchMe
   .le-more .le-go{color:var(--accent-ink);font-weight:600}
   .mv-pick{flex-direction:column;align-items:stretch}
   button.mval{background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;text-align:right}
+  .hm-sort{display:inline-flex;gap:2px;padding:3px;margin:2px 0 8px;border-radius:999px;border:1px solid var(--line);background:var(--panel)}
+  .hm-sort button{padding:6px 13px;border-radius:999px;border:0;background:none;color:var(--muted);font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
+  .hm-sort button[aria-pressed="true"]{background:var(--panel-2);color:var(--ink)}
+  .topic-tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--muted)}
+  .topic-tag::before{content:"";width:12px;height:5px;border-radius:3px;background:var(--c)}
+  .field .tline{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;margin-top:8px;text-align:left}
+  .field .tline>span{display:inline-block;min-width:74px;width:auto;margin:0;color:var(--muted);font-size:13.5px}
+  .field .tline .tf{display:inline-flex;width:auto;margin:0}.field .tline input[type=number]{width:84px;flex:none;margin:0}
   .wk-ahead{padding:4px 0}
   .wa-r{display:flex;justify-content:space-between;gap:12px;width:100%;padding:11px 16px;border:0;border-bottom:1px solid var(--line-2);background:none;color:var(--ink);font:inherit;font-size:14.5px;text-align:left;cursor:pointer}
   .wa-r:last-child{border-bottom:0}.wa-d{color:var(--muted);white-space:nowrap}
@@ -2942,6 +2950,17 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function moveDay(i,to){var m=Object.assign({},i.moves||{});m[today()]=to;Store.update("items",i.id,{moves:m})}
   /* ===== rhythm (end) ===== */
   /* how many days it has been done, ever. Shown instead of a streak, so one missed day never wipes the number */
+  /* several a day is still one task and one row: each tap is the next one. Time k (0 first) is the reminder for the first,
+     then times[k], or every N hours after the one before it, counted from when that one was actually done. */
+  function timesN(i){return i.kind==="med"?Math.max(1,i.timesADay||1):perDayOf(i)}
+  function takenAt(i,ds){var e=(i.events||{})[ds];if(e&&e.length)return e.map(function(x){return x.t||null});var n=countOn(i,ds),lt=(i.logTimes||{})[ds],a=[];for(var k=0;k<n;k++)a.push(k===n-1?lt||null:null);return a}
+  function addMin(t,m){var x=((minsOf(t)+m)%1440+1440)%1440;return p2(Math.floor(x/60))+":"+p2(x%60)}
+  function slotAt(i,k,ds){var first=i.reminder||(expectOf(i)||{}).at||null;if(k===0)return first;
+    if(i.everyH){var tk=takenAt(i,ds)[k-1]||slotAt(i,k-1,ds);return tk?addMin(tk,i.everyH*60):null}
+    return (i.times||[])[k]||null}
+  function nextSlot(i,ds){ds=ds||today();var N=timesN(i);if(N<2)return null;var n=countOn(i,ds);if(n>=N)return null;return {n:n+1,of:N,at:slotAt(i,n,ds)}}
+  function itemTime(i,ds){var ns=nextSlot(i,ds);if(ns&&ns.at)return ns.at;var w=expectOf(i);return (w&&w.at)||i.reminder||null}
+  function isMedish(i){return i.kind==="med"||i.catId==="c_medicine"}
   /* a number you count one at a time (8 glasses of water): one tap adds one, the circle shows the day's number */
   function tapCount(i){return i.kind==="measure"&&/^(glass(es)?|cups?|bottles?|servings?|times?|pieces?|portions?|scoops?)$/i.test((i.unit||"").trim())}
   function totalOf(i){
@@ -3777,6 +3796,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
      Back: this week in lights, and the blob says the one thing worth saying. Tap a light to filter the list,
      tap anywhere else to turn the card. The card "switches on" when the whole day is done. ===== */
   var _qcWasFull={},_qcDayWas=null,_qcNumWas=null;
+  try{state.hmSort=localStorage.getItem("ritsu_hmsort")||"topic"}catch(e){state.hmSort="topic"}
   function qcBar(dom,s,off){
     var p=s.tot?s.done/s.tot:0,full=!!s.tot&&s.done===s.tot,bloom=false;
     if(off===0){bloom=full&&_qcWasFull[dom]===false;_qcWasFull[dom]=full;}   /* glow once, only when it fills while Home is open */
@@ -3991,7 +4011,8 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     var resting=restSet.length;
     if(resting)h+='<div class="low-rest">'+PI("moon")+'<span><b>'+qcWord(resting,1)+(resting===1?" thing is":" things are")+' resting today.</b> '+(resting===1?"It is":"They are")+' back tomorrow. Nothing counts against a low day. High priority things, and ones with a small version, stay.</span></div>';
     if(!its.length&&!extra.length)h+='<div class="cat-empty">'+(off===0?"Nothing planned yet. Tap + whenever you\'re ready.":off>0?"Nothing planned for this day yet.":"Nothing was on the list this day.")+'</div>';
-    if(its.length)h+=qcGrouped(its,ds);
+    if(its.length){h+='<div class="hm-sort" role="group" aria-label="Sort the list"><button data-hmsort="topic" aria-pressed="'+(state.hmSort!=="time")+'">By topic</button><button data-hmsort="time" aria-pressed="'+(state.hmSort==="time")+'">By time</button></div>';
+      h+=state.hmSort==="time"?qcByTime(its,ds):qcGrouped(its,ds);}
     if(extra.length){h+='<div class="qc-lh qc-xh"><h3 aria-level="2">'+(extra.every(function(i){return i.kind==="med"})?"Medicine":"Also today")+'</h3><span>not counted in your day</span></div><div class="card">';extra.forEach(function(i){h+=itemRow(i,{ds:ds})});h+='</div>';}
     if(off===0)h+=weekAheadHtml()+leftoverHtml();
     el.innerHTML=h;
@@ -4159,6 +4180,11 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     var d=areaDomain(i.catId);
     if(d==="todo"){var l=i.catId==="c_home"?"home":(i.list||"work");return [{work:0,home:1,personal:2,family:3}[l]||0,{work:"Work",home:"Home",personal:"Personal",family:"Family"}[l]||"Work"];}
     var c=Store.get("cats",i.catId);return [(c&&c.order)||0,(c&&c.name)||"Other"];
+  }
+  /* By time: one list from morning to night (the next time for things done several times a day), untimed ones after, done ones last */
+  function qcByTime(its,ds){
+    var key=function(i){var t=itemTime(i,ds);return (hmDone(i,ds)&&i.id!==_justDone?3000:0)+(t?minsOf(t):1500)};
+    return '<div class="card">'+its.slice().sort(function(a,b){return key(a)-key(b)||hmPrio(a,b)}).map(function(i){return itemRow(i,{ds:ds,topic:1})}).join("")+'</div>';
   }
   function qcGrouped(its,ds){
     var h="";
@@ -4528,7 +4554,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     else if(i.kind==="med")h+='<button aria-label="'+esc(tickLabel(i))+'" class="tick round '+(complete?"on"+(i.id===_justDone?" pop":""):"")+'" data-toggle="'+i.id+'">'+(complete?CHECK_SVG:"＋")+'</button>';
     else h+='<span class="tick" style="border-style:dashed">↻</span>';
 
-    h+='<div class="rb"><div class="rt"><button class="rtb" data-open="'+i.id+'">'+esc(cbTitle(i))+'</button>'+(i.private?LOCK:"")+(i.localOnly?'<span class="flagpill" style="margin-left:7px">this device</span>':"")+'</div><div class="rmeta">';
+    h+='<div class="rb"><div class="rt"><button class="rtb" data-open="'+i.id+'">'+esc(cbTitle(i))+'</button>'+(i.private?LOCK:"")+(i.localOnly?'<span class="flagpill" style="margin-left:7px">this device</span>':"")+'</div><div class="rmeta">'+(opts.topic?'<span class="topic-tag" style="--c:var(--c-'+(areaDomain(i.catId)||"todo")+')">'+esc(qcGroupOf(i)[1])+'</span>':'');
     var ct=(complete&&isRoutine(i))?completionTime(i,dsR):null;
     if(ct)h+='<span class="time accent">'+(i.kind==="med"?"taken ":"done ")+esc(fmtTime(ct))+'</span>';
 
@@ -4560,7 +4586,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     else if(i.kind==="measure"){h+='<span class="pill" style="color:var(--accent-ink)">'+PI("target")+esc((i.target||0)+(i.unit?" "+i.unit:""))+'</span>';h+=totalPill(i);}
     else if(i.kind==="upkeep"){var d3=dCount(nextDue(i));h+='<span class="pill due '+(d3<=0?"over":d3<=7?"soon":"")+'">'+(i.mode==="rebuy"?"rebuy":"replace")+' in '+(d3<=0?"now":d3+"d")+'</span>';}
     h+=flagPills(i,today());
-    if(i.reminder)h+='<span class="pill">'+PI("bell")+esc(fmtSpan(i))+'</span>';
+    var nsl=isT?nextSlot(i):null;if(nsl&&nsl.at)h+='<span class="pill">'+PI("bell")+(isMedish(i)?"dose "+nsl.n+" at ":"next at ")+esc(fmtTime(nsl.at))+'</span>';else if(i.reminder)h+='<span class="pill">'+PI("bell")+esc(fmtSpan(i))+'</span>';
     h+=tagPills(i.tags);
     if(opts.area){var c=Store.get("cats",i.catId);if(c)h+='<span class="pill" style="color:'+esc(c.color)+'">'+esc(c.name)+'</span>';}
     h+='</div></div><div class="rright">';
@@ -6698,8 +6724,8 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       h+='<div class="field"><label>Fasting window</label><div class="pick-wrap">'+PROTOCOLS.map(function(pr){return '<button type="button" class="tagpick '+(pf===pr.h?"on":"")+'" data-protoset="'+pr.h+'">'+protoLabel(pr.h)+'</button>'}).join("")+'</div><div class="hint">You can change this any time. Longer isn\'t always better.</div></div>';
     } else if(d.stance==="episode"){
       h+='<div class="field"><div class="hint" style="margin-top:0">Nothing to set up. Tap <b>Start</b> when it begins and <b>It\'s over</b> when it goes, Daywell keeps the length, so after a couple of these it can tell you whether this one is running longer than your usual.</div></div>';
-    } else if(d.akind==="activity"){h+=rhythmField(d)+'<div class="field"><label for="i-small">Small version <span class="sub-lbl">(optional)</span></label><input type="text" id="i-small" maxlength="60" value="'+esc(d.small||"")+'" placeholder="For example: 10 minute walk"><div class="hint">On a hard day, the small one counts as done. It also keeps this on a low day.</div></div><div class="two"><div class="field"><label>Times a day</label><input type="number" id="i-perday" min="1" value="'+(d.perDay||1)+'"><div class="hint">Days over this are flagged as unusual.</div></div></div>';
-      h+='<div class="two"><div class="field"><label id="l-prio">Priority</label><div class="seg" id="i-prio" role="group" aria-labelledby="l-prio">'+prioBtns(d.priority)+'</div></div><div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div></div>';
+    } else if(d.akind==="activity"){h+=rhythmField(d)+'<div class="field"><label for="i-small">Small version <span class="sub-lbl">(optional)</span></label><input type="text" id="i-small" maxlength="60" value="'+esc(d.small||"")+'" placeholder="For example: 10 minute walk"><div class="hint">On a hard day, the small one counts as done. It also keeps this on a low day.</div></div><div class="two"><div class="field"><label>Times a day</label><input type="number" id="i-perday" min="1" max="12" value="'+(d.perDay||1)+'"><div class="hint">Days over this are flagged as unusual.</div></div></div>'+timesField(d,d.perDay||1);
+      h+='<div class="two"><div class="field"><label id="l-prio">Priority</label><div class="seg" id="i-prio" role="group" aria-labelledby="l-prio">'+prioBtns(d.priority)+'</div></div>'+((d.perDay||1)>1?'':'<div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div>')+'</div>';
       h+=expectField(d);
     } else if(d.akind==="oneoff"){h+='<div class="two"><div class="field"><label>Due date</label><input type="date" id="i-due" value="'+esc(d.dueDate||"")+'"></div><div class="field"><label id="l-prio">Priority</label><div class="seg" id="i-prio" role="group" aria-labelledby="l-prio">'+prioBtns(d.priority)+'</div></div></div>';
     } else if(d.akind==="med"){h+=rhythmField(d)+'<div class="two"><div class="field"><label>Pills on hand</label><input type="number" id="i-stock" min="0" value="'+(d.stock||0)+'"></div><div class="field"><label>Doses per day</label><input type="number" id="i-doses" min="0.5" step="0.5" value="'+(d.dosesPerDay||1)+'"></div></div><div class="two"><div class="field"><label>Remind at ≤ pills</label><input type="number" id="i-rtab" min="0" value="'+(d.reorderTablets||0)+'"></div><div class="field"><label>…or ≤ days left</label><input type="number" id="i-rday" min="0" value="'+(d.reorderAt||0)+'"></div></div><div class="two"><div class="field"><label>Course length (days)</label><input type="number" id="i-course" min="0" value="'+(d.courseDays||0)+'"><div class="hint">0 = ongoing.</div></div><div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div></div>';
@@ -6752,9 +6778,22 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
         (cu?'<div style="margin-top:8px"><input type="number" id="i-repnum" min="2" value="'+d.repeatEvery+'" aria-label="Every how many days"></div>':'');}
     return h+'</div>';
   }
+  /* 2 or more a day: a time for each, or the first time and every N hours after the one before */
+  var ORD=["1st","2nd","3rd","4th","5th","6th","7th","8th","9th","10th","11th","12th"];
+  function timesField(d,N){
+    if(N<2)return "";var ev=!!d.everyH;
+    var h='<div class="field"><label id="l-when">When</label><div class="seg" id="i-when" role="group" aria-labelledby="l-when"><button type="button" data-v="times" class="'+(ev?"":"on")+'">At set times</button><button type="button" data-v="every" class="'+(ev?"on":"")+'">Every few hours</button></div>';
+    if(!ev){for(var k=0;k<N;k++)h+='<div class="tline"><span>'+ORD[k]+'</span>'+timeField(k?"i-t"+k:"i-rem",k?(d.times||[])[k]:d.reminder)+'</div>';
+      h+='<div class="hint">One task: each tap on its circle is the next one, and the list shows the next time.</div>';}
+    else h+='<div class="tline"><span>First</span>'+timeField("i-rem",d.reminder)+'</div><div class="tline"><span>Then every</span><input type="number" id="i-everyh" min="1" max="24" value="'+(d.everyH||6)+'"><span>hours</span></div>'+
+      '<div class="hint">Each next one counts from when you actually did the last one.</div>';
+    return h+'</div>';
+  }
   function prioBtns(cur){return ["high","med","low","none"].map(function(p){return '<button type="button" data-v="'+p+'" class="'+((cur||"med")===p?"on":"")+'">'+(p==="med"?"Med":p[0].toUpperCase()+p.slice(1))+'</button>'}).join("")}
   function syncItem(){var d=ms.data;if(!d)return;var g=function(id){return $("#"+id)};
-    if(g("i-title"))d.title=g("i-title").value;if(g("i-sub"))d.sub=g("i-sub").value.trim();if(g("i-due"))d.dueDate=g("i-due").value||null;if(g("i-int"))d.intervalDays=parseInt(g("i-int").value,10)||30;if(g("i-last"))d.lastDone=g("i-last").value||null;if(g("i-notes"))d.notes=g("i-notes").value;if(g("i-target"))d.target=parseFloat(g("i-target").value)||1;if(g("i-unit"))d.unit=g("i-unit").value.trim();if(g("i-rem"))d.reminder=g("i-rem").value||null;if(g("i-stock"))d.stock=parseInt(g("i-stock").value,10)||0;if(g("i-doses"))d.dosesPerDay=parseFloat(g("i-doses").value)||1;if(g("i-rtab"))d.reorderTablets=parseInt(g("i-rtab").value,10)||0;if(g("i-rday"))d.reorderAt=parseInt(g("i-rday").value,10)||0;if(g("i-course"))d.courseDays=parseInt(g("i-course").value,10)||0;if(g("i-perday"))d.perDay=Math.max(1,parseInt(g("i-perday").value,10)||1);if(g("i-private"))d.private=g("i-private").checked;
+    if(g("i-title"))d.title=g("i-title").value;if(g("i-sub"))d.sub=g("i-sub").value.trim();if(g("i-due"))d.dueDate=g("i-due").value||null;if(g("i-int"))d.intervalDays=parseInt(g("i-int").value,10)||30;if(g("i-last"))d.lastDone=g("i-last").value||null;if(g("i-notes"))d.notes=g("i-notes").value;if(g("i-target"))d.target=parseFloat(g("i-target").value)||1;if(g("i-unit"))d.unit=g("i-unit").value.trim();if(g("i-rem"))d.reminder=g("i-rem").value||null;if(g("i-stock"))d.stock=parseInt(g("i-stock").value,10)||0;if(g("i-doses"))d.dosesPerDay=parseFloat(g("i-doses").value)||1;if(g("i-rtab"))d.reorderTablets=parseInt(g("i-rtab").value,10)||0;if(g("i-rday"))d.reorderAt=parseInt(g("i-rday").value,10)||0;if(g("i-course"))d.courseDays=parseInt(g("i-course").value,10)||0;if(g("i-perday"))d.perDay=Math.max(1,Math.min(12,parseInt(g("i-perday").value,10)||1));
+    if(g("i-t1")){d.times=[g("i-rem")?(g("i-rem").value||null):d.reminder];for(var tk=1;tk<12;tk++){var te=g("i-t"+tk);if(!te)break;d.times.push(te.value||null)}}
+    if(g("i-everyh"))d.everyH=Math.max(1,Math.min(24,parseInt(g("i-everyh").value,10)||6));if(g("i-private"))d.private=g("i-private").checked;
     if(g("i-count"))d.count=g("i-count").checked;
     if(g("i-small"))d.small=g("i-small").value.trim();
     if(g("i-local"))d.localOnly=g("i-local").checked;
@@ -6815,7 +6854,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(kind==="todo"){var rep=(ms.mode==="task"||d.akind==="oneoff")?0:(d.repeatEvery||1);base.repeatEvery=rep;base.perDay=rep>0?Math.max(1,d.perDay||1):1;base.normal={min:base.perDay,max:base.perDay,maxGapDays:rep>0?rep:null,maxPerWeek:null};base.dueDate=rep>0?null:(d.dueDate||(d.catId===TODO_CAT?today():null));base.done=rep>0?false:!!d.done;if(!ms.id&&rep>0){base.counts={};base.logTimes={};base.events={};}}
     if(kind==="measure"){base.repeatEvery=1;base.target=d.target||1;base.unit=d.unit||"";if(!ms.id)base.values={};}
     if(kind==="med"){base.repeatEvery=1;base.dosesPerDay=d.dosesPerDay||1;base.stock=d.stock||0;base.reorderTablets=d.reorderTablets||0;base.reorderAt=d.reorderAt||0;base.courseDays=d.courseDays||0;base.courseStart=d.courseStart||today();if(!ms.id){base.log=[];base.logTimes={};}}
-    if(kind==="todo"&&base.repeatEvery>0)base.small=d.small||"";
+    if(kind==="todo"&&base.repeatEvery>0){base.small=d.small||"";var bn=base.perDay||1;base.everyH=bn>1&&d.everyH?d.everyH:null;base.times=bn>1&&!d.everyH&&d.times?d.times.slice(0,bn):null;}
     if(kind==="measure"||kind==="med"||(kind==="todo"&&base.repeatEvery>0)){base.days=(d.days&&d.days.length)?d.days.slice():null;base.perWeek=d.perWeek||null;base.repeatEvery=(base.days||base.perWeek)?1:(d.repeatEvery||1);}
     if(kind==="upkeep"){base.mode=d.mode||"replace";base.intervalDays=d.intervalDays||30;base.lastDone=d.lastDone||today();}
     if(ms.id)Store.update("items",ms.id,base);else{base.createdAt=new Date().toISOString();base.createdDate=today();base.order=Date.now();base.owner=state.me||null;Store.add("items",base);}closeModal();}
@@ -7284,7 +7323,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   $("#fab").addEventListener("click",function(){if(state.view==="area")openAdd(null,state.areaId);else if(state.view==="day")openAdd(state.day);else openAdd(today());});
   var _ms=$("#mSettings");if(_ms)_ms.addEventListener("click",function(){go("settings");});
   document.addEventListener("keydown",function(e){if(e.key==="Escape"&&$("#overlay").classList.contains("show"))closeModal();});
-  document.addEventListener("change",function(e){if(e.target&&e.target.id==="i-rep"){syncItem();renderItemModal();}});
+  document.addEventListener("change",function(e){if(e.target&&e.target.id==="i-rep"||e.target.id==="i-perday"){syncItem();renderItemModal();}});
   document.addEventListener("input",function(e){if(e.target&&e.target.id==="lib-q"&&ms.type==="library"){ms.q=e.target.value;tpPaint();}});
   /* hold a card to open its list: a soft fill grows across it, and letting go early cancels */
   var _hmLong=false;
@@ -7342,6 +7381,8 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if((el=e.target.closest("[data-area]"))&&!e.target.closest("[data-action]")){go("area",el.getAttribute("data-area"));return;}
     if((el=e.target.closest("[data-mplus]"))){e.stopPropagation();var mi=Store.get("items",el.getAttribute("data-mplus"));if(mi){var mu=storeSnap(),mv=Object.assign({},mi.values||{}),t1=today();mv[t1]=(+mv[t1]||0)+1;if(mv[t1]>=(mi.target||1)){_justDone=mi.id;setTimeout(jdClear,1400);}Store.update("items",mi.id,{values:mv});toast(mi.title+": "+mv[t1]+" "+(mi.unit||"")+" today",mu);}return;}
     if((el=e.target.closest("[data-small]"))){e.stopPropagation();var si=Store.get("items",el.getAttribute("data-small"));if(si&&si.small){var su=storeSnap(),sc=Object.assign({},si.counts||{}),sd=Object.assign({},si.smallDays||{}),stt=Object.assign({},si.logTimes||{}),t0=today();sc[t0]=Math.max(sc[t0]||0,perDayOf(si));sd[t0]=1;stt[t0]=stt[t0]||nowHM();var sp={counts:sc,smallDays:sd,logTimes:stt};if((si.events||{})[t0]){var se=Object.assign({},si.events);se[t0]=se[t0].concat(Array(Math.max(0,perDayOf(si)-se[t0].length)).fill(nowHM()));sp.events=se;}_justDone=si.id;setTimeout(jdClear,1400);Store.update("items",si.id,sp);toast("Small one done: "+si.small+". It counts.",su);}return;}
+    if((el=e.target.closest("[data-hmsort]"))){state.hmSort=el.getAttribute("data-hmsort");try{localStorage.setItem("ritsu_hmsort",state.hmSort)}catch(x){}qcListFill(hmDay());return;}
+    if((el=e.target.closest("#i-when button"))){syncItem();ms.data.everyH=el.getAttribute("data-v")==="every"?(ms.data.everyH||6):null;renderItemModal();return;}
     if((el=e.target.closest("[data-low]"))){var lo=!isLowDay(today());setLowDay(today(),lo);render();toast(lo?"A low day. Only what matters stays.":"The day is back as planned.");return;}
     if((el=e.target.closest("[data-toggle]"))){e.stopPropagation();toggleItem(el.getAttribute("data-toggle"));return;}
     if((el=e.target.closest("[data-measure]"))){e.stopPropagation();openMeasure(el.getAttribute("data-measure"));return;}
