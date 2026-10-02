@@ -3968,12 +3968,13 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   }
   /* wrap-up */
   function wrapSeen(){try{return localStorage.getItem("ritsu_wrap")===today()}catch(e){return false}}
+  function isMedItem(i){return i.kind==="med"||i.catId==="c_medicine"}
   function mvName(ds){return dCount(ds)===1?"tomorrow":DOW_LONG[new Date(ds+"T00:00:00").getDay()]}
   function wrapDays(){var t=today(),m=addDaysStr(t,(8-new Date(t+"T00:00:00").getDay())%7||7);return [addDaysStr(t,1),addDaysStr(t,2),m]}
   function wrapHtml(){
     if(new Date().getHours()<20||wrapSeen())return "";
     var all=dayOneOffs(today()),open=all.filter(function(i){return !i.done}),done=all.length-open.length;
-    var mov=visibleItems().filter(function(i){var m=isRoutine(i)&&!isTracker(i)&&moveTargets(i);return m&&m.length});
+    var mov=visibleItems().filter(function(i){var m=isRoutine(i)&&!isTracker(i)&&!isMedItem(i)&&moveTargets(i);return m&&m.length});
     if(!open.length&&!mov.length)return "";
     if(!_wr||_wr.day!==today())_wr={day:today(),tick:{},to:{}};
     _wr.mv={};mov.forEach(function(i){_wr.mv[i.id]=moveTargets(i)});
@@ -4371,7 +4372,8 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     var h='<button class="back" data-back-area="'+i.catId+'">← '+esc(c?c.name:"Back")+'</button><div class="day-h" style="border:0;padding-bottom:0;margin-bottom:10px"><div class="d"><p class="kicker">'+esc(c?c.name:"")+(i.sub?" · "+esc(i.sub):"")+'</p><h1 class="title" style="font-size:30px">'+esc(i.title)+(i.private?" "+LOCK:"")+'</h1><p class="kicker" style="color:var(--muted);margin-top:8px">'+itemSubtitle(i)+(i.reminder?' · '+PI("bell")+esc(fmtSpan(i)):'')+'</p></div><button class="btn ghost sm" data-action="edit-item" data-id="'+i.id+'">Edit</button></div>';
     if(i.notes)h+='<p style="color:var(--muted);margin:0 0 6px;font-size:14px">'+esc(i.notes)+'</p>';
     var mvt=isRoutine(i)&&!isTracker(i)?moveTargets(i):null,mvd=(i.moves||{})[today()];
-    if(mvt&&mvt.length)h+='<div class="panel mv-p mv-pick"><span>Not today? Pick a rest day for it, and the plan carries on.</span><div class="mv-days">'+mvt.map(function(x){var n=mvName(x);return '<button class="btn sm" data-moveto="'+i.id+'|'+x+'">'+n.charAt(0).toUpperCase()+n.slice(1)+'</button>'}).join("")+'</div></div>';
+    if(mvt&&isMedItem(i))h+='<div class="panel mv-p"><span>Missed a dose? Your doctor or pharmacist can tell you what to do.</span></div>';
+    else if(mvt&&mvt.length)h+='<div class="panel mv-p mv-pick"><span>Not today? Pick a free day for it, and the plan carries on.</span><div class="mv-days">'+mvt.map(function(x){var n=mvName(x);return '<button class="btn sm" data-moveto="'+i.id+'|'+x+'">'+n.charAt(0).toUpperCase()+n.slice(1)+'</button>'}).join("")+'</div></div>';
     else if(mvt)h+='<div class="panel mv-p"><span>It is already part of tomorrow, so you can leave today be.</span></div>';
     else if(mvd)h+='<div class="panel mv-p"><span>Moved to '+mvName(mvd)+'.</span><button class="btn ghost sm" data-moveback="'+i.id+'">Undo</button></div>';
     if(i.tags&&i.tags.length)h+='<div class="rmeta" style="margin:10px 0">'+tagPills(i.tags)+'</div>';
@@ -6476,7 +6478,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(m==="some"){var DN=[[1,"M","Monday"],[2,"T","Tuesday"],[3,"W","Wednesday"],[4,"T","Thursday"],[5,"F","Friday"],[6,"S","Saturday"],[0,"S","Sunday"]];
       h+='<div class="rhy-days">'+DN.map(function(x){var on=d.days.indexOf(x[0])>-1;return '<button type="button" data-rhyday="'+x[0]+'" class="'+(on?"on":"")+'" aria-pressed="'+on+'" aria-label="'+x[2]+'">'+x[1]+'</button>'}).join("")+'</div>';
       var rest=DN.filter(function(x){return d.days.indexOf(x[0])<0}).map(function(x){return x[2]});
-      h+='<div class="hint">'+(!rest.length?"Every day of the week.":(rest.length>1?rest.slice(0,-1).join(", ")+" and "+rest[rest.length-1]+" are rest days.":rest[0]+" is a rest day.")+" A rest day never counts against you.")+'</div>';}
+      h+='<div class="hint">'+(!rest.length?"Every day of the week.":(rest.length>1?rest.slice(0,-1).join(", ")+" and "+rest[rest.length-1]+" are free days.":rest[0]+" is a free day.")+" A free day never counts against you.")+'</div>';}
     if(m==="week")h+='<div class="rhy-week"><button type="button" data-rhyn="-1" aria-label="One fewer">\u2212</button><b>'+d.perWeek+'</b><button type="button" data-rhyn="1" aria-label="One more">+</button><span>'+(d.perWeek===1?"time":"times")+' a week, any days</span></div>'+
       '<div class="hint">It shows each day until you have done '+d.perWeek+'. A day you skip is not held against you.</div>';
     if(m==="few"){var pr=REPEATS.map(function(r){return r[0]}),cu=pr.indexOf(d.repeatEvery)===-1;

@@ -27,3 +27,4 @@ Noticed: 2026-09-30. On a laptop the left sidebar shows all 11 groups in one lon
 - **Storage keys.** Every key still starts `ritsu_`. A one-time move to `hiyori_` needs a migration step so nobody loses data.
 - **Dead styles.** `.dayscroll*` and other unused CSS, plus the old tag code paths, are still in `index.html`.
 - **Tryout with friends.** Show 5 friends the icon and the name for 5 seconds and ask what the app does. Also ask them to say "Hiyori" out loud.
+- **Words for days off, per type (option B, 2026-10-03).** Today every kind says "free day" (option A, chosen by the user). Later, a word per type: workouts "rest day", food "day off", measurements "free day". Keep medicine out of any "move it" wording.
