@@ -980,6 +980,10 @@ try{var _t=localStorage.getItem("ritsu_theme")||"dark";if(_t==="auto")_t=matchMe
   .le-more button{background:none;border:0;font:inherit;font-size:14px;cursor:pointer;padding:8px 0;color:var(--muted)}
   .le-more .le-go{color:var(--accent-ink);font-weight:600}
   .mv-pick{flex-direction:column;align-items:stretch}
+  .low-t{display:inline-flex;align-items:center;gap:6px;margin-right:12px;padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--muted);font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;vertical-align:middle}
+  .low-t .pi{margin:0}.low-t.on{border-color:var(--c-mind);color:var(--c-mind);background:color-mix(in srgb,var(--c-mind) 12%,transparent)}
+  .low-rest{display:flex;gap:10px;align-items:flex-start;margin:10px 0 4px;padding:13px 14px;border-radius:16px;border:1px dashed var(--line);color:var(--muted);font-size:13.5px;line-height:1.45}
+  .low-rest b{color:var(--ink);font-weight:600}.low-rest .pi{width:16px;height:16px;margin-top:2px;color:var(--c-mind)}
   /* ===== the tidy ===== */
   .td{--td-out:cubic-bezier(.22,1,.36,1);--td-rise:cubic-bezier(.16,1,.3,1);position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;overflow:hidden;
     background:radial-gradient(120% 60% at 50% 0%,color-mix(in srgb,var(--panel) 70%,var(--bg)),var(--bg) 60%);opacity:0;transform:translateY(24px);transition:opacity .35s var(--td-out),transform .5s var(--td-out)}
@@ -3274,6 +3278,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       if(i.kind==="med"&&i.count!==true)return false;   // meds never dent consistency unless opted in
       if((i.repeatEvery||1)!==1)return false;
       if(hasRhythm(i)&&!planOn(i,ds))return false;   /* a rest day is not a miss */
+      if(isLowDay(ds)&&!lowKeep(i))return false;      /* nor is anything resting on a low day */
       var st=startedOn(i);
       if(st&&dCount(ds)<dCount(st))return false;
       return true;
@@ -3684,7 +3689,14 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
 
   /* What counts in a domain on a given day. Today follows the same rules as the old rings;
      past days read the daily-routine history the calendar already uses; future days are what is planned. */
-  function hmItems(dom,ds){
+  /* Low day: one tap on a bad day. What stays: High priority, anything with a small version, and medicine.
+     The rest rests until tomorrow, and nothing counts against a low day. Saved per date in ritsu_low. */
+  function lowDays(){try{return JSON.parse(localStorage.getItem("ritsu_low")||"[]")}catch(e){return []}}
+  function isLowDay(ds){return lowDays().indexOf(ds)>-1}
+  function setLowDay(ds,on){var a=lowDays().filter(function(x){return x!==ds&&dCount(x)>-60});if(on)a.push(ds);try{localStorage.setItem("ritsu_low",JSON.stringify(a))}catch(e){}}
+  function lowKeep(i){return i.priority==="high"||!!i.small||i.kind==="med"||i.catId==="c_medicine"}
+  function hmItems(dom,ds){var a=hmItems0(dom,ds);return isLowDay(ds)?a.filter(lowKeep):a}
+  function hmItems0(dom,ds){
     var off=dCount(ds),all=visibleItems().filter(function(i){return !isTracker(i)&&i.count!==false});   /* count:false (Faith habits, or opted out) sits under "Also today" */
     function inDom(i){return areaDomain(i.catId)===dom}
     if(off===0)return all.filter(function(i){return i.kind!=="med"&&!isFast(i)&&inDom(i)&&schedToday(i)});
@@ -3767,6 +3779,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(!tot)return off>0?"Nothing planned yet. <em>Room to breathe.</em>":off<0?"A quiet day.":"A clear day. <em>Enjoy the space.</em>";
     if(off<0)return done===tot?"All "+qcWord(tot)+" done. <em>A full day.</em>":qcWord(done,1)+" of "+qcWord(tot)+" done that day.";
     if(off>0)return qcWord(tot,1)+" planned. "+(nx?nm+" comes first.":"");
+    if(off===0&&isLowDay(today())){if(!tot)return "A low day. <em>Nothing has to happen today.</em>";if(done===tot)return "A low day, and it is done. <em>Rest well.</em>";return "A low day. <em>Just the "+qcWord(tot)+" that "+(tot===1?"matters":"matter")+".</em>";}
     if(done===tot)return "All "+qcWord(tot)+" done. <em>A fine day.</em>";
     if(!done)return qcWord(tot,1)+(tot===1?" thing":" things")+" today. "+nm+" is first"+(at?", at "+at:"")+".";
     if(left===1)return "One to go. "+nm+" is the last"+(at?", at "+at:"")+".";
@@ -3963,9 +3976,12 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     var off=dCount(ds),doms=state.qcDom?[state.qcDom]:HM_DOMS.map(function(d){return d[0]}),its=[];
     doms.forEach(function(d){hmItems(d,ds).forEach(function(i){if(its.indexOf(i)<0)its.push(i)})});
     its.sort(hmListSort);
-    var extra=visibleItems().filter(function(i){return its.indexOf(i)<0&&dueOnDate(i,ds,off)&&!isFast(i)&&!isTracker(i)&&!isLeftover(i)&&(!state.qcDom||areaDomain(i.catId)===state.qcDom)}).sort(hmListSort);
+    var restSet=[];if(off===0&&isLowDay(ds))doms.forEach(function(d){hmItems0(d,ds).forEach(function(i){if(!lowKeep(i)&&restSet.indexOf(i)<0)restSet.push(i)})});
+    var extra=visibleItems().filter(function(i){return its.indexOf(i)<0&&restSet.indexOf(i)<0&&dueOnDate(i,ds,off)&&!isFast(i)&&!isTracker(i)&&!isLeftover(i)&&(!state.qcDom||areaDomain(i.catId)===state.qcDom)}).sort(hmListSort);
     var left=its.filter(function(i){return !hmDone(i,ds)}).length;
-    var dn=state.qcDom?HM_DOMS.filter(function(d){return d[0]===state.qcDom})[0][1]:"";var h='<div class="qc-lh"><h3 aria-level="2">'+(off===0?"Today":hmLabel(ds))+(dn?' <em class="qc-only qb-'+state.qcDom+'">'+dn+' only</em><button class="qc-all" data-qcall>Show All</button>':'')+'</h3><span>'+(its.length?(left?left+" left":"All done"):"")+'</span></div>';
+    var dn=state.qcDom?HM_DOMS.filter(function(d){return d[0]===state.qcDom})[0][1]:"";var h='<div class="qc-lh"><h3 aria-level="2">'+(off===0?"Today":hmLabel(ds))+(dn?' <em class="qc-only qb-'+state.qcDom+'">'+dn+' only</em><button class="qc-all" data-qcall>Show All</button>':'')+'</h3><span>'+(off===0?'<button class="low-t'+(isLowDay(ds)?" on":"")+'" data-low aria-pressed="'+isLowDay(ds)+'">'+PI("moon")+'Low day</button>':'')+(its.length?(left?left+" left":"All done"):"")+'</span></div>';
+    var resting=restSet.length;
+    if(resting)h+='<div class="low-rest">'+PI("moon")+'<span><b>'+qcWord(resting,1)+(resting===1?" thing is":" things are")+' resting today.</b> '+(resting===1?"It is":"They are")+' back tomorrow. Nothing counts against a low day. High priority things, and ones with a small version, stay.</span></div>';
     if(!its.length&&!extra.length)h+='<div class="cat-empty">'+(off===0?"Nothing planned yet. Tap + whenever you\'re ready.":off>0?"Nothing planned for this day yet.":"Nothing was on the list this day.")+'</div>';
     if(its.length)h+=qcGrouped(its,ds);
     if(extra.length){h+='<div class="qc-lh qc-xh"><h3 aria-level="2">'+(extra.every(function(i){return i.kind==="med"})?"Medicine":"Also today")+'</h3><span>not counted in your day</span></div><div class="card">';extra.forEach(function(i){h+=itemRow(i,{ds:ds})});h+='</div>';}
@@ -4514,7 +4530,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
         else if(a.type==="low")h+='<span class="pill">under usual</span>';
       });
     } else if(i.kind==="todo"){
-      if(isRepeat(i)){h+='<span class="pill rep">'+PI("repeat")+esc(planLabel(i))+'</span>';if(pd>1)h+='<span class="pill">'+cc+'/'+pd+' today</span>';if(countOn(i,today())>pd)h+='<span class="pill warnflag">'+cc+'× · over usual</span>';h+=totalPill(i);}
+      if(isRepeat(i)){h+='<span class="pill rep">'+PI("repeat")+esc(planLabel(i))+'</span>';if((i.smallDays||{})[dsR])h+='<span class="pill">done small · '+esc(i.small||"")+'</span>';if(pd>1)h+='<span class="pill">'+cc+'/'+pd+' today</span>';if(countOn(i,today())>pd)h+='<span class="pill warnflag">'+cc+'× · over usual</span>';h+=totalPill(i);}
       else if(i.dueDate&&!i.done)h+='<span class="pill due '+dueClass(i.dueDate)+'">'+esc(dueLabel(i.dueDate))+'</span>';
       if(i.priority==="high"&&!complete)h+='<span class="pill hi">High</span>';
     } else if(i.kind==="med"){var dl=medDaysLeft(i);h+='<span class="pill due '+(dl<=0?"over":medLow(i)?"soon":"")+'">'+PI("pill")+dl+'d · '+(i.stock||0)+' left</span>';h+=totalPill(i);var cl=medCourseLeft(i);if(cl!=null&&cl>=0)h+='<span class="pill">course '+cl+'d</span>';}
@@ -4529,6 +4545,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     else if(i.kind==="upkeep"&&isRoutine(i)){var d4=dCount(nextDue(i));h+='<span class="days '+(d4<=0?"bad":d4<=7?"warn":"ok")+'">'+(d4<=0?"now":d4+"d")+'</span><button class="mini-btn" data-reset="'+i.id+'">'+(i.mode==="rebuy"?"Bought":"Mark done")+'</button>';}
     else if(i.kind==="med"&&isRoutine(i))h+='<button class="mini-btn" data-restock="'+i.id+'">Restock</button>';
     else if(i.kind==="measure"){var tv=(i.values||{})[today()];h+='<span class="mval"><b class="'+(complete?"hit":"")+'">'+(tv!=null?tv:"-")+'</b><small>'+esc(i.unit||"")+'</small></span>';}
+    else if(i.kind==="todo"&&isRepeat(i)&&i.small&&isT&&!complete&&isRoutine(i))h+='<button class="mini-btn" data-small="'+i.id+'" title="'+esc(i.small)+'">Small one</button>';
     else h+=avatarStack(i.assignees,3);
     h+='</div></div>';
     if(i.cb)h+=cbRowExtra(i);
@@ -6650,7 +6667,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       h+='<div class="field"><label>Fasting window</label><div class="pick-wrap">'+PROTOCOLS.map(function(pr){return '<button type="button" class="tagpick '+(pf===pr.h?"on":"")+'" data-protoset="'+pr.h+'">'+protoLabel(pr.h)+'</button>'}).join("")+'</div><div class="hint">You can change this any time. Longer isn\'t always better.</div></div>';
     } else if(d.stance==="episode"){
       h+='<div class="field"><div class="hint" style="margin-top:0">Nothing to set up. Tap <b>Start</b> when it begins and <b>It\'s over</b> when it goes, Daywell keeps the length, so after a couple of these it can tell you whether this one is running longer than your usual.</div></div>';
-    } else if(d.akind==="activity"){h+=rhythmField(d)+'<div class="two"><div class="field"><label>Times a day</label><input type="number" id="i-perday" min="1" value="'+(d.perDay||1)+'"><div class="hint">Days over this are flagged as unusual.</div></div></div>';
+    } else if(d.akind==="activity"){h+=rhythmField(d)+'<div class="field"><label for="i-small">Small version <span class="sub-lbl">(optional)</span></label><input type="text" id="i-small" maxlength="60" value="'+esc(d.small||"")+'" placeholder="For example: 10 minute walk"><div class="hint">On a hard day, the small one counts as done. It also keeps this on a low day.</div></div><div class="two"><div class="field"><label>Times a day</label><input type="number" id="i-perday" min="1" value="'+(d.perDay||1)+'"><div class="hint">Days over this are flagged as unusual.</div></div></div>';
       h+='<div class="two"><div class="field"><label id="l-prio">Priority</label><div class="seg" id="i-prio" role="group" aria-labelledby="l-prio">'+prioBtns(d.priority)+'</div></div><div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div></div>';
       h+=expectField(d);
     } else if(d.akind==="oneoff"){h+='<div class="two"><div class="field"><label>Due date</label><input type="date" id="i-due" value="'+esc(d.dueDate||"")+'"></div><div class="field"><label id="l-prio">Priority</label><div class="seg" id="i-prio" role="group" aria-labelledby="l-prio">'+prioBtns(d.priority)+'</div></div></div>';
@@ -6708,6 +6725,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function syncItem(){var d=ms.data;if(!d)return;var g=function(id){return $("#"+id)};
     if(g("i-title"))d.title=g("i-title").value;if(g("i-sub"))d.sub=g("i-sub").value.trim();if(g("i-due"))d.dueDate=g("i-due").value||null;if(g("i-int"))d.intervalDays=parseInt(g("i-int").value,10)||30;if(g("i-last"))d.lastDone=g("i-last").value||null;if(g("i-notes"))d.notes=g("i-notes").value;if(g("i-target"))d.target=parseFloat(g("i-target").value)||1;if(g("i-unit"))d.unit=g("i-unit").value.trim();if(g("i-rem"))d.reminder=g("i-rem").value||null;if(g("i-stock"))d.stock=parseInt(g("i-stock").value,10)||0;if(g("i-doses"))d.dosesPerDay=parseFloat(g("i-doses").value)||1;if(g("i-rtab"))d.reorderTablets=parseInt(g("i-rtab").value,10)||0;if(g("i-rday"))d.reorderAt=parseInt(g("i-rday").value,10)||0;if(g("i-course"))d.courseDays=parseInt(g("i-course").value,10)||0;if(g("i-perday"))d.perDay=Math.max(1,parseInt(g("i-perday").value,10)||1);if(g("i-private"))d.private=g("i-private").checked;
     if(g("i-count"))d.count=g("i-count").checked;
+    if(g("i-small"))d.small=g("i-small").value.trim();
     if(g("i-local"))d.localOnly=g("i-local").checked;
     if(g("i-exat")){var at=g("i-exat").value;var sl=g("i-exsl")?parseInt(g("i-exsl").value,10):60;
       d.expect=at?{at:at,slack:(isNaN(sl)?60:sl),dir:((d.expect&&d.expect.dir)||"either")}:null;}
@@ -6766,6 +6784,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(kind==="todo"){var rep=(ms.mode==="task"||d.akind==="oneoff")?0:(d.repeatEvery||1);base.repeatEvery=rep;base.perDay=rep>0?Math.max(1,d.perDay||1):1;base.normal={min:base.perDay,max:base.perDay,maxGapDays:rep>0?rep:null,maxPerWeek:null};base.dueDate=rep>0?null:(d.dueDate||(d.catId===TODO_CAT?today():null));base.done=rep>0?false:!!d.done;if(!ms.id&&rep>0){base.counts={};base.logTimes={};base.events={};}}
     if(kind==="measure"){base.repeatEvery=1;base.target=d.target||1;base.unit=d.unit||"";if(!ms.id)base.values={};}
     if(kind==="med"){base.repeatEvery=1;base.dosesPerDay=d.dosesPerDay||1;base.stock=d.stock||0;base.reorderTablets=d.reorderTablets||0;base.reorderAt=d.reorderAt||0;base.courseDays=d.courseDays||0;base.courseStart=d.courseStart||today();if(!ms.id){base.log=[];base.logTimes={};}}
+    if(kind==="todo"&&base.repeatEvery>0)base.small=d.small||"";
     if(kind==="measure"||kind==="med"||(kind==="todo"&&base.repeatEvery>0)){base.days=(d.days&&d.days.length)?d.days.slice():null;base.perWeek=d.perWeek||null;base.repeatEvery=(base.days||base.perWeek)?1:(d.repeatEvery||1);}
     if(kind==="upkeep"){base.mode=d.mode||"replace";base.intervalDays=d.intervalDays||30;base.lastDone=d.lastDone||today();}
     if(ms.id)Store.update("items",ms.id,base);else{base.createdAt=new Date().toISOString();base.createdDate=today();base.order=Date.now();base.owner=state.me||null;Store.add("items",base);}closeModal();}
@@ -7290,6 +7309,8 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if((el=e.target.closest("[data-tagf]"))){state.filterTag=el.getAttribute("data-tagf")||null;render();return;}
     if((el=e.target.closest("[data-back-area]"))){var ba=el.getAttribute("data-back-area");if(ba===TODO_CAT)go("day");else go("area",ba);return;}
     if((el=e.target.closest("[data-area]"))&&!e.target.closest("[data-action]")){go("area",el.getAttribute("data-area"));return;}
+    if((el=e.target.closest("[data-small]"))){e.stopPropagation();var si=Store.get("items",el.getAttribute("data-small"));if(si&&si.small){var su=storeSnap(),sc=Object.assign({},si.counts||{}),sd=Object.assign({},si.smallDays||{}),stt=Object.assign({},si.logTimes||{}),t0=today();sc[t0]=Math.max(sc[t0]||0,perDayOf(si));sd[t0]=1;stt[t0]=stt[t0]||nowHM();var sp={counts:sc,smallDays:sd,logTimes:stt};if((si.events||{})[t0]){var se=Object.assign({},si.events);se[t0]=se[t0].concat(Array(Math.max(0,perDayOf(si)-se[t0].length)).fill(nowHM()));sp.events=se;}_justDone=si.id;setTimeout(jdClear,1400);Store.update("items",si.id,sp);toast("Small one done: "+si.small+". It counts.",su);}return;}
+    if((el=e.target.closest("[data-low]"))){var lo=!isLowDay(today());setLowDay(today(),lo);render();toast(lo?"A low day. Only what matters stays.":"The day is back as planned.");return;}
     if((el=e.target.closest("[data-toggle]"))){e.stopPropagation();toggleItem(el.getAttribute("data-toggle"));return;}
     if((el=e.target.closest("[data-measure]"))){e.stopPropagation();openMeasure(el.getAttribute("data-measure"));return;}
     if((el=e.target.closest("[data-reset]"))){e.stopPropagation();var rid=el.getAttribute("data-reset"),ri=Store.get("items",rid),prevLd=ri?(ri.lastDone||null):null;Store.update("items",rid,{lastDone:today()});toast("Done",function(){Store.update("items",rid,{lastDone:prevLd})});return;}
