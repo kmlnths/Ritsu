@@ -1,0 +1,33 @@
+/* checks the rhythm rules: some days, times a week, moved days. Run: node docs/tools/test-rhythm.js */
+const fs=require("fs");
+const src=fs.readFileSync(__dirname+"/../../index.html","utf8").replace(/\r\n/g,"\n");
+const a=src.indexOf("  /* ===== rhythm (start)"),b=src.indexOf("  /* ===== rhythm (end)");
+const TODAY="2026-10-07";   /* a Wednesday */
+function fmt(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function today(){return TODAY}
+function dCount(ds){return Math.round((new Date(ds+"T00:00:00")-new Date(TODAY+"T00:00:00"))/86400000)}
+function addDaysStr(ds,n){const d=new Date(ds+"T00:00:00");d.setDate(d.getDate()+n);return fmt(d)}
+function didOn(i,ds){return (i.counts||{})[ds]>0}
+function repeatLabel(n){return n===1?"Daily":"Every "+n+" days"}
+const R=new Function("addDaysStr","dCount","didOn","repeatLabel",src.slice(a,b)+";return {hasRhythm,planOn,rhythmLabel}")(addDaysStr,dCount,didOn,repeatLabel);
+const gym={days:[1,2,4,5],repeatEvery:1};                       /* Mon Tue Thu Fri */
+const read={perWeek:2,repeatEvery:1,counts:{"2026-10-05":1}};    /* done Monday */
+const eggs={repeatEvery:1,days:[1,3,5],moves:{"2026-10-07":"2026-10-08"}};   /* Wednesday moved to Thursday */
+const cases=[
+ ["gym on Wednesday is a rest day",R.planOn(gym,"2026-10-07"),false],
+ ["gym on Thursday",R.planOn(gym,"2026-10-08"),true],
+ ["reading shows today (1 of 2 done)",R.planOn(read,"2026-10-07"),true],
+ ["a skipped past day never counts",R.planOn(read,"2026-10-06"),false],
+ ["a done past day counts",R.planOn(read,"2026-10-05"),true],
+ ["after 2 done it rests",R.planOn(Object.assign({},read,{counts:{"2026-10-05":1,"2026-10-06":1}}),"2026-10-08"),false],
+ ["a new week starts fresh",R.planOn(Object.assign({},read,{counts:{"2026-10-05":1,"2026-10-06":1}}),"2026-10-12"),true],
+ ["eggs moved off Wednesday",R.planOn(eggs,"2026-10-07"),false],
+ ["eggs moved onto Thursday",R.planOn(eggs,"2026-10-08"),true],
+ ["a daily item with a move has a rhythm",R.hasRhythm({repeatEvery:1,moves:{"2026-10-07":"2026-10-08"}}),true],
+ ["a plain daily item has none",R.hasRhythm({repeatEvery:1}),false],
+ ["label Mon Tue Thu Fri",R.rhythmLabel(gym),"Mon, Tue, Thu, Fri"],
+ ["label weekdays",R.rhythmLabel({days:[5,1,2,3,4]}),"Weekdays"],
+ ["label times a week",R.rhythmLabel(read),"2 times a week"]
+];
+let bad=0;for(const [t,got,want] of cases)if(got!==want){bad++;console.log("FAIL",t,"got",got,"want",want)}
+console.log(bad?bad+" failed":"all "+cases.length+" pass");process.exit(bad?1:0);
