@@ -971,6 +971,14 @@ try{var _t=localStorage.getItem("ritsu_theme")||"dark";if(_t==="auto")_t=matchMe
   .add::after{inset:-14px -10px}
   .mini-toggle::after{inset:-14px}
   .tagpick,.pick,.seg button{position:relative}
+  .seg.rhy{display:grid;grid-template-columns:1fr 1fr}
+  .rhy-days{display:flex;justify-content:space-between;gap:6px;margin-top:10px}
+  .rhy-days button{flex:1;max-width:44px;aspect-ratio:1;border-radius:50%;border:1px solid var(--line);background:var(--panel-2);color:var(--muted);font-weight:600;font-size:13px;cursor:pointer}
+  .rhy-days button.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  .rhy-week{display:flex;align-items:center;gap:14px;margin-top:10px}
+  .rhy-week button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--panel-2);color:var(--ink);font-size:20px;cursor:pointer}
+  .rhy-week b{font-size:28px;font-weight:300;min-width:1ch;text-align:center;font-variant-numeric:tabular-nums}
+  .rhy-week span{color:var(--muted);font-size:14px}
   .tagpick::after,.pick::after{content:"";position:absolute;inset:-8px}
   .seg button::after{content:"";position:absolute;inset:-4px}
   .day-h .nav button{position:relative}
@@ -4268,7 +4276,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
         else if(a.type==="low")h+='<span class="pill">under usual</span>';
       });
     } else if(i.kind==="todo"){
-      if(isRepeat(i)){h+='<span class="pill rep">'+PI("repeat")+esc(repeatLabel(i.repeatEvery))+'</span>';if(pd>1)h+='<span class="pill">'+cc+'/'+pd+' today</span>';if(countOn(i,today())>pd)h+='<span class="pill warnflag">'+cc+'× · over usual</span>';st=streakOf(i);if(st>1)h+='<span class="streak">'+PI("flame")+st+'</span>';}
+      if(isRepeat(i)){h+='<span class="pill rep">'+PI("repeat")+esc(rhythmLabel(i))+'</span>';if(pd>1)h+='<span class="pill">'+cc+'/'+pd+' today</span>';if(countOn(i,today())>pd)h+='<span class="pill warnflag">'+cc+'× · over usual</span>';st=streakOf(i);if(st>1)h+='<span class="streak">'+PI("flame")+st+'</span>';}
       else if(i.dueDate&&!i.done)h+='<span class="pill due '+dueClass(i.dueDate)+'">'+esc(dueLabel(i.dueDate))+'</span>';
       if(i.priority==="high"&&!complete)h+='<span class="pill hi">High</span>';
     } else if(i.kind==="med"){var dl=medDaysLeft(i);h+='<span class="pill due '+(dl<=0?"over":medLow(i)?"soon":"")+'">'+PI("pill")+dl+'d · '+(i.stock||0)+' left</span>';var st2=streakOf(i);if(st2>1)h+='<span class="streak">'+PI("flame")+st2+'</span>';var cl=medCourseLeft(i);if(cl!=null&&cl>=0)h+='<span class="pill">course '+cl+'d</span>';}
@@ -4462,7 +4470,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     h+='<div class="panel"><h4 aria-level="2">'+(isLimit(i)?"Which days it happens":isBody(i)?"Which days you log it":"Which days you do it")+'</h4><div class="freq">';for(var f=1;f<=7;f++){var di=f%7;h+='<div class="freqbar"><div class="fb" style="height:'+Math.max(3,Math.round(freq[di]/fmax*66))+'px"></div><small>'+DOW[di][0]+'</small></div>';}h+='</div></div>';
     h+=assignPanel(i);return h;
   }
-  function itemSubtitle(i){if(isFast(i))return "Fasting \u00b7 "+protoLabel(targetOf(i));if(isEpisode(i))return "Episode, starts, runs, ends";if(isLimit(i))return "Holding off, "+esc(rangeLabel(i));if(isBody(i))return "Body, "+esc(rangeLabel(i));if(i.kind==="measure")return "Goal "+(i.target||0)+" "+esc(i.unit||"")+" · daily";if(i.kind==="med")return "Medication · "+(i.dosesPerDay||1)+"/day";if(i.kind==="upkeep")return (i.mode==="rebuy"?"Rebuy":"Replace")+" every "+(i.intervalDays||30)+" days";if(i.kind==="todo")return isRepeat(i)?(esc(repeatLabel(i.repeatEvery))+(perDayOf(i)>1?" · "+perDayOf(i)+"×/day":"")):"One-off task";return ""}
+  function itemSubtitle(i){if(isFast(i))return "Fasting \u00b7 "+protoLabel(targetOf(i));if(isEpisode(i))return "Episode, starts, runs, ends";if(isLimit(i))return "Holding off, "+esc(rangeLabel(i));if(isBody(i))return "Body, "+esc(rangeLabel(i));if(i.kind==="measure")return "Goal "+(i.target||0)+" "+esc(i.unit||"")+" · daily";if(i.kind==="med")return "Medication · "+(i.dosesPerDay||1)+"/day";if(i.kind==="upkeep")return (i.mode==="rebuy"?"Rebuy":"Replace")+" every "+(i.intervalDays||30)+" days";if(i.kind==="todo")return isRepeat(i)?(esc(rhythmLabel(i))+(perDayOf(i)>1?" · "+perDayOf(i)+"×/day":"")):"One-off task";return ""}
   function assignPanel(i){if(!(i.assignees&&i.assignees.length))return"";var h='<div class="panel" style="display:flex;align-items:center;gap:12px"><b style="font-size:13px">Assigned</b>';i.assignees.forEach(function(id){var p=personById(id);if(p)h+='<span style="display:inline-flex;align-items:center;gap:6px">'+avatar(p,"sm")+esc(p.name)+'</span>';});return h+'</div>'}
 
   /* ===== Medication report (per med item) ===== */
@@ -6373,7 +6381,6 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   var AKINDS=[["activity","Activity","Something you do, on repeat"],["med","Medication","Pills, count & reorder"],["measure","Measure","A number (sleep, water)"],["upkeep","Upkeep","Replace or rebuy a thing"],["oneoff","One-off task","A single task with a due date"]];
   function renderItemModal(){
     var d=ms.data,cs=cats(),ppl=people(),ts=tags();var cur=Store.get("cats",d.catId);var subs={};itemsOf(d.catId).forEach(function(i){if(i.sub)subs[i.sub]=1;});
-    var presetR=REPEATS.map(function(r){return r[0]});var isCustom=(d.akind==="activity")&&(d.repeatEvery>0)&&presetR.indexOf(d.repeatEvery)===-1;
     var h='<div class="modal-h"><h3>'+(ms.id?"Edit":"Add to "+esc(cur?cur.name:"area"))+'</h3><button class="x" data-close>×</button></div><div class="modal-b">';
     h+='<div class="field"><label>What is it?</label><input type="text" id="i-title" value="'+esc(d.title)+'" placeholder="e.g. Brush teeth">'+(ms.ask?'<div class="hint" style="color:var(--accent-ink)">'+esc(ms.ask)+' Rename it to yours.</div>':'')+'</div>';
     if(!ms.id)h+='<button type="button" class="todo-add" style="padding:0 0 14px" data-action="library" data-cat="'+esc(d.catId||"")+'"><span class="pl">\u2261</span>Or choose a template</button>';
@@ -6401,15 +6408,15 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       h+='<div class="field"><label>Fasting window</label><div class="pick-wrap">'+PROTOCOLS.map(function(pr){return '<button type="button" class="tagpick '+(pf===pr.h?"on":"")+'" data-protoset="'+pr.h+'">'+protoLabel(pr.h)+'</button>'}).join("")+'</div><div class="hint">You can change this any time. Longer isn\'t always better.</div></div>';
     } else if(d.stance==="episode"){
       h+='<div class="field"><div class="hint" style="margin-top:0">Nothing to set up. Tap <b>Start</b> when it begins and <b>It\'s over</b> when it goes, Daywell keeps the length, so after a couple of these it can tell you whether this one is running longer than your usual.</div></div>';
-    } else if(d.akind==="activity"){h+='<div class="two"><div class="field"><label>Repeat</label><select id="i-rep">'+REPEATS.map(function(r){var sel=(r[0]===-1?isCustom:(!isCustom&&(d.repeatEvery||1)===r[0]));return '<option value="'+r[0]+'" '+(sel?"selected":"")+'>'+r[1]+'</option>'}).join("")+'</select>'+(isCustom?'<div style="margin-top:8px"><input type="number" id="i-repnum" min="1" value="'+d.repeatEvery+'"></div>':'')+'</div><div class="field"><label>Times a day</label><input type="number" id="i-perday" min="1" value="'+(d.perDay||1)+'"><div class="hint">Days over this are flagged as unusual.</div></div></div>';
+    } else if(d.akind==="activity"){h+=rhythmField(d)+'<div class="two"><div class="field"><label>Times a day</label><input type="number" id="i-perday" min="1" value="'+(d.perDay||1)+'"><div class="hint">Days over this are flagged as unusual.</div></div></div>';
       h+='<div class="two"><div class="field"><label id="l-prio">Priority</label><div class="seg" id="i-prio" role="group" aria-labelledby="l-prio">'+prioBtns(d.priority)+'</div></div><div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div></div>';
       h+=expectField(d);
     } else if(d.akind==="oneoff"){h+='<div class="two"><div class="field"><label>Due date</label><input type="date" id="i-due" value="'+esc(d.dueDate||"")+'"></div><div class="field"><label id="l-prio">Priority</label><div class="seg" id="i-prio" role="group" aria-labelledby="l-prio">'+prioBtns(d.priority)+'</div></div></div>';
-    } else if(d.akind==="med"){h+='<div class="two"><div class="field"><label>Pills on hand</label><input type="number" id="i-stock" min="0" value="'+(d.stock||0)+'"></div><div class="field"><label>Doses per day</label><input type="number" id="i-doses" min="0.5" step="0.5" value="'+(d.dosesPerDay||1)+'"></div></div><div class="two"><div class="field"><label>Remind at ≤ pills</label><input type="number" id="i-rtab" min="0" value="'+(d.reorderTablets||0)+'"></div><div class="field"><label>…or ≤ days left</label><input type="number" id="i-rday" min="0" value="'+(d.reorderAt||0)+'"></div></div><div class="two"><div class="field"><label>Course length (days)</label><input type="number" id="i-course" min="0" value="'+(d.courseDays||0)+'"><div class="hint">0 = ongoing.</div></div><div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div></div>';
-    } else if(d.akind==="measure"){h+='<div class="two"><div class="field"><label>Daily goal</label><input type="number" id="i-target" min="0" step="any" value="'+(d.target||1)+'"></div><div class="field"><label>Unit</label><input type="text" id="i-unit" value="'+esc(d.unit||"")+'" placeholder="hrs, glasses…"></div></div><div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div>';
+    } else if(d.akind==="med"){h+=rhythmField(d)+'<div class="two"><div class="field"><label>Pills on hand</label><input type="number" id="i-stock" min="0" value="'+(d.stock||0)+'"></div><div class="field"><label>Doses per day</label><input type="number" id="i-doses" min="0.5" step="0.5" value="'+(d.dosesPerDay||1)+'"></div></div><div class="two"><div class="field"><label>Remind at ≤ pills</label><input type="number" id="i-rtab" min="0" value="'+(d.reorderTablets||0)+'"></div><div class="field"><label>…or ≤ days left</label><input type="number" id="i-rday" min="0" value="'+(d.reorderAt||0)+'"></div></div><div class="two"><div class="field"><label>Course length (days)</label><input type="number" id="i-course" min="0" value="'+(d.courseDays||0)+'"><div class="hint">0 = ongoing.</div></div><div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div></div>';
+    } else if(d.akind==="measure"){h+=rhythmField(d)+'<div class="two"><div class="field"><label>Daily goal</label><input type="number" id="i-target" min="0" step="any" value="'+(d.target||1)+'"></div><div class="field"><label>Unit</label><input type="text" id="i-unit" value="'+esc(d.unit||"")+'" placeholder="hrs, glasses…"></div></div><div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div>';
     } else if(d.akind==="upkeep"){h+='<div class="field"><label>What happens</label><div class="seg" id="i-mode"><button type="button" data-v="replace" class="'+(d.mode!=="rebuy"?"on":"")+'">Replace It</button><button type="button" data-v="rebuy" class="'+(d.mode==="rebuy"?"on":"")+'">Rebuy It</button></div></div><div class="two"><div class="field"><label>Every (days)</label><input type="number" id="i-int" min="1" value="'+(d.intervalDays||30)+'"><div class="hint">e.g. 90 for a 3-month toothbrush.</div></div><div class="field"><label>Last done</label><input type="date" id="i-last" value="'+esc(d.lastDone||today())+'"></div></div>';}
     if(d.stance==="routine"){var _cnt=(d.akind==="med")?(d.count===true):(d.count!==false);
-      h+='<label class="toggle-line"><input type="checkbox" id="i-count" '+(_cnt?"checked":"")+'> Count toward my consistency score'+(d.akind==="med"?' <span class="sub-lbl">(medicine is off by default, still tracked)</span>':'')+'</label>';}
+      h+='<label class="toggle-line"><input type="checkbox" id="i-count" '+(_cnt?"checked":"")+'> Counts toward my day'+(d.akind==="med"?' <span class="sub-lbl">(medicine is off by default, still tracked)</span>':'')+'</label><div class="hint">On for what matters, like a workout. Off for nice to haves, like eggs: they sit under Also today, and a missed day is fine.</div>';}
     /* flags are opt-in per item. Nothing appears unless you put it there. */
     var chosen=(d.markers||[]);
     h+='<div class="field"><label>'+(d.stance==="limit"?"Triggers you can tag":"Things you can flag")+' <span class="sub-lbl">(optional)</span></label><div class="pick-wrap" id="i-markers">';
@@ -6438,6 +6445,23 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     h+='<div class="hint">One odd day is ignored. Daywell raises it once it happens two or three times, and then it asks why, once.</div></div>';
     return h;
   }
+  /* one rhythm picker for every kind of item: activity, medicine, a number you measure */
+  var RHY=[["day","Every day"],["some","Some days"],["week","Times a week"],["few","Every few days"]];
+  function rhyMode(d){return d.perWeek?"week":(d.days&&d.days.length)?"some":(d.repeatEvery||1)>1?"few":"day"}
+  function rhythmField(d){
+    var m=rhyMode(d),h='<div class="field"><label id="l-rhy">Rhythm</label><div class="seg rhy" id="i-rhy" role="group" aria-labelledby="l-rhy">'+
+      RHY.map(function(r){return '<button type="button" data-v="'+r[0]+'" class="'+(m===r[0]?"on":"")+'" aria-pressed="'+(m===r[0])+'">'+r[1]+'</button>'}).join("")+'</div>';
+    if(m==="some"){var DN=[[1,"M","Monday"],[2,"T","Tuesday"],[3,"W","Wednesday"],[4,"T","Thursday"],[5,"F","Friday"],[6,"S","Saturday"],[0,"S","Sunday"]];
+      h+='<div class="rhy-days">'+DN.map(function(x){var on=d.days.indexOf(x[0])>-1;return '<button type="button" data-rhyday="'+x[0]+'" class="'+(on?"on":"")+'" aria-pressed="'+on+'" aria-label="'+x[2]+'">'+x[1]+'</button>'}).join("")+'</div>';
+      var rest=DN.filter(function(x){return d.days.indexOf(x[0])<0}).map(function(x){return x[2]});
+      h+='<div class="hint">'+(!rest.length?"Every day of the week.":(rest.length>1?rest.slice(0,-1).join(", ")+" and "+rest[rest.length-1]+" are rest days.":rest[0]+" is a rest day.")+" A rest day never counts against you.")+'</div>';}
+    if(m==="week")h+='<div class="rhy-week"><button type="button" data-rhyn="-1" aria-label="One fewer">\u2212</button><b>'+d.perWeek+'</b><button type="button" data-rhyn="1" aria-label="One more">+</button><span>'+(d.perWeek===1?"time":"times")+' a week, any days</span></div>'+
+      '<div class="hint">It shows each day until you have done '+d.perWeek+'. A day you skip is not held against you.</div>';
+    if(m==="few"){var pr=REPEATS.map(function(r){return r[0]}),cu=pr.indexOf(d.repeatEvery)===-1;
+      h+='<select id="i-rep" aria-label="How often" style="margin-top:10px">'+REPEATS.filter(function(r){return r[0]!==1}).map(function(r){var sel=r[0]===-1?cu:(!cu&&d.repeatEvery===r[0]);return '<option value="'+r[0]+'" '+(sel?"selected":"")+'>'+r[1]+'</option>'}).join("")+'</select>'+
+        (cu?'<div style="margin-top:8px"><input type="number" id="i-repnum" min="2" value="'+d.repeatEvery+'" aria-label="Every how many days"></div>':'');}
+    return h+'</div>';
+  }
   function prioBtns(cur){return ["high","med","low","none"].map(function(p){return '<button type="button" data-v="'+p+'" class="'+((cur||"med")===p?"on":"")+'">'+(p==="med"?"Med":p[0].toUpperCase()+p.slice(1))+'</button>'}).join("")}
   function syncItem(){var d=ms.data;if(!d)return;var g=function(id){return $("#"+id)};
     if(g("i-title"))d.title=g("i-title").value;if(g("i-sub"))d.sub=g("i-sub").value.trim();if(g("i-due"))d.dueDate=g("i-due").value||null;if(g("i-int"))d.intervalDays=parseInt(g("i-int").value,10)||30;if(g("i-last"))d.lastDone=g("i-last").value||null;if(g("i-notes"))d.notes=g("i-notes").value;if(g("i-target"))d.target=parseFloat(g("i-target").value)||1;if(g("i-unit"))d.unit=g("i-unit").value.trim();if(g("i-rem"))d.reminder=g("i-rem").value||null;if(g("i-stock"))d.stock=parseInt(g("i-stock").value,10)||0;if(g("i-doses"))d.dosesPerDay=parseFloat(g("i-doses").value)||1;if(g("i-rtab"))d.reorderTablets=parseInt(g("i-rtab").value,10)||0;if(g("i-rday"))d.reorderAt=parseInt(g("i-rday").value,10)||0;if(g("i-course"))d.courseDays=parseInt(g("i-course").value,10)||0;if(g("i-perday"))d.perDay=Math.max(1,parseInt(g("i-perday").value,10)||1);if(g("i-private"))d.private=g("i-private").checked;
@@ -6454,7 +6478,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       var a3=num("i-ngap");if(a3!==undefined)d.normal.maxGapDays=a3;
       var a4=num("i-nweek");if(a4!==undefined)d.normal.maxPerWeek=a4;
     }
-    var rep=g("i-rep");if(rep){var rv=parseInt(rep.value,10);if(rv===-1){var rn=g("i-repnum");d.repeatEvery=rn?(parseInt(rn.value,10)||1):(d.repeatEvery>0?d.repeatEvery:3);}else d.repeatEvery=rv;}}
+    var rep=g("i-rep");if(rep){var rv=parseInt(rep.value,10);if(rv===-1){var rn=g("i-repnum");d.repeatEvery=rn?Math.max(2,parseInt(rn.value,10)||2):4;}else d.repeatEvery=rv;}}
   function saveItem(anyway){if(ms.mode==="task"&&!ms.id&&!ms.dateTouched){var qt=$("#i-title"),qp=qt?parseQuick(qt.value):null;if(qp){qt.value=qp.title;var qdue=$("#i-due");if(qdue)qdue.value=qp.date;}}
     syncItem();var d=ms.data;if(!(d.title||"").trim()){toast("It needs a name, please.");return;}
     var stance=(ms.mode==="task")?"routine":(d.stance||"routine");
@@ -6500,6 +6524,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(kind==="todo"){var rep=(ms.mode==="task"||d.akind==="oneoff")?0:(d.repeatEvery||1);base.repeatEvery=rep;base.perDay=rep>0?Math.max(1,d.perDay||1):1;base.normal={min:base.perDay,max:base.perDay,maxGapDays:rep>0?rep:null,maxPerWeek:null};base.dueDate=rep>0?null:(d.dueDate||(d.catId===TODO_CAT?today():null));base.done=rep>0?false:!!d.done;if(!ms.id&&rep>0){base.counts={};base.logTimes={};base.events={};}}
     if(kind==="measure"){base.repeatEvery=1;base.target=d.target||1;base.unit=d.unit||"";if(!ms.id)base.values={};}
     if(kind==="med"){base.repeatEvery=1;base.dosesPerDay=d.dosesPerDay||1;base.stock=d.stock||0;base.reorderTablets=d.reorderTablets||0;base.reorderAt=d.reorderAt||0;base.courseDays=d.courseDays||0;base.courseStart=d.courseStart||today();if(!ms.id){base.log=[];base.logTimes={};}}
+    if(kind==="measure"||kind==="med"||(kind==="todo"&&base.repeatEvery>0)){base.days=(d.days&&d.days.length)?d.days.slice():null;base.perWeek=d.perWeek||null;base.repeatEvery=(base.days||base.perWeek)?1:(d.repeatEvery||1);}
     if(kind==="upkeep"){base.mode=d.mode||"replace";base.intervalDays=d.intervalDays||30;base.lastDone=d.lastDone||today();}
     if(ms.id)Store.update("items",ms.id,base);else{base.createdAt=new Date().toISOString();base.createdDate=today();base.order=Date.now();base.owner=state.me||null;Store.add("items",base);}closeModal();}
 
@@ -7084,6 +7109,9 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if((el=e.target.closest("#i-mode button"))){ms.data.mode=el.getAttribute("data-v");renderItemModal();return;}
     if((el=e.target.closest("[data-protoset]"))){syncItem();var pv=parseInt(el.getAttribute("data-protoset"),10);ms.data.protocol={fast:pv,eat:24-pv};renderItemModal();return;}
     if((el=e.target.closest("#i-exdir button"))){syncItem();if(ms.data.expect)ms.data.expect.dir=el.getAttribute("data-v");renderItemModal();return;}
+    if((el=e.target.closest("#i-rhy button"))){syncItem();var rd=ms.data,rv2=el.getAttribute("data-v");rd.days=rv2==="some"?((rd.days&&rd.days.length)?rd.days:[1,2,3,4,5]):null;rd.perWeek=rv2==="week"?(rd.perWeek||3):null;rd.repeatEvery=rv2==="few"?((rd.repeatEvery||1)>1?rd.repeatEvery:2):1;renderItemModal();return;}
+    if((el=e.target.closest("[data-rhyday]"))){syncItem();var rdd=ms.data.days,rk=+el.getAttribute("data-rhyday"),rx=rdd.indexOf(rk);if(rx>-1){if(rdd.length>1)rdd.splice(rx,1);}else rdd.push(rk);renderItemModal();return;}
+    if((el=e.target.closest("[data-rhyn]"))){syncItem();ms.data.perWeek=Math.min(6,Math.max(1,(ms.data.perWeek||3)+(+el.getAttribute("data-rhyn"))));renderItemModal();return;}
     if((el=e.target.closest("#i-prio button"))){ms.data.priority=el.getAttribute("data-v");if(ms.mode==="task")renderTaskModal();else renderItemModal();return;}
     if((el=e.target.closest("[data-tagtoggle]"))){syncItem();var tt=el.getAttribute("data-tagtoggle");var ar=ms.data.tags||[];var ix2=ar.indexOf(tt);if(ix2>-1)ar.splice(ix2,1);else ar.push(tt);ms.data.tags=ar;if(ms.mode==="task")renderTaskModal();else renderItemModal();return;}
     if((el=e.target.closest("#i-assign .pick"))){syncItem();var pd=el.getAttribute("data-pid");var a2=ms.data.assignees||[];var ix3=a2.indexOf(pd);if(ix3>-1)a2.splice(ix3,1);else a2.push(pd);ms.data.assignees=a2;if(ms.mode==="task")renderTaskModal();else renderItemModal();return;}
