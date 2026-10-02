@@ -17,7 +17,7 @@ html,body{margin:0;height:100%;background:#050608;color:var(--ink);font-family:"
 .count{font-size:13px;color:var(--faint);font-variant-numeric:tabular-nums}
 .done-now{background:none;border:0;color:var(--mut);font:inherit;font-size:13px;cursor:pointer;padding:0;margin-left:10px}
 .bar{margin:12px 22px 0;height:3px;border-radius:3px;background:#1d2026;overflow:hidden}
-.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#6b7380,#d7dbe0);border-radius:3px;transition:width .6s var(--out)}
+.bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#6b7380,#d7dbe0);transform-origin:0 50%;transform:scaleX(0);transition:transform .6s var(--out)}
 h1{margin:18px 22px 0;font-size:15px;font-weight:500;color:var(--mut)}
 h1 b{color:var(--ink);font-weight:600}
 
@@ -127,7 +127,7 @@ h1 b{color:var(--ink);font-weight:600}
   function paint(rising){
     stage.innerHTML="";
     for(var k=Math.min(idx+3,total)-1;k>=idx;k--){var e=cardEl(DATA[k]);var p=k-idx;if(p>0)e.classList.add("n"+p);else{if(rising&&!reduce){e.classList.add("rise");e.addEventListener("animationend",function(){this.classList.remove("rise")},{once:true})}bind(e);}stage.appendChild(e);}
-    ct.textContent=Math.min(idx+1,total)+" of "+total;bar.style.width=(idx/total*100)+"%";
+    ct.textContent=Math.min(idx+1,total)+" of "+total;bar.style.transform="scaleX("+(idx/total)+")";
     document.getElementById("end").classList.toggle("on",idx>=total);
     if(idx>=total){document.getElementById("endp").textContent=total+" things have a home now.";ct.textContent=total+" of "+total;}
   }
