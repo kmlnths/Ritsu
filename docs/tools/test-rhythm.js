@@ -9,7 +9,7 @@ function dCount(ds){return Math.round((new Date(ds+"T00:00:00")-new Date(TODAY+"
 function addDaysStr(ds,n){const d=new Date(ds+"T00:00:00");d.setDate(d.getDate()+n);return fmt(d)}
 function didOn(i,ds){return (i.counts||{})[ds]>0}
 function repeatLabel(n){return n===1?"Daily":"Every "+n+" days"}
-const R=new Function("addDaysStr","dCount","didOn","repeatLabel","today",src.slice(a,b)+";return {hasRhythm,planOn,rhythmLabel,moveTargets}")(addDaysStr,dCount,didOn,repeatLabel,today);
+const R=new Function("addDaysStr","dCount","didOn","repeatLabel","today",src.slice(a,b)+";return {hasRhythm,planOn,planLabel,moveTargets}")(addDaysStr,dCount,didOn,repeatLabel,today);
 const gym={days:[1,2,4,5],repeatEvery:1};                       /* Mon Tue Thu Fri */
 const read={perWeek:2,repeatEvery:1,counts:{"2026-10-05":1}};    /* done Monday */
 const eggs={repeatEvery:1,days:[1,3,5],moves:{"2026-10-07":"2026-10-08"}};   /* Wednesday moved to Thursday */
@@ -25,8 +25,8 @@ const cases=[
  ["eggs moved onto Thursday",R.planOn(eggs,"2026-10-08"),true],
  ["a daily item with a move has a rhythm",R.hasRhythm({repeatEvery:1,moves:{"2026-10-07":"2026-10-08"}}),true],
  ["a plain daily item has none",R.hasRhythm({repeatEvery:1}),false],
- ["label Mon Tue Thu Fri",R.rhythmLabel(gym),"Mon, Tue, Thu, Fri"],
- ["label weekdays",R.rhythmLabel({days:[5,1,2,3,4]}),"Weekdays"],
+ ["label Mon Tue Thu Fri",R.planLabel(gym),"Mon, Tue, Thu, Fri"],
+ ["label weekdays",R.planLabel({days:[5,1,2,3,4]}),"Weekdays"],
  ["gym Mon Tue Thu Fri, missed Wednesday? Wednesday is rest",JSON.stringify(R.moveTargets(gym)),"null"],
  ["weekdays, missed today: only the weekend is free",JSON.stringify(R.moveTargets({days:[1,2,3,4,5],repeatEvery:1})),JSON.stringify(["2026-10-10","2026-10-11"])],
  ["Wed and Fri: Thursday, Saturday to Tuesday, never Friday",JSON.stringify(R.moveTargets({days:[3,5],repeatEvery:1})),JSON.stringify(["2026-10-08","2026-10-10","2026-10-11","2026-10-12","2026-10-13"])],
@@ -35,7 +35,10 @@ const cases=[
  ["times a week never moves",R.moveTargets(read),null],
  ["every 3 days catches up by itself",R.moveTargets({repeatEvery:3}),null],
  ["a one-off task is not a plan",R.moveTargets({kind:"todo",repeatEvery:0}),null],
- ["label times a week",R.rhythmLabel(read),"2 times a week"]
+ ["label times a week",R.planLabel(read),"2 times a week"]
 ];
-let bad=0;for(const [t,got,want] of cases)if(got!==want){bad++;console.log("FAIL",t,"got",got,"want",want)}
+let bad=0;
+/* a function here must not share its name with one elsewhere in the app (the later one would silently win) */
+for(const m of src.slice(a,b).matchAll(/function (\w+)\(/g)){const n=src.split("function "+m[1]+"(").length-1;if(n!==1){bad++;console.log("FAIL",m[1],"is defined",n,"times in index.html")}}
+for(const [t,got,want] of cases)if(got!==want){bad++;console.log("FAIL",t,"got",got,"want",want)}
 console.log(bad?bad+" failed":"all "+cases.length+" pass");process.exit(bad?1:0);
