@@ -82,9 +82,6 @@ svg.chev{width:13px;height:13px;color:var(--faint)}
 .sheet.on{transform:none}
 .sheet.nudge{animation:nudge .45s var(--out)}
 @keyframes nudge{0%{transform:none}35%{transform:translateY(-12px)}100%{transform:none}}
-.sheet.nudge .def{animation:pulse .9s var(--out)}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.5)}100%{box-shadow:0 0 0 12px rgba(52,211,153,0)}}
-.chips button.def{border-color:var(--acc);color:#6EE7B7;background:rgba(52,211,153,.12)}
 .putback{display:block;margin:18px auto 0;background:none;border:0;color:var(--mut);font:inherit;font-size:14px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .sheet h3{margin:0 0 4px;font-size:18px}.sheet p{margin:0 0 16px;color:var(--mut);font-size:14px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
@@ -190,11 +187,13 @@ svg.chev{width:13px;height:13px;color:var(--faint)}
   function done(msg){history.push({i:idx});idx++;closeSheet();paint(true);say(msg)}
   function openDays(x){
     sheet.style.setProperty("--c","var(--"+x.c+")");
-    sheet.innerHTML='<h3>Which day?</h3><p>'+esc(x.t)+' joins that day as a normal to-do. Not sure? Next week is fine.</p><div class="chips">'+
-      ["Tomorrow","Sat 10","Mon 12","Next week"].map(function(d){return '<button data-day="'+d+'"'+(d==="Next week"?' class="def"':'')+'>'+d+'</button>'}).join("")+'</div>'+
-      '<button class="putback" id="putback">Put it back in the pile</button>';
+    /* no default day: the choice is theirs. Escape: send it to the back of this tidy, unless only two cards are left */
+    var canBack=total-idx>2;
+    sheet.innerHTML='<h3>Which day?</h3><p>'+esc(x.t)+' joins that day as a normal to-do.</p><div class="chips">'+
+      ["Tomorrow","Sat 10","Mon 12","Next week"].map(function(d){return '<button data-day="'+d+'">'+d+'</button>'}).join("")+'</div>'+
+      (canBack?'<button class="putback" id="putback">Put it at the back of the pile</button>':'');
     openSheet(null,true);
-    document.getElementById("putback").onclick=function(){closeSheet();paint(true)};
+    if(canBack)document.getElementById("putback").onclick=function(){DATA.push(DATA.splice(idx,1)[0]);history.push({i:idx,back:true});closeSheet();paint(true);say("At the back of the pile: "+x.t)};
     [].forEach.call(sheet.querySelectorAll("[data-day]"),function(b){b.onclick=function(){done("Moved to "+b.getAttribute("data-day")+": "+x.t)}});
   }
   function openBig(x){
@@ -212,7 +211,7 @@ svg.chev{width:13px;height:13px;color:var(--faint)}
   scrim.onclick=function(){if(modal){sheet.classList.remove("nudge");void sheet.offsetWidth;sheet.classList.add("nudge");return}var c=onCancel;closeSheet();if(c)c()};
   var tt=null;
   function say(m){tmsg.textContent=m;toast.classList.add("on");clearTimeout(tt);tt=setTimeout(function(){toast.classList.remove("on")},4000)}
-  document.getElementById("undo").onclick=function(){var h=history.pop();if(!h)return;idx=h.i;toast.classList.remove("on");paint(true)};
+  document.getElementById("undo").onclick=function(){var h=history.pop();if(!h)return;idx=h.i;if(h.back)DATA.splice(idx,0,DATA.pop());toast.classList.remove("on");paint(true)};
   document.getElementById("stop").onclick=function(){say("Saved. The rest wait for next time.")};
   [].forEach.call(document.querySelectorAll(".acts button,.upbtn"),function(b){b.onclick=function(){act(b.getAttribute("data-a"))}});
   addEventListener("keydown",function(e){if(sheet.classList.contains("on"))return;var m={ArrowRight:"right",ArrowLeft:"left",ArrowUp:"up",Enter:"big"}[e.key];if(m){e.preventDefault();act(m)}});
