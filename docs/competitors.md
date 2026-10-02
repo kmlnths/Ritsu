@@ -83,3 +83,21 @@ Source: its App Store page and the developer's listing. The user likes its icon.
 - Its icon: hand-inked slanted tally strokes plus a full stop, black on a white tile (the initials "ttt." in the shape of a tally). Why it works: one idea that is the product (counting small things), hand-made and warm in a sea of geometric ticks, one colour, and the mark is the name.
 - Pricing data point: a lifetime price of about $35 sits close to the $35 a year the user had in mind for a paid tier.
 - Lookalike caution: an ink tally on a white tile is theirs in spirit. A Hiyori mark should differ clearly (a tick, colour, or a different gesture).
+
+## Ideas from three small calm apps (read 2026-10-03)
+
+Sources: their websites and App Store pages, read that day. All three are iPhone only, made by one person each, and tiny: [Enough Today](https://apps.apple.com/us/app/enough-today/id6761869652) 4 ratings (free, out since May 2025, version 4.4 on 2025-09-24), [Somehow](https://apps.apple.com/us/app/somehow/id6797419233) too few ratings to show (free, tip jar $3, $5, $10), [Haven](https://apps.apple.com/us/app/id6759458256) 1 rating ($6.99 a month, $49.99 a year, $299.99 lifetime). Estimate: each earns well under $1,000 a month (a handful of ratings usually means a few hundred downloads). Too few reviews to mine complaints. All three sit at the calm end, so calm alone is not a difference among small apps; calm plus health still is.
+
+What they cannot follow us into: Somehow promises never to have accounts or social, so it can never do friend groups. Haven's whole idea is friction, the opposite of fair scoring. Enough Today has no health data and would need medicine wording to add it.
+
+Ideas worth taking, best first:
+1. **Low-energy day** (Enough Today's energy check-in). One tap on Home: "Low day". Only the things that count toward the day stay; the rest wait quietly. Fits people with a condition (bad days are the norm).
+2. **A smaller version that still counts** (Enough Today's Quick, Standard, Extended). Gym can have "10 minute walk" as its small version. Daywell already gives half credit for half a reading goal; this extends it to every habit.
+3. **Totals, not streaks** (Enough Today's milestones). Show "48 times" instead of a streak flame that resets. A missed day never wipes progress.
+4. **No pile-ups** (Somehow: "never more than one pending instance of anything"). Old open to-dos should not stack up on today.
+5. **"Do something else instead"** (Haven's third choice). When a planned thing is missed, offer the small version, not only "move it".
+6. **A "What Daywell will never do" list** for the store page and site (Somehow's list: no guilt notifications, no streak punishment, no ads, no shaming). We already live by these rules; saying them out loud builds trust.
+7. **Wording to learn from:** "Three done is never four failed." (Somehow) and "Nothing is recorded." (Haven, about its camera).
+8. **Pricing ideas:** a tip jar before a paid tier (Somehow), and a lifetime price next to the yearly one (Haven).
+
+Not to copy: app blocking and camera rep counting (Haven), one-task-only screens as the whole app (Somehow), a separate morning sorting screen (Enough Today; our "Counts toward my day" switch already does the sorting once).
