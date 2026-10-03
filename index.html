@@ -2901,12 +2901,12 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function isRepeat(i){return i.kind==="todo"&&(i.repeatEvery||0)>0}
   function perDayOf(i){return Math.max(1,i.perDay||1)}
   function countOn(i,ds){var e=(i.events||{})[ds];if(e)return e.length;return (i.counts||{})[ds]||0}
-  function measureHit(i,ds){var val=(i.values||{})[ds];if(val!=null&&(i.okDays||[]).indexOf(ds)>-1)return true;return val!=null&&val>=(i.target||1)}
+  function measureHit(i,ds){var val=(i.values||{})[ds];if(i.mark==="number")return val!=null;if(val!=null&&(i.okDays||[]).indexOf(ds)>-1)return true;return val!=null&&val>=(i.target||1)}
   function medDaysLeft(i){return Math.floor((i.stock||0)/((i.dosesPerDay||1)*Math.max(1,i.timesADay||1)))}
   function medCourseLeft(i){return (i.courseDays||0)>0?dCount(addDaysStr(i.courseStart||today(),i.courseDays)):null}
   function didOn(i,ds){if(i.kind==="measure")return measureHit(i,ds);if(i.kind==="med")return (i.log||[]).indexOf(ds)>-1;if(i.kind==="todo"){if(isRepeat(i))return countOn(i,ds)>0;return !!i.done;}return false}
-  function metOn(i,ds){if(i.kind==="todo"&&isRepeat(i))return countOn(i,ds)>=perDayOf(i);if(i.kind==="med"&&(i.timesADay||1)>1)return countOn(i,ds)>=i.timesADay;return didOn(i,ds)}
-  function abnormalOn(i,ds){return i.kind==="todo"&&isRepeat(i)&&countOn(i,ds)>perDayOf(i)}
+  function metOn(i,ds){if(i.mark==="count")return false;if(i.kind==="todo"&&isRepeat(i))return countOn(i,ds)>=perDayOf(i);if(i.kind==="med"&&(i.timesADay||1)>1)return countOn(i,ds)>=i.timesADay;return didOn(i,ds)}
+  function abnormalOn(i,ds){return i.mark!=="count"&&i.kind==="todo"&&isRepeat(i)&&countOn(i,ds)>perDayOf(i)}
   function lastDoneOf(i){if(i.kind==="todo"){var ks=Object.keys(i.counts||{}).filter(function(k){return i.counts[k]>0});ks.sort();return ks.length?ks[ks.length-1]:null;}if(i.kind==="med"){var l=(i.log||[]).slice().sort();return l.length?l[l.length-1]:null;}return i.lastDone||null}
   function nextDue(i){if(i.kind==="todo"){if(isRepeat(i)){var ld=lastDoneOf(i);return ld?addDaysStr(ld,i.repeatEvery):today();}return i.dueDate||null;}if(i.kind==="measure"||i.kind==="med"){var ld2=lastDoneOf(i);return ld2?addDaysStr(ld2,i.repeatEvery||1):today();}return addDaysStr(i.lastDone||i.createdDate||today(),i.intervalDays||30)}
   function doneForNow(i){if(i.kind==="measure")return measureHit(i,today());if(i.kind==="med")return metOn(i,today());if(i.kind==="todo"){if(isRepeat(i))return metOn(i,today());return !!i.done;}return dCount(nextDue(i))>0}
@@ -2962,8 +2962,11 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function itemTime(i,ds){var ns=nextSlot(i,ds);if(ns&&ns.at)return ns.at;var w=expectOf(i);return (w&&w.at)||i.reminder||null}
   function isMedish(i){return i.kind==="med"||i.catId==="c_medicine"}
   /* a number you count one at a time (8 glasses of water): one tap adds one, the circle shows the day's number */
-  function tapAmount(i){if(i.kind!=="measure")return 0;if(+i.glass>0)return +i.glass;return /^(glass(es)?|cups?|bottles?|servings?|times?|pieces?|portions?|scoops?)$/i.test((i.unit||"").trim())?1:0}
+  function tapAmount(i){if(i.kind!=="measure"||i.mark==="number")return 0;if(+i.glass>0)return +i.glass;return /^(glass(es)?|cups?|bottles?|servings?|times?|pieces?|portions?|scoops?)$/i.test((i.unit||"").trim())?1:0}
   function tapCount(i){return tapAmount(i)>0}
+  /* how you mark it: done (tap once, several a day still allowed), goal (an amount to reach), count (tap each time, no goal,
+     never counts), number (type a reading, never counts). Stored as i.mark once chosen; older items read it from what they are */
+  function markOf(i){if(i.mark)return i.mark;if(i.kind==="measure")return (tapCount(i)||(!isTracker(i)&&i.count!==false))?"goal":"number";return "done"}
   function totalOf(i){
     if(i.kind==="measure"){var n=0;for(var k in(i.values||{}))if(measureHit(i,k))n++;return n}
     if(i.kind==="med")return (i.log||[]).length;
@@ -4006,7 +4009,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     doms.forEach(function(d){hmItems(d,ds).forEach(function(i){if(its.indexOf(i)<0)its.push(i)})});
     its.sort(hmListSort);
     var restSet=[];if(off===0&&isLowDay(ds))doms.forEach(function(d){hmItems0(d,ds).forEach(function(i){if(!lowKeep(i)&&restSet.indexOf(i)<0)restSet.push(i)})});
-    var extra=visibleItems().filter(function(i){return its.indexOf(i)<0&&restSet.indexOf(i)<0&&dueOnDate(i,ds,off)&&!isFast(i)&&!isTracker(i)&&!isLeftover(i)&&(!state.qcDom||areaDomain(i.catId)===state.qcDom)}).sort(hmListSort);
+    var extra=visibleItems().filter(function(i){return its.indexOf(i)<0&&restSet.indexOf(i)<0&&dueOnDate(i,ds,off)&&!isFast(i)&&(!isTracker(i)||i.mark)&&!isLeftover(i)&&(!state.qcDom||areaDomain(i.catId)===state.qcDom)}).sort(hmListSort);
     var left=its.filter(function(i){return !hmDone(i,ds)}).length;
     var dn=state.qcDom?HM_DOMS.filter(function(d){return d[0]===state.qcDom})[0][1]:"";var h='<div class="qc-lh"><h3 aria-level="2">'+(off===0?"Today":hmLabel(ds))+(dn?' <em class="qc-only qb-'+state.qcDom+'">'+dn+' only</em><button class="qc-all" data-qcall>Show All</button>':'')+'</h3><span>'+(off===0?'<button class="low-t'+(isLowDay(ds)?" on":"")+'" data-low aria-pressed="'+isLowDay(ds)+'">'+PI("moon")+'Low day</button>':'')+(its.length?(left?left+" left":"All done"):"")+'</span></div>';
     var resting=restSet.length;
@@ -4549,7 +4552,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     } else if(isBody(i)){
       var okB=inRangeOn(i,today())&&!flagsOn(i,today()).length;
       h+='<button aria-label="'+esc(tickLabel(i))+'" class="tick round '+(cc>0&&okB?"on":"")+'" '+(cc>0&&!okB?'style="border-color:var(--gold);color:var(--gold-ink);background:var(--gold-soft)"':'')+' data-toggle="'+i.id+'">'+(cc>0?cc:"＋")+'</button>';
-    } else if(i.kind==="todo"){var cls=complete?("on"+(i.id===_justDone?" pop":"")):(cc>0?"part":"");var lbl=complete?CHECK_SVG:(pd>1&&cc>0?cc:"");h+='<button aria-label="'+esc(tickLabel(i))+'" class="tick '+(isRepeat(i)?"round ":"")+cls+'" data-toggle="'+i.id+'">'+lbl+'</button>';}
+    } else if(i.kind==="todo"){var cls=complete?("on"+(i.id===_justDone?" pop":"")):(cc>0?"part":"");var lbl=complete?CHECK_SVG:((pd>1||i.mark==="count")&&cc>0?cc:(i.mark==="count"?"＋":""));h+='<button aria-label="'+esc(tickLabel(i))+'" class="tick '+(isRepeat(i)?"round ":"")+cls+'" data-toggle="'+i.id+'">'+lbl+'</button>';}
     else if(i.kind==="measure"&&isT&&tapCount(i)){var tv0=+((i.values||{})[today()])||0;h+='<button aria-label="Add '+tapAmount(i)+' '+esc(i.unit||"")+', '+esc(i.title)+'" class="tick round '+(complete?"on":tv0>0?"part":"")+'" data-mplus="'+i.id+'">'+(complete?CHECK_SVG:(tv0>0&&tv0===Math.round(tv0)&&tv0<100?tv0:"＋"))+'</button>';}
     else if(i.kind==="measure")h+='<button aria-label="'+esc(tickLabel(i))+'" class="tick round '+(complete?"on":"")+'" data-measure="'+i.id+'">'+(complete?CHECK_SVG:"＋")+'</button>';
     else if(i.kind==="med"){var mN=Math.max(1,i.timesADay||1),mc=isT?countOn(i,today()):0;h+='<button aria-label="'+esc(tickLabel(i))+'" class="tick round '+(complete?"on"+(i.id===_justDone?" pop":""):(mN>1&&mc>0?"part":""))+'" data-toggle="'+i.id+'">'+(complete?CHECK_SVG:(mN>1&&mc>0?mc:"＋"))+'</button>';}
@@ -4580,11 +4583,11 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
         else if(a.type==="low")h+='<span class="pill">under usual</span>';
       });
     } else if(i.kind==="todo"){
-      if(isRepeat(i)){h+='<span class="pill rep">'+PI("repeat")+esc(planLabel(i))+'</span>';if((i.smallDays||{})[dsR])h+='<span class="pill">done small · '+esc(i.small||"")+'</span>';if(pd>1)h+='<span class="pill">'+cc+'/'+pd+' today</span>';if(countOn(i,today())>pd)h+='<span class="pill warnflag">'+cc+'× · over usual</span>';h+=totalPill(i);}
+      if(isRepeat(i)){h+='<span class="pill rep">'+PI("repeat")+esc(planLabel(i))+'</span>';if((i.smallDays||{})[dsR])h+='<span class="pill">done small · '+esc(i.small||"")+'</span>';if(i.mark==="count")h+='<span class="pill">'+cc+' today</span>';else if(pd>1)h+='<span class="pill">'+cc+'/'+pd+' today</span>';if(i.mark!=="count"&&countOn(i,today())>pd)h+='<span class="pill warnflag">'+cc+'× · over usual</span>';h+=totalPill(i);}
       else if(i.dueDate&&!i.done)h+='<span class="pill due '+dueClass(i.dueDate)+'">'+esc(dueLabel(i.dueDate))+'</span>';
       if(i.priority==="high"&&!complete)h+='<span class="pill hi">High</span>';
     } else if(i.kind==="med"){var dl=medDaysLeft(i);if((i.timesADay||1)>1&&isT)h+='<span class="pill">'+countOn(i,today())+'/'+i.timesADay+' today</span>';h+='<span class="pill due '+(dl<=0?"over":medLow(i)?"soon":"")+'">'+PI("pill")+dl+'d · '+(i.stock||0)+' left</span>';h+=totalPill(i);var cl=medCourseLeft(i);if(cl!=null&&cl>=0)h+='<span class="pill">course '+cl+'d</span>';}
-    else if(i.kind==="measure"){h+='<span class="pill" style="color:var(--accent-ink)">'+PI("target")+esc((i.target||0)+(i.unit?" "+i.unit:""))+'</span>';h+=totalPill(i);}
+    else if(i.kind==="measure"){if(i.mark!=="number")h+='<span class="pill" style="color:var(--accent-ink)">'+PI("target")+esc((i.target||0)+(i.unit?" "+i.unit:""))+'</span>';h+=totalPill(i);}
     else if(i.kind==="upkeep"){var d3=dCount(nextDue(i));h+='<span class="pill due '+(d3<=0?"over":d3<=7?"soon":"")+'">'+(i.mode==="rebuy"?"rebuy":"replace")+' in '+(d3<=0?"now":d3+"d")+'</span>';}
     h+=flagPills(i,today());
     var nsl=isT?nextSlot(i):null;if(nsl&&nsl.at)h+='<span class="pill">'+PI("bell")+(isMedish(i)?"dose "+nsl.n+" at ":"next at ")+esc(fmtTime(nsl.at))+'</span>';else if(i.reminder)h+='<span class="pill">'+PI("bell")+esc(fmtSpan(i))+'</span>';
@@ -6691,11 +6694,13 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function openItemEditor(id,presetCat){var d;if(id){d=JSON.parse(JSON.stringify(Store.get("items",id)));if(d.catId===TODO_CAT&&!isRepeat(d))return openTask(id);}else d={catId:presetCat||(cats().filter(function(c){return c.id!==TODO_CAT})[0]||{}).id,sub:"",title:"",akind:"activity",kind:"todo",notes:"",priority:"med",tags:[],assignees:[],private:false,done:false,dueDate:null,repeatEvery:1,perDay:1,counts:{},target:1,unit:"",values:{},dosesPerDay:1,stock:0,reorderTablets:10,reorderAt:7,courseDays:0,intervalDays:30,mode:"replace",stance:"routine",normal:{min:1,max:1,maxGapDays:1,maxPerWeek:null},markers:[],scale:null,localOnly:false};
     // derive akind for existing
     if(!d.akind){d.akind=d.kind==="med"?"med":d.kind==="measure"?"measure":d.kind==="upkeep"?"upkeep":(isRepeat(d)?"activity":"oneoff");}
+    if(!d.mark&&(d.akind==="activity"||d.akind==="measure"))d.mark=markOf(d);
     if(!d.stance)d.stance="routine";
     if(!d.normal)d.normal={min:1,max:1,maxGapDays:1,maxPerWeek:null};
     if(!Array.isArray(d.markers))d.markers=[];
     ms={type:"item",mode:"area",id:id||null,data:d};renderItemModal();}
-  var AKINDS=[["activity","Activity","Something you do, on repeat"],["med","Medication","Pills, count & reorder"],["measure","Measure","A number (sleep, water)"],["upkeep","Upkeep","Replace or rebuy a thing"],["oneoff","One-off task","A single task with a due date"]];
+  var AKINDS=[["activity","Activity","Something on repeat"],["med","Medication","Pills, count & reorder"],["upkeep","Upkeep","Replace or rebuy a thing"],["oneoff","One-off task","A single task with a due date"]];
+  var MARKS=[["done","Done","Tap once. Evening walk."],["goal","Goal","Tap till you get there. 8 glasses of water."],["count","Count","Tap each time. Cups of chai."],["number","Number","Type it in. Your weight."]];
   function renderItemModal(){
     var d=ms.data,cs=cats(),ppl=people(),ts=tags();var cur=Store.get("cats",d.catId);var subs={};itemsOf(d.catId).forEach(function(i){if(i.sub)subs[i.sub]=1;});
     var h='<div class="modal-h"><h3>'+(ms.id?"Edit":"Add to "+esc(cur?cur.name:"area"))+'</h3><button class="x" data-close>×</button></div><div class="modal-b">';
@@ -6703,7 +6708,8 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(!ms.id)h+='<button type="button" class="todo-add" style="padding:0 0 14px" data-action="library" data-cat="'+esc(d.catId||"")+'"><span class="pl">\u2261</span>Or choose a template</button>';
     /* stance comes first, it decides how the thing is scored, which decides what else to ask */
     h+='<div class="field"><label>How should this be counted?</label><div class="kindsel" id="i-stance" style="grid-template-columns:repeat(3,1fr)">'+STANCES.map(function(s){return '<button type="button" data-v="'+s[0]+'" class="'+(d.stance===s[0]?"on":"")+'"><b>'+s[1]+'</b><small>'+s[2]+'</small></button>'}).join("")+'</div><div class="hint">'+(d.stance==="routine"?"Counts toward your day, with streaks.":d.stance==="body"?"No streaks or scores, just your usual range.":"Every clear day counts toward your streak.")+'</div></div>';
-    if(d.stance==="routine")h+='<div class="field"><label>Type</label><div class="kindsel" id="i-akind">'+AKINDS.map(function(k){return '<button type="button" data-v="'+k[0]+'" class="'+(d.akind===k[0]?"on":"")+'"><b>'+k[1]+'</b><small>'+k[2]+'</small></button>'}).join("")+'</div></div>';
+    if(d.stance==="routine")h+='<div class="field"><label>Type</label><div class="kindsel" id="i-akind">'+AKINDS.map(function(k){return '<button type="button" data-v="'+k[0]+'" class="'+(d.akind===k[0]||(k[0]==="activity"&&d.akind==="measure")?"on":"")+'"><b>'+k[1]+'</b><small>'+k[2]+'</small></button>'}).join("")+'</div></div>';
+    if(d.stance==="routine"&&(d.akind==="activity"||d.akind==="measure"))h+='<div class="field"><label id="l-mark">How to mark it</label><div class="kindsel" id="i-mark" role="group" aria-labelledby="l-mark" style="grid-template-columns:repeat(2,1fr)">'+MARKS.map(function(m){return '<button type="button" data-v="'+m[0]+'" class="'+(d.mark===m[0]?"on":"")+'" aria-pressed="'+(d.mark===m[0])+'"><b>'+m[1]+'</b><small>'+m[2]+'</small></button>'}).join("")+'</div><div class="hint">'+(d.mark==="count"||d.mark==="number"?"Just keeps a record. It sits under Also today and never counts toward your day.":"Done and Goal can count toward your day.")+'</div></div>';
     h+='<div class="field"><label>Section <span class="sub-lbl">(optional)</span></label><input type="text" id="i-sub" list="sublist" value="'+esc(d.sub||"")+'" placeholder="e.g. Meds, Sleep"><datalist id="sublist">'+Object.keys(subs).map(function(s){return '<option value="'+esc(s)+'">'}).join("")+'</datalist></div>';
     if(d.stance==="body"){
       var N=d.normal||{};
@@ -6725,14 +6731,16 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
       h+='<div class="field"><label>Fasting window</label><div class="pick-wrap">'+PROTOCOLS.map(function(pr){return '<button type="button" class="tagpick '+(pf===pr.h?"on":"")+'" data-protoset="'+pr.h+'">'+protoLabel(pr.h)+'</button>'}).join("")+'</div><div class="hint">You can change this any time. Longer isn\'t always better.</div></div>';
     } else if(d.stance==="episode"){
       h+='<div class="field"><div class="hint" style="margin-top:0">Nothing to set up. Tap <b>Start</b> when it begins and <b>It\'s over</b> when it goes, Daywell keeps the length, so after a couple of these it can tell you whether this one is running longer than your usual.</div></div>';
+    } else if(d.akind==="activity"&&d.mark==="count"){h+=rhythmField(d)+'<div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div>';
     } else if(d.akind==="activity"){h+=rhythmField(d)+'<div class="field"><label for="i-small">Small version <span class="sub-lbl">(optional)</span></label><input type="text" id="i-small" maxlength="60" value="'+esc(d.small||"")+'" placeholder="For example: 10 minute walk"><div class="hint">On a hard day, the small one counts as done. It also keeps this on a low day.</div></div><div class="two"><div class="field"><label>Times a day</label><input type="number" id="i-perday" min="1" max="12" value="'+(d.perDay||1)+'"><div class="hint">Days over this are flagged as unusual.</div></div></div>'+timesField(d,d.perDay||1);
       h+='<div class="two"><div class="field"><label id="l-prio">Priority</label><div class="seg" id="i-prio" role="group" aria-labelledby="l-prio">'+prioBtns(d.priority)+'</div></div>'+((d.perDay||1)>1?'':'<div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div>')+'</div>';
       h+=expectField(d);
     } else if(d.akind==="oneoff"){h+='<div class="two"><div class="field"><label>Due date</label><input type="date" id="i-due" value="'+esc(d.dueDate||"")+'"></div><div class="field"><label id="l-prio">Priority</label><div class="seg" id="i-prio" role="group" aria-labelledby="l-prio">'+prioBtns(d.priority)+'</div></div></div>';
     } else if(d.akind==="med"){h+=rhythmField(d)+'<div class="two"><div class="field"><label>Pills on hand</label><input type="number" id="i-stock" min="0" value="'+(d.stock||0)+'"></div><div class="field"><label>Pills each time</label><input type="number" id="i-doses" min="0.5" step="0.5" value="'+(d.dosesPerDay||1)+'"></div></div><div class="two"><div class="field"><label>Times a day</label><input type="number" id="i-tad" min="1" max="12" value="'+(d.timesADay||1)+'"></div></div>'+timesField(d,d.timesADay||1)+'<div class="two"><div class="field"><label>Remind at ≤ pills</label><input type="number" id="i-rtab" min="0" value="'+(d.reorderTablets||0)+'"></div><div class="field"><label>…or ≤ days left</label><input type="number" id="i-rday" min="0" value="'+(d.reorderAt||0)+'"></div></div><div class="two"><div class="field"><label>Course length (days)</label><input type="number" id="i-course" min="0" value="'+(d.courseDays||0)+'"><div class="hint">0 = ongoing.</div></div>'+((d.timesADay||1)>1?'':'<div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div>')+'</div>';
+    } else if(d.akind==="measure"&&d.mark==="number"){h+=rhythmField(d)+'<div class="two"><div class="field"><label>Unit <span class="sub-lbl">(optional)</span></label><input type="text" id="i-unit" value="'+esc(d.unit||"")+'" placeholder="kg, mg/dL"></div><div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div></div>';
     } else if(d.akind==="measure"){h+=rhythmField(d)+'<div class="two"><div class="field"><label>Daily goal</label><input type="number" id="i-target" min="0" step="any" value="'+(d.target||1)+'"></div><div class="field"><label>Unit</label><input type="text" id="i-unit" value="'+esc(d.unit||"")+'" placeholder="hrs, L, fl oz…"></div></div><div class="field"><label for="i-glass">One tap adds <span class="sub-lbl">(optional)</span></label><input type="number" id="i-glass" min="0" step="any" value="'+(+d.glass>0?d.glass:"")+'" placeholder="'+(usesOz()?"8":"0.25")+'"><div class="hint">For example one glass, '+(usesOz()?"8 fl oz":"0.25 L")+'. Then a tap on the circle adds it, and the number on the right lets you type the exact amount.</div></div><div class="field"><label>Reminder <span class="sub-lbl">(opt)</span></label>'+timeField("i-rem",d.reminder)+'</div>';
     } else if(d.akind==="upkeep"){h+='<div class="field"><label>What happens</label><div class="seg" id="i-mode"><button type="button" data-v="replace" class="'+(d.mode!=="rebuy"?"on":"")+'">Replace It</button><button type="button" data-v="rebuy" class="'+(d.mode==="rebuy"?"on":"")+'">Rebuy It</button></div></div><div class="two"><div class="field"><label>Every (days)</label><input type="number" id="i-int" min="1" value="'+(d.intervalDays||30)+'"><div class="hint">e.g. 90 for a 3-month toothbrush.</div></div><div class="field"><label>Last done</label><input type="date" id="i-last" value="'+esc(d.lastDone||today())+'"></div></div>';}
-    if(d.stance==="routine"){var _cnt=(d.akind==="med")?(d.count===true):(d.count!==false);
+    if(d.stance==="routine"&&d.mark!=="count"&&d.mark!=="number"){var _cnt=(d.akind==="med")?(d.count===true):(d.count!==false);
       h+='<div class="field"><label class="toggle-line"><input type="checkbox" id="i-count" '+(_cnt?"checked":"")+'> Counts toward my day'+(d.akind==="med"?' <span class="sub-lbl">(medicine is off by default, still tracked)</span>':'')+'</label><div class="hint">On for what matters, like a workout. Off for nice to haves, like eggs: they sit under Also today, and a missed day is fine.</div></div>';}
     /* flags are opt-in per item. Nothing appears unless you put it there. */
     var chosen=(d.markers||[]);
@@ -6860,6 +6868,9 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(kind==="todo"&&base.repeatEvery>0){base.small=d.small||"";var bn=base.perDay||1;base.everyH=bn>1&&d.everyH?d.everyH:null;base.times=bn>1&&!d.everyH&&d.times?d.times.slice(0,bn):null;}
     if(kind==="measure"||kind==="med"||(kind==="todo"&&base.repeatEvery>0)){base.days=(d.days&&d.days.length)?d.days.slice():null;base.perWeek=d.perWeek||null;base.repeatEvery=(base.days||base.perWeek)?1:(d.repeatEvery||1);}
     if(kind==="upkeep"){base.mode=d.mode||"replace";base.intervalDays=d.intervalDays||30;base.lastDone=d.lastDone||today();}
+    if(d.count!=null)base.count=d.count;   /* the Counts toward my day switch */
+    base.mark=(kind==="measure"||(kind==="todo"&&base.repeatEvery>0))?(d.mark||null):null;
+    if(base.mark==="count"||base.mark==="number")base.count=false;
     if(ms.id)Store.update("items",ms.id,base);else{base.createdAt=new Date().toISOString();base.createdDate=today();base.order=Date.now();base.owner=state.me||null;Store.add("items",base);}closeModal();}
 
   function openCatEditor(id){var d=id?JSON.parse(JSON.stringify(Store.get("cats",id))):{name:"",emoji:CAT_EMOJIS[0],color:CAT_COLORS[0]};ms={type:"cat",id:id||null,data:d};renderCatModal();}
@@ -7277,7 +7288,7 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
   function tapTodo(i){
     if(i.cb){cbTick(i);return;}
     if(!isRepeat(i)&&!isLimit(i)&&!isBody(i)){var was={done:!!i.done,completedAt:i.completedAt||null},nowDone=!i.done;_justDone=nowDone?i.id:null;setTimeout(jdClear,1400);if(nowDone)Buddy.react("done");Store.update("items",i.id,{done:nowDone,completedAt:nowDone?fmt(new Date())+"T"+nowHM()+":00":null});var fin=nowDone&&dayFinished();toast(nowDone?"Done: "+i.title:"Marked as not done",function(){Store.update("items",i.id,was)},nowDone?(fin?"joy":"happy"):null,nowDone?winLine(fin):"");return;}
-    if(isLimit(i)||isBody(i)){addEvent(i,today());openStrip(i.id);return;}   /* always adds, undo lives in the strip */
+    if(isLimit(i)||isBody(i)||i.mark==="count"){addEvent(i,today());openStrip(i.id);return;}   /* always adds, undo lives in the strip */
     var pd=Math.max(1,normOf(i).max||perDayOf(i));var c=countOn(i,today());
     if(c<pd){if(c+1>=pd){_justDone=i.id;setTimeout(jdClear,1400);}addEvent(i,today());openStrip(i.id);}else setDayCount(i,today(),0);
   }
@@ -7452,7 +7463,10 @@ body.welcome .fab,body.welcome #fab,body.welcome #fabMenu,body.welcome #bottomna
     if(e.target.closest("[data-save-flag]")){saveNewFlag();return;}
     if(e.target.closest("[data-flagdone]")){closeFlagPicker();return;}
     if((el=e.target.closest("[data-del-marker]"))){var mid=el.getAttribute("data-del-marker");if(gone("Flag deleted")){Store.del("markers",mid);Store.all("items").forEach(function(i){if((i.markers||[]).indexOf(mid)>-1)Store.update("items",i.id,{markers:i.markers.filter(function(x){return x!==mid})});});}return;}
-    if((el=e.target.closest("#i-akind button"))){syncItem();ms.data.akind=el.getAttribute("data-v");renderItemModal();return;}
+    if((el=e.target.closest("#i-akind button"))){syncItem();ms.data.akind=el.getAttribute("data-v");ms.data.mark=ms.data.akind==="activity"?"done":null;renderItemModal();return;}
+    if((el=e.target.closest("#i-mark button"))){syncItem();var mk=el.getAttribute("data-v"),md=ms.data,wasM=md.akind==="measure",pmk=md.mark;md.mark=mk;md.akind=(mk==="goal"||mk==="number")?"measure":"activity";
+      if(mk==="goal"&&!wasM&&!(+md.glass>0)){md.glass=1;if(!(md.target>1))md.target=8;}if(mk==="count")md.perDay=1;
+      if((mk==="done"||mk==="goal")&&(pmk==="count"||pmk==="number"))md.count=true;renderItemModal();return;}
     if((el=e.target.closest("#i-mode button"))){ms.data.mode=el.getAttribute("data-v");renderItemModal();return;}
     if(tdClick(e))return;
     if((el=e.target.closest("[data-tidy]"))){openTidy();return;}

@@ -1,0 +1,111 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0c0e;--card:#16171a;--row:#1e1f23;--line:#2a2b30;--ink:#f2f2f0;--dim:#9a9ca3;--faint:#62646b;--green:#3ddc97;--green-soft:#123a2b;--blue:#38bdf8}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:'Space Grotesk',sans-serif;padding:40px;width:1860px}
+.cols{display:grid;grid-template-columns:repeat(3,540px);gap:46px}
+h2{font-size:17px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:12px}
+h2 b{color:var(--green);margin-right:8px}
+.lead{color:var(--dim);font-size:17px;line-height:1.55;margin-bottom:22px;min-height:54px}
+.phone{background:var(--card);border:1px solid var(--line);border-radius:34px;padding:26px 24px;min-height:900px}
+.kicker{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);font-weight:600}
+.title{font-size:32px;font-weight:700;margin:4px 0 22px}
+.label{font-size:16px;color:var(--dim);font-weight:500;margin:18px 0 10px}
+.opt{display:flex;align-items:center;gap:16px;background:var(--row);border:1px solid transparent;border-radius:16px;padding:16px 18px;margin-bottom:10px}
+.opt.on{border-color:var(--green);background:var(--green-soft)}
+.opt .n{font-size:18px;font-weight:600}
+.opt .s{font-size:14px;color:var(--dim);margin-top:2px}
+.opt.on .s{color:#bfe9d4}
+.opt .ic{width:44px;display:flex;justify-content:center;flex:none}
+.field{display:flex;justify-content:space-between;background:var(--row);border-radius:14px;padding:16px 18px;font-size:18px;margin-bottom:10px}
+.field span{color:var(--dim)} .field b{font-weight:600}
+.hint{color:var(--dim);font-size:14px;line-height:1.5;margin-top:6px}
+.circ{width:30px;height:30px;border-radius:50%;border:2.5px solid var(--faint);flex:none;display:flex;align-items:center;justify-content:center}
+.circ.done{background:var(--green);border-color:var(--green);color:#06140e;font-weight:700}
+.plus{width:38px;height:38px;border-radius:12px;background:#2a2b30;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:500;flex:none}
+.pill{border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:15px;color:var(--dim);flex:none}
+.row{display:flex;align-items:center;gap:16px;background:var(--row);border-radius:18px;padding:16px 18px;margin-bottom:10px}
+.row .t{flex:1}
+.row .n{font-size:19px;font-weight:500}
+.row .s{font-size:14px;color:var(--dim);margin-top:2px}
+.row.quiet{background:transparent;border:1px dashed var(--line)}
+.bar{height:6px;border-radius:3px;background:#2a2b30;margin-top:8px;width:170px}
+.bar i{display:block;height:100%;border-radius:3px;background:var(--blue)}
+.ring{width:34px;height:34px;flex:none}
+.sec{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);font-weight:600;margin:22px 0 10px}
+.big{display:flex;align-items:baseline;gap:10px}
+.big b{font-size:28px;font-weight:600}
+.tpl{display:flex;justify-content:space-between;align-items:center;background:var(--row);border-radius:14px;padding:15px 18px;margin-bottom:10px;font-size:17px}
+.tpl em{font-style:normal;color:var(--green);font-size:15px}
+.sheet{background:var(--row);border-radius:20px;padding:20px;margin-top:14px}
+.sheet input{width:100%;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:26px;font-weight:600;color:var(--ink);font-family:inherit}
+.btn{margin-top:12px;background:var(--green);color:#06140e;border-radius:12px;text-align:center;padding:13px;font-weight:700;font-size:17px}
+</style></head><body>
+<div class="cols">
+
+<!-- 1 -->
+<div>
+<h2><b>1</b>How to mark it</h2>
+<p class="lead">One new setting on every item. Four choices. Editing Water here, which is set to Goal.</p>
+<div class="phone">
+  <div class="kicker">Health</div>
+  <div class="title">Water</div>
+  <div class="label">How to mark it</div>
+  <div class="opt"><div class="ic"><div class="circ"></div></div><div><div class="n">Done</div><div class="s">Tap once. Evening walk.</div></div></div>
+  <div class="opt on"><div class="ic"><svg class="ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="#2a2b30" stroke-width="4"/><circle cx="18" cy="18" r="15" fill="none" stroke="#38bdf8" stroke-width="4" stroke-dasharray="59 95" transform="rotate(-90 18 18)" stroke-linecap="round"/></svg></div><div><div class="n">Goal</div><div class="s">Tap till you get there. 8 glasses of water.</div></div></div>
+  <div class="opt"><div class="ic"><div class="plus">+</div></div><div><div class="n">Count</div><div class="s">Tap each time. Cups of chai.</div></div></div>
+  <div class="opt"><div class="ic"><div class="pill">72.5</div></div><div><div class="n">Number</div><div class="s">Type it in. Your weight.</div></div></div>
+  <div class="label">Goal</div>
+  <div class="field"><span>Each day</span><b>8 glasses</b></div>
+  <p class="hint">Only Done and Goal can count toward your day. Count and Number just keep a record.</p>
+</div>
+</div>
+
+<!-- 2 -->
+<div>
+<h2><b>2</b>On Home</h2>
+<p class="lead">Each choice looks a little different in your list. Still sorted by topic. Items that only keep a record have a dotted edge, because they never count.</p>
+<div class="phone">
+  <div class="kicker">Today</div>
+  <div class="sec">Health</div>
+  <div class="row"><div class="circ done">&#10003;</div><div class="t"><div class="n">Evening walk</div><div class="s">done at 6:40</div></div></div>
+  <div class="row"><svg class="ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="#2a2b30" stroke-width="4"/><circle cx="18" cy="18" r="15" fill="none" stroke="#38bdf8" stroke-width="4" stroke-dasharray="59 95" transform="rotate(-90 18 18)" stroke-linecap="round"/></svg><div class="t"><div class="n">Water</div><div class="s">5 of 8 glasses</div><div class="bar"><i style="width:62%"></i></div></div><div class="plus">+</div></div>
+  <div class="row quiet"><div class="t"><div class="n">Cups of chai</div><div class="s">3 today</div></div><div class="plus">+</div></div>
+  <div class="row quiet"><div class="t"><div class="n">Weight</div><div class="s">72.5 kg this morning</div></div><div class="pill">Type</div></div>
+  <div class="row quiet"><div class="t"><div class="n">Blood sugar</div><div class="s">not written yet today</div></div><div class="pill">Type</div></div>
+  <div class="sec">Mind</div>
+  <div class="row"><div class="circ"></div><div class="t"><div class="n">Read 20 pages</div></div></div>
+  <div class="sheet">
+    <div class="kicker">Blood sugar</div>
+    <div class="label" style="margin-top:8px">Tapping Type opens this</div>
+    <input value="112">
+    <p class="hint">mg/dL. Last time 108.</p>
+    <div class="btn">Save</div>
+  </div>
+</div>
+</div>
+
+<!-- 3 -->
+<div>
+<h2><b>3</b>Templates choose for you</h2>
+<p class="lead">Pick a template and the right choice is already set. You only open the setting if you want to change it.</p>
+<div class="phone">
+  <div class="kicker">Templates</div>
+  <div class="title">Health</div>
+  <div class="tpl">Water <em>Goal, 8</em></div>
+  <div class="tpl">Walk <em>Done</em></div>
+  <div class="tpl">Steps <em>Goal, 8000</em></div>
+  <div class="tpl">Chai <em>Count</em></div>
+  <div class="tpl">Cigarettes <em>Count</em></div>
+  <div class="tpl">Weight <em>Number</em></div>
+  <div class="tpl">Blood pressure <em>Number</em></div>
+  <div class="tpl">Blood sugar <em>Number</em></div>
+  <div class="tpl">Medicine <em>Done, each dose</em></div>
+  <p class="hint" style="margin-top:14px">Items you made before this change keep working as they do now. Daywell picks the closest choice for them.</p>
+</div>
+</div>
+
+</div>
+</body></html>
